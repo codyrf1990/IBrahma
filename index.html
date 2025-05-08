@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iSubCore</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <div id="license-app">
+        <!-- NEW HEADER STRUCTURE -->
+        <header class="main-header">
+            <div class="title-group" id="appLogoArea">
+                <h1 class="app-title">iBramah</h1>
+                <p class="app-tagline">Opportunity Tracker</p>
+            </div>
+            <img src="PICS/SolidCAM.png" alt="SolidCAM Logo" class="header-logo">
+            <div class="percentage-calculator summary-box"> <!-- Moved content here -->
+                <h4>Quick % Calc</h4>
+                <div class="calculator-content"> <!-- ADDED WRAPPER -->
+                    <div class="calc-input-row">
+                        <label for="calculator-amount">Amount:</label>
+                        <input type="number" id="calculator-amount" placeholder="e.g., 1000">
+                    </div>
+                    <div class="calculator-results">
+                        <div id="result-container-5" class="percentage-result-item"></div>
+                        <div id="result-container-10" class="percentage-result-item"></div>
+                        <div id="result-container-15" class="percentage-result-item"></div>
+                    </div>
+                </div> <!-- END ADDED WRAPPER -->
+            </div>
+        </header>
+
+        <!-- COMMANDER CARD START -->
+        <div id="commander-card" class="card">
+            <div id="commander-system-section" class="commander-section">
+                <h3>System</h3>
+                <div class="icon-grid">
+                    <div class="commander-icon" id="icon-save-to-file" title="Save to File"><span class="icon-placeholder">[S]</span><span class="icon-label">Save</span></div>
+                    <div class="commander-icon" id="icon-load-from-file" title="Load from File"><span class="icon-placeholder">[L]</span><span class="icon-label">Load</span></div>
+                    <div class="commander-icon" id="icon-add-renewal" title="Add Renewal"><span class="icon-placeholder">[+]</span><span class="icon-label">Add</span></div>
+                    <div class="commander-icon" id="icon-system-settings" title="Settings"><span class="icon-placeholder">[G]</span><span class="icon-label">Settings</span></div>
+                    <div class="commander-icon" id="icon-user-profile" title="User Profile"><span class="icon-placeholder">[U]</span><span class="icon-label">Profile</span></div>
+                    <div class="commander-icon" id="icon-system-help" title="Help"><span class="icon-placeholder">[?]</span><span class="icon-label">Help</span></div>
+                </div>
+            </div>
+            <div id="commander-chats-section" class="commander-section">
+                <h3>AI Chats</h3>
+                <button id="btn-chat-std" class="button medium-button">SolidCAM Chat Std</button>
+                <button id="btn-chat-pro" class="button medium-button">SolidCAM Chat Pro</button>
+            </div>
+            <div id="commander-utils-section" class="commander-section">
+                <h3>Utilities</h3>
+                <div class="icon-grid">
+                    <div class="commander-icon" id="icon-email-templates" title="Email Templates"><span class="icon-placeholder">[E]</span><span class="icon-label">Email</span></div>
+                    <div class="commander-icon" id="icon-adv-calculator" title="Calculator"><span class="icon-placeholder">[C]</span><span class="icon-label">Calc</span></div>
+                    <div class="commander-icon" id="icon-scratchpad" title="Scratchpad"><span class="icon-placeholder">[N]</span><span class="icon-label">Notes</span></div>
+                </div>
+            </div>
+        </div>
+        <!-- COMMANDER CARD END -->
+
+        <!-- Hidden file input (moved outside buttons) -->
+        <input type="file" id="file-input" accept=".json" style="display: none;">
+        <span class="sync-message" id="sync-message" role="status" style="display: block; text-align: center; margin-bottom: 10px;"></span>
+
+        <!-- Add New Renewal Section (Modal) -->
+        <div id="add-renewal-modal" class="modal-overlay" style="display: none;">
+            <div class="modal-content">
+                <div class="add-section" id="add-section">
+                    <h3>Add New Renewal</h3>
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label for="account-name">Account Name</label>
+                            <input type="text" id="account-name" required placeholder="Enter account name">
+                        </div>
+                        <div class="form-field">
+                            <label for="renewal-date">Renewal Date</label>
+                            <input type="date" id="renewal-date">
+                        </div>
+                        <div class="form-field">
+                            <label for="sent-date">Sent Date</label>
+                            <input type="date" id="sent-date">
+                        </div>
+                        <div class="form-field">
+                            <label for="close-date">Close Date</label>
+                            <input type="date" id="close-date" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="amount">Amount USD</label>
+                            <input type="number" id="amount" required min="0" step="0.01" placeholder="Enter amount">
+                        </div>
+                        <div class="form-field">
+                            <label for="opportunity-id">Opportunity ID</label>
+                            <input type="text" id="opportunity-id" required placeholder="Enter Opportunity ID">
+                        </div>
+                    </div>
+                    <div class="button-row">
+                        <button class="cancel-btn">Cancel</button>
+                        <button class="add-btn">Add Renewal</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirmed Receipts / Progress Area (Refactored) -->
+        <!-- ORIGINAL CONTAINER REMOVED AS IT'S NOW EMPTY -->
+        <!-- <div class="receipts-progress"> -->
+             <!-- Existing: Percentage Calculator (Class added) -->
+             <!-- MOVED TO HEADER -->
+        <!-- </div> -->
+
+        <!-- Totals Toggle and Confirmed Total Area (Refactored) -->
+        <div class="totals-summary">
+             <!-- NEW: Combined Progress Overview Box -->
+             <div id="progress-overview" class="summary-box">
+                 <h3>Progress Overview</h3>
+                 <!-- Main Info Texts -->
+                 <p id="receipts-info">0 of 55 Receipts Received</p> <!-- Renamed from div -->
+                 <div class="progress-bar-container" style="margin-bottom: 0.75rem;"> <!-- Added wrapper & margin -->
+                     <div class="progress-bar">
+                         <div class="progress-fill" id="receipts-progress" style="width: 0%"></div>
+                     </div>
+                 </div>
+                 <!-- Goal Control Group -->
+                 <div class="control-group goal-group"> 
+                     <span id="receipts-percentage">0%</span>
+                     <input type="number" id="receipts-goal-input" value="55" min="1">
+                     <button id="update-goal-btn">Update Goal</button>
+                 </div>
+                 <hr> <!-- Separator -->
+             </div>
+
+             <!-- Renamed and Populated: Key Stats Section -->
+             <div id="kpi-stats-section" class="summary-box summary-box-empty"> <!-- Renamed ID, kept classes -->
+                 <h4>Key Stats</h4>
+                 <div class="kpi-list">
+                     <p>Total Entered: <span id="kpi-total-confirmed" class="kpi-value">Calculating...</span></p>
+                     <p>Average Confirmed: <span id="kpi-avg-amount" class="kpi-value">Calculating...</span></p>
+                 </div>
+             </div>
+
+             <!-- NEW: Static text display for entry counts -->
+             <!-- <p id="entry-summary-text" class="entry-summary">Loading counts...</p> -->
+             <div id="total-confirmed-whole-card" class="summary-box entry-summary"> <!-- Replaced p with div and added class for styling -->
+                 <h3>Total Confirmed</h3>
+                 <p id="total-confirmed-whole-value" class="kpi-value">$0</p> <!-- Added kpi-value class for consistency -->
+             </div>
+        </div>
+
+        <!-- SEARCH BAR: Inserted above main container -->
+        <div class="search-container" role="search">
+          <label for="search-input" class="visually-hidden">Search Renewals:</label>
+          <input type="search" id="search-input" placeholder="Search by Name or Opp ID...">
+        </div>
+
+        <!-- Main Container for Dynamic Month Sections (Moved) -->
+        <div class="container" id="main-container">
+            <!-- Month sections will be dynamically loaded here by script.js -->
+            
+            <!-- Placeholder for elements previously in totals-breakdown if needed -->
+            <div id="legacy-totals-placeholder" style="display: none;">
+                <div id="total-licenses"></div>
+                <div id="total-value"></div>
+                <div id="accounts-goal"></div>
+                <div id="accounts-progress"></div>
+                <div id="accounts-percentage"></div>
+                <div id="accounts-ratio"></div>
+                <div id="total-accounts-input"></div>
+                <button></button> <!-- Keep JS function call available -->
+            </div>
+
+            <!-- Completion status -->
+            <div class="completion-status" id="completion-message" style="display: none;">
+                Congratulations! You've reached your account goal for this quarter.
+            </div>
+        </div>
+
+        <!-- Edit Modal (Remains at end) -->
+        <div class="modal-overlay" id="edit-modal" style="display: none;">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3>Edit License</h3>
+                    <button class="modal-close">×</button>
+                </div>
+                <div class="modal-form">
+                    <div class="form-field">
+                        <label for="edit-name">Account Name</label>
+                        <input type="text" id="edit-name" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="edit-renewal-date">Renewal Date</label>
+                        <input type="date" id="edit-renewal-date">
+                    </div>
+                    <div class="form-field">
+                        <label for="edit-sent-date">Sent Date</label>
+                        <input type="date" id="edit-sent-date">
+                    </div>
+                    <div class="form-field">
+                        <label for="edit-date">Close Date</label>
+                        <input type="date" id="edit-date" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="edit-amount">Amount (USD)</label>
+                        <input type="number" id="edit-amount" required min="0" step="0.01">
+                    </div>
+                    <div class="form-field">
+                        <label for="edit-opportunity-id">Opportunity ID</label> <!-- Changed from edit-id -->
+                        <input type="text" id="edit-opportunity-id" required> <!-- Changed from edit-id -->
+                    </div>
+                    <input type="hidden" id="edit-row-id">
+                </div>
+                <div class="modal-actions">
+                    <button class="cancel-btn">Cancel</button>
+                    <button class="add-btn">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirmation Modal -->
+        <div id="confirmation-modal" class="modal-overlay" style="display: none;">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3>Confirm Action</h3>
+                </div>
+                <div class="modal-content">
+                    <p id="modal-message"></p>
+                </div>
+                <div class="modal-footer">
+                    <button id="modal-cancel-btn" class="cancel-btn">Cancel</button>
+                    <button id="modal-confirm-btn" class="confirm-btn">Confirm</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Auto-save indicator (Remains at end) -->
+        <div id="auto-save-indicator">Changes saved</div>
+    </div>
+
+    <div id="logoHoverMessageWindow" class="fancy-message-window" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="logoHoverMessageTitle">
+      <div class="fancy-message-content">
+        <button id="closeLogoHoverMessage" class="close-btn" aria-label="Close message">&times;</button>
+        <h2 id="logoHoverMessageTitle" class="visually-hidden">A special message</h2>
+        <p>Like Henry Maudslay at Bramah's locks, every craftsman's journey begins with that first crucial innovation. From shop floors to breakthrough solutions, we honor those who taught us, the places that shaped us, and the constant pursuit of better ways. Here's to the mentors who saw potential, the challenges that forged skill, and the courage to seek new horizons while keeping old friendships.</p>
+        <p class="message-signature">-From a machinist's journey: Shop floor to SolidCAM, every step builds the next</p>
+      </div>
+    </div>
+    <div id="fancyMessageOverlay" style="display:none;"></div>
+
+    <!-- GENERIC CONTENT MODAL START -->
+    <div id="generic-content-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeGenericModal()">&times;</span>
+            <h3 id="generic-modal-title">Modal Title</h3>
+            <div id="generic-modal-body">
+                <iframe id="generic-modal-iframe" src="about:blank" style="width:100%; height:500px; border:none;"></iframe>
+            </div>
+        </div>
+    </div>
+    <!-- GENERIC CONTENT MODAL END -->
+
+    <script type="module" src="src/js/main.js"></script>
+</body>
+</html>

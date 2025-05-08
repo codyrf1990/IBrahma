@@ -1,0 +1,2082 @@
+:root {
+    /* Color Variables */
+    --primary-color: #CC0000;
+    --primary-hover: #b30000;
+    --text-primary: #333;
+    --text-secondary: #666;
+    --background-primary: #f8f8f8;
+    --background-secondary: #e6e6e6;
+    --border-color: #e0e0e0;
+    --success-color: #38a169;
+    --error-color: #e53e3e;
+    
+    /* Light Theme Table Header Variables */
+    --table-header-bg: #f0f2f5;
+    --table-header-text-color: #212529;
+    --table-header-border-color: #dee2e6;
+    
+    /* Spacing Variables */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 40px;
+    
+    /* Border Radius */
+    --border-radius-sm: 4px;
+    --border-radius-md: 6px;
+    --border-radius-lg: 8px;
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+    --accent-red: #D32F2F; /* Or your chosen red value */
+}
+
+/* Visually Hidden Utility Class */
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important; /* Fix potential positioning issues */
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, var(--background-primary) 0%, var(--background-secondary) 100%);
+    color: var(--text-primary);
+}
+
+#license-app {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+}
+
+/* NEW HEADER STYLING */
+.main-header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr; /* Left flexible, Center auto, Right flexible */
+    align-items: center; /* Vertically align items */
+    padding: 10px 20px; /* Adjust padding */
+    gap: 20px; /* Space between columns */
+    border-bottom: 1px solid #eee; /* Optional separator */
+    margin-bottom: 15px; /* Space below header row */
+    background-color: #fff; /* Give header a background */
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--border-radius-lg);
+}
+
+/* NEW: Title Group Container */
+.main-header .title-group {
+     grid-column: 1 / 2; /* Place group in first column */
+     justify-self: start; /* Keep group aligned left */
+     align-self: center; /* Keep group vertically centered */
+     display: flex; /* Use flex for internal alignment if needed */
+     flex-direction: column; /* Stack title and tagline */
+     align-items: center; /* Horizontally center the title and tagline blocks */
+     position: relative; /* Allow fine-tuning of vertical position */
+     top: 2px; /* Nudge down slightly; adjust value as needed */
+}
+
+.main-header .app-title {
+    /* grid-column: 1 / 2; /* Remove - handled by parent group */
+    /* justify-self: start; /* Remove - handled by parent group */
+    margin: 0; /* Reset default heading margin */
+    /* Decrease font size significantly */
+    font-size: 1.8rem; /* Make title large (adjust value as needed) */
+    color: var(--primary-color);
+    font-weight: 600; /* Or desired weight */
+    margin-bottom: 0; /* Remove space below title */
+    line-height: 1.1; /* Tighten line height */
+    text-align: center; /* Center the text within the h1 block */
+}
+
+/* NEW: Style for the tagline */
+.main-header .app-tagline {
+    font-size: 0.8rem; /* Smaller than title */
+    color: #666; /* Muted color */
+    margin-top: 3px; /* Space below title (adjust as needed) */
+    margin-bottom: 0;
+    line-height: 1.2;
+    text-align: center; /* Center tagline text - already was */
+    /* Ensure it aligns correctly under the left-aligned title */
+    /* padding-left: 5px; /* Remove padding, no longer needed for visual centering */
+}
+
+.main-header .header-logo {
+    max-height: 72px; /* Adjusted from 60px */
+    width: auto;
+    grid-column: 2 / 3;
+    justify-self: center;
+    align-self: center; /* Added for better vertical alignment if header height changes */
+}
+
+.main-header .percentage-calculator {
+    grid-column: 3 / 4; /* Place calculator in third column */
+    justify-self: end; /* Align to the right */
+    /* Adjust size and appearance */
+    width: 127px; /* Adjusted to fit 9-digit input + label */
+    padding: 4px 6px; /* Reverted to a slightly larger padding */
+    border-radius: 5px; /* Smaller radius */
+    font-size: 0.8rem; /* KEEPING AS IS */
+    min-width: 127px; /* Matches new width */
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08); /* Lighter shadow */
+    /* Keep other necessary styles */
+    background-color: #f9f9f9;
+    border: 1px solid var(--border-color);
+    margin: 0;
+    text-align: center; /* Center the title */
+}
+
+.main-header .percentage-calculator h4 { /* Title */
+    font-size: 0.9rem; /* Adjusted size */
+    margin-bottom: 8px; /* Space below title */
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.main-header .percentage-calculator .calculator-content {
+    display: flex;
+    flex-direction: column; /* Stack Title / Amount / Results */
+    align-items: center; /* Center items horizontally */
+    /* Reduce gap between Title/Amount/Results rows */
+    gap: 4px; /* Reduced gap */
+    width: 100%; /* Ensure it fills the card for centering */
+}
+
+.main-header .percentage-calculator .calc-input-row { /* Renamed from amount-input-group */
+     display: flex;
+     align-items: center;
+     justify-content: center; /* Center the input row content */
+     gap: 6px; /* Space between label and input */
+     width: 100%; /* Take full width for centering */
+     /* margin-bottom: 0; /* Gap handles spacing */
+}
+
+.main-header .percentage-calculator input[type="number"] {
+     width: 36px; /* Further reduced by 30% from 51px, rounded */
+     /* Keep other input styles */
+     font-size: 0.8rem;
+     padding: 4px 5px; /* Slightly more padding */
+     border: 1px solid var(--border-color);
+     border-radius: 3px;
+}
+ .main-header .percentage-calculator .calc-input-row label {
+     font-size: 0.8rem;
+     color: var(--text-secondary);
+ }
+
+/* --- Results Group Container (Horizontal Row) --- */
+.main-header .percentage-calculator .calculator-results { /* Wrapper for all results */
+    display: flex;
+    flex-direction: row; /* Arrange items horizontally */
+    justify-content: center; /* Key for centering items IN the row */
+    align-items: center; /* Align items vertically */
+    /* Reduce the gap between the 5%, 10%, 15% units */
+    gap: 6px; /* Reverted to a wider gap for balance */
+    /* width: 100%; /* REMOVE this line to allow parent centering */
+    /* font-size: 0.8rem; /* Smaller font for results - moved to children */
+    /* color: var(--text-muted); /* Moved to children */
+    margin-top: 5px; /* Restore slight top margin if needed visually */
+}
+
+/* NEW: Individual Result Item (Vertical Stack Inside) */
+.main-header .percentage-calculator .percentage-result-item {
+    display: flex;
+    flex-direction: column; /* Stack label (5%) above value (500) */
+    align-items: center; /* Center the stacked items horizontally */
+    text-align: center;
+    padding: 0 2px; /* Reverted to slightly wider padding */
+    min-width: 30px; /* Reverted to a wider min-width for balance */
+}
+
+/* NEW: Style Label and Value Spans */
+.main-header .percentage-calculator .result-label {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    line-height: 1.1;
+}
+
+.main-header .percentage-calculator .result-value {
+    display: block;
+    font-size: 0.85rem; /* Slightly larger value */
+    font-weight: 600; /* Bolder value */
+    color: var(--text-primary); /* Use primary text color for results */
+    line-height: 1.1;
+    margin: 0; /* Reset margin */
+}
+
+/* NEW BUTTON ROW STYLING */
+.header-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Added for robust vertical alignment of items */
+    gap: 15px; /* Spacing between buttons */
+    margin-top: 20px;    /* Space above */
+    margin-bottom: 20px; /* Space below (equal to above) */
+    padding: 0; /* Remove previous vertical padding, horizontal remains 0 */
+    border-bottom: 1px solid #eee; /* Subtle separator - kept */
+}
+
+/* Base styles for all action buttons */
+.header-actions .button {
+    padding: 8px 18px; /* Adjust padding */
+    border-radius: 6px; /* Rounded corners */
+    border: 1px solid transparent; /* Base border */
+    font-size: 0.9rem; /* Consistent font size */
+    font-weight: 500; /* Medium weight */
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    display: inline-flex; /* Align icon and text */
+    align-items: center;
+    gap: 6px; /* Space between icon and text */
+    text-decoration: none; /* Remove underline if they were links */
+    line-height: 1.2; /* Ensure text vertical alignment */
+    /* Remove any default button styling that might interfere */
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+/* Icon specific styles within buttons */
+.header-actions .button i {
+   font-size: 1em; /* Match icon size to text or adjust as needed */
+   /* margin-right: 6px;  Replaced by gap property */
+}
+
+/* Primary Button Style (#show-add-form-btn) */
+#show-add-form-btn {
+    background-color: #dc3545; /* Theme Red */
+    color: white;
+    border-color: #dc3545;
+}
+
+#show-add-form-btn:hover {
+    background-color: #c82333; /* Darker red */
+    border-color: #bd2130;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+#show-add-form-btn:active {
+    background-color: #bd2130;
+    border-color: #b21f2d;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); /* Inset shadow on click */
+}
+
+/* Secondary Button Style (#save-button, #load-button - Outline Example) */
+#save-button,
+#load-button {
+    background-color: white;
+    color: #dc3545; /* Theme Red */
+    border: 1px solid #dc3545; /* Explicit border */
+}
+
+#save-button:hover,
+#load-button:hover {
+    background-color: #f8f9fa; /* Very light gray background on hover */
+    color: #c82333; /* Darker red text */
+    border-color: #c82333;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+#save-button:active,
+#load-button:active {
+     background-color: #e9ecef; /* Slightly darker gray */
+     color: #bd2130;
+     border-color: #bd2130;
+     box-shadow: inset 0 1px 3px rgba(0,0,0,0.15); /* Inset shadow on click */
+ }
+
+/* Ensure sync buttons don't have conflicting styles if they existed */
+.sync-button {
+    /* Reset potentially inherited styles if needed */
+    /* background-color: initial; */
+    /* color: initial; */
+    /* border: initial; */
+    /* padding: initial; */ /* Base styles handle padding now */
+}
+
+/* ==========================
+   General Button Styles (Keep or modify if needed)
+   ========================== */
+button {
+    cursor: pointer;
+    /* Remove default styles if causing issues */
+    /* appearance: none; */
+    /* -webkit-appearance: none; */
+    /* background: none; */
+    /* border: none; */
+    /* padding: 0; */
+    /* font: inherit; */
+}
+
+.container {
+    background-color: white;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--border-color);
+    margin-bottom: 0;
+}
+
+h2 {
+    margin-top: 0;
+    color: var(--primary-color);
+    font-weight: 600;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: var(--spacing-sm);
+}
+
+.month-section {
+    margin-bottom: var(--spacing-xl);
+    background: white;
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-md);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 16px; /* Reduced bottom margin */
+}
+
+.month-header {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: var(--spacing-md);
+    font-weight: 600;
+    padding-top: 8px;    /* Reduced top padding */
+    padding-bottom: 8px; /* Reduced bottom padding */
+    align-items: center; /* Vertically align items */
+}
+
+/* Assuming h3 within month-header is the title */
+.month-header h3 {
+    margin-top: 0;
+    margin-bottom: 0;
+    color: var(--text-color-secondary, #777); /* Applied new color */
+}
+
+/* Assuming span within month-header is the subscription count */
+.month-header span { /* Or a more specific class if available */
+    margin: 0;
+    color: var(--text-color-secondary, #777); /* Applied new color */
+}
+
+/* Updated Client Row Styles using TR */
+.client-row {
+    /* display: table-row; Implicit */
+    border-bottom: 1px solid var(--border-color);
+    background-color: white;
+    vertical-align: middle; /* Ensure vertical alignment */
+    transition: background-color 0.2s ease-in-out; /* Smooth transition */
+    min-height: 44px; /* Maintain consistent row height */
+}
+
+/* Apply zebra striping within each month section */
+.month-section .client-table tbody .client-row:nth-child(odd) {
+    background-color: #fbfbfb; /* Light color for odd rows */
+}
+.month-section .client-table tbody .client-row:nth-child(even) {
+    background-color: #ffffff; /* Default white for even */
+}
+
+.client-row:hover {
+    background-color: #f5f5f5; /* Slightly darker hover as requested */
+    cursor: default;
+}
+
+/* Visual Feedback Classes */
+.row-highlight-success {
+    animation: highlight-success 1.5s ease-out;
+}
+
+.row-fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}
+
+@keyframes highlight-success {
+    0% { background-color: #e6ffed; } /* Light green */
+    70% { background-color: #e6ffed; } /* Hold highlight */
+    100% { background-color: inherit; } /* Fade back to original (odd/even/hover) */
+}
+
+/* Keep checkbox wrapper and styles */
+.checkbox-wrapper {
+    padding-left: var(--spacing-md); /* Add padding if needed */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* New checkbox-name-wrapper for improved alignment */
+.checkbox-name-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.custom-checkbox {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--primary-color);
+}
+
+/* Styles for Edit/Delete Icons (within td-actions) */
+.edit-icon,
+.delete-icon {
+    cursor: pointer;
+    color: var(--primary-color);
+    font-size: 18px; /* Consistent icon size */
+    border: none;
+    background: none;
+    padding: 0;
+    opacity: 0.7;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+    margin: 0;
+    min-width: 32px; /* Consistent width for all icons */
+    min-height: 32px; /* Consistent height for all icons */
+    width: 32px; /* Fixed width */
+    height: 32px; /* Fixed height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px; /* Optional: adds a subtle rounded corner for hover effect */
+}
+
+.edit-icon:hover,
+.delete-icon:hover {
+    opacity: 1;
+    background-color: rgba(204, 0, 0, 0.05); /* Subtle background on hover */
+}
+
+.client-row:hover .edit-icon,
+.client-row:hover .delete-icon {
+    opacity: 1;
+}
+
+/* Container for action buttons within the table cell */
+.action-buttons-container {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Distribute space evenly */
+    gap: 0.4rem; /* Minimum gap between items */
+    width: 100%; /* Ensure container fills cell width */
+    height: 100%;
+    padding: 0.1rem 0.2rem; /* Slight padding for better visual appearance */
+}
+
+/* Style the actions table header and data cells */
+#main-container th.td-actions,
+#main-container td.td-actions {
+    min-width: 110px; /* Ensure enough space for all icons */
+    width: 110px;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0 4px; /* Reduced padding to keep buttons tight */
+}
+
+/* Styling for individual action buttons/icons */
+.action-button {
+    cursor: pointer;
+    padding: 4px; /* Add padding to increase clickable area and visual space */
+    border-radius: 4px; /* Slightly rounded background on hover */
+    transition: transform 0.15s ease, background-color 0.15s ease, opacity 0.15s ease;
+    display: inline-block; /* Ensure padding applies correctly */
+    vertical-align: middle; /* Reinforce vertical alignment */
+    line-height: 1; /* Prevent extra space from line height */
+    min-width: 24px;
+    min-height: 24px;
+}
+
+.action-button:hover {
+    transform: scale(1.1); /* Slightly enlarge on hover */
+    background-color: rgba(0, 0, 0, 0.1); /* Subtle background highlight */
+    opacity: 0.9;
+}
+
+.action-button:active {
+    transform: scale(0.95); /* Slightly shrink on click */
+    opacity: 0.7;
+}
+
+/* Ensure icons or images inside buttons have consistent size */
+.action-buttons-container img,
+.action-buttons-container i,
+.action-buttons-container svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Maintain specific styling for the action icons */
+.edit-icon,
+.delete-icon,
+.notes-icon {
+    color: var(--primary-color);
+    font-size: 16px;
+}
+
+/* Hover state will be handled by .action-button:hover */
+
+/* Styles for the Restructured Totals Area */
+.totals-summary {
+    /* Make the container itself the card */
+    background-color: white; /* Card background */
+    padding: var(--spacing-md) 0; /* Adjust padding - top/bottom only */
+    margin-top: var(--spacing-lg);
+    border-radius: var(--border-radius-lg); /* Card border radius */
+    border: 1px solid var(--border-color); /* Card border */
+    box-shadow: var(--shadow-sm); /* Card shadow */
+    /* Flexbox layout for children */
+    display: flex;
+    justify-content: space-around; /* Distribute items */
+    align-items: flex-start; /* Align items to top for better alignment with varied content */
+    /* gap: var(--spacing-lg); */ /* Remove gap, use padding instead */
+    flex-wrap: wrap;
+}
+
+/* Reset individual card styles and add padding/borders */
+.totals-summary > #progress-overview,
+.totals-summary > #kpi-stats-section,
+.totals-summary > .entry-summary { 
+    flex: 1; 
+    min-width: 200px; 
+    background-color: transparent;
+    /* Use padding for spacing */
+    padding: 0 var(--spacing-lg); /* Add horizontal padding */
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+    position: relative; /* Needed if using pseudo-elements for borders, but direct border is simpler */
+}
+
+/* Add vertical separators */
+.totals-summary > #progress-overview,
+.totals-summary > #kpi-stats-section {
+    border-right: 1px solid var(--border-color); /* Use theme border color */
+}
+
+/* Remove horizontal line within progress overview */
+#progress-overview hr {
+    display: none;
+}
+
+/* Keep specific alignment for the summary text section */
+.totals-summary > .entry-summary {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    align-self: center; 
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Horizontally center stacked items */
+    justify-content: center; /* Vertically center the stack in the card */
+    flex-shrink: 0; 
+}
+
+/* Ensure headings inside the sections have appropriate margin */
+.totals-summary h3,
+.totals-summary h4 {
+    margin-top: 0; /* Remove top margin if padding is handled by parent */
+    margin-bottom: var(--spacing-sm); /* Add some space below headings */
+}
+
+.totals-toggle {
+    display: flex;
+    gap: var(--spacing-md);
+    /* Remove background/padding if handled by parent */
+    background-color: transparent;
+    padding: 0;
+    margin: 0; 
+    justify-content: flex-start; /* Align left */
+}
+
+.toggle-button {
+    /* Keep existing styles, adjust padding/min-width if needed */
+     padding: var(--spacing-sm) var(--spacing-lg);
+     border: 2px solid var(--primary-color);
+     border-radius: var(--border-radius-md);
+     background-color: white;
+     color: var(--primary-color);
+     font-weight: 600;
+     cursor: pointer;
+     transition: all 0.2s ease;
+     min-width: 150px;
+}
+
+.toggle-button.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.confirmed-total {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--primary-color);
+    text-align: right;
+}
+
+/* --- Refactored Top Summary Section Layout --- */
+.receipts-progress {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-lg);
+    margin: var(--spacing-lg) 0;
+    background-color: white;
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    min-height: 150px;
+}
+
+/* Style for the single box in the top summary */
+.receipts-progress > .summary-box {
+    flex: 0 1 350px;
+    max-width: 400px;
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    background-color: var(--background-primary);
+    border: 1px solid var(--border-color);
+}
+
+/* Specific styles for the new combined overview box */
+#progress-overview {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center children like progress bar and goal group */
+    width: 100%;
+    position: relative; /* Add positioning context */
+    box-sizing: border-box; /* Ensure padding is included in width */
+}
+
+#progress-overview h3 {
+    margin-top: 0;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    margin-bottom: var(--spacing-md);
+    text-align: center;
+}
+
+/* Center main info text elements */
+#progress-overview #receipts-info,
+#progress-overview #remaining-info {
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-sm);
+    font-size: 0.95rem;
+    text-align: center; 
+}
+
+/* Remove old progress-text flex styles */
+/* #progress-overview .progress-text { ... removed ... } */
+
+/* NEW: Styling for control groups using Flexbox */
+.control-group {
+    display: flex;
+    align-items: center; /* Vertically center items */
+    gap: 0.75rem; /* Space between items */
+    margin-bottom: 0.75rem; /* Space below the group */
+}
+
+.goal-group {
+    justify-content: center; /* Center items within the group */
+}
+
+.pool-group {
+    justify-content: flex-start; /* Align items to the start */
+}
+
+/* Optional: Push input/button away from label in pool group */
+.pool-group span#pool-info-label {
+     /* margin-right: auto; */ /* Remove or comment out if using min-width */
+     color: var(--text-secondary); 
+     font-size: 0.95rem;
+}
+
+#progress-overview #receipts-percentage {
+    font-weight: bold;
+    flex-shrink: 0; /* Prevent percentage shrinking */
+}
+
+/* Increase input width and center text */
+#progress-overview #receipts-goal-input,
+#progress-overview #total-pool-input {
+    width: 70px; /* Increased width */
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    text-align: center; /* Centered text */
+    flex-shrink: 0; /* Prevent inputs from shrinking */
+}
+
+#progress-overview #update-goal-btn,
+#progress-overview #update-pool-btn {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 1px solid var(--primary-color);
+    background-color: white;
+    color: var(--primary-color);
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    white-space: nowrap; /* Prevent button text wrapping */
+    flex-shrink: 0; /* Prevent buttons from shrinking */
+}
+
+#progress-overview #update-goal-btn:hover,
+#progress-overview #update-pool-btn:hover {
+    background-color: var(--primary-hover);
+    color: white;
+}
+
+#progress-overview hr {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: var(--spacing-md) 0;
+}
+
+/* Styles for the empty placeholder box - NOW KPI SECTION */
+#kpi-stats-section {
+    display: flex; /* Use flex for internal layout */
+    flex-direction: column; /* Stack title and list */
+    width: 100%;
+}
+
+#kpi-stats-section h4 {
+    margin-top: 0;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    margin-bottom: var(--spacing-md);
+    text-align: center; 
+}
+
+.kpi-list {
+    width: 100%; /* Take full width */
+    padding: 0 var(--spacing-sm); /* Optional padding for list */
+    box-sizing: border-box;
+}
+
+.kpi-list p {
+    display: flex; /* Use flex to align label and value */
+    justify-content: space-between; /* Push value to the right */
+    margin-bottom: var(--spacing-sm);
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+}
+
+.kpi-value {
+    font-weight: bold;
+    color: var(--text-primary);
+    min-width: 80px; /* Ensure space for values */
+    text-align: right;
+}
+
+/* Center text for the specific total confirmed value */
+#total-confirmed-whole-card #total-confirmed-whole-value {
+    text-align: center;
+    min-width: unset; /* Remove min-width if not needed for centered text */
+}
+
+/* Ensure Percentage Calculator keeps its specific styles */
+.percentage-calculator h4 { /* Already has .summary-box class */
+    margin-top: 0;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    margin-bottom: var(--spacing-md);
+    text-align: center;
+}
+
+/* Keep percentage calculator internal styles */
+.percentage-calculator .calc-input-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.percentage-calculator label {
+    flex-shrink: 0; /* Prevent label from shrinking */
+    margin-bottom: 0; /* Remove default bottom margin */
+}
+
+.percentage-calculator input[type="number"] {
+    flex-grow: 1; /* Allow input to take remaining space */
+    width: auto; /* Override default 100% width */
+    padding: var(--spacing-xs) var(--spacing-sm); /* Smaller padding */
+    font-size: 0.9rem;
+}
+
+.calculator-results {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.calculator-results div {
+    margin-bottom: var(--spacing-xs);
+    display: flex;
+    justify-content: space-between; /* Align label and value */
+}
+
+.calculator-results span {
+    font-weight: 600;
+    color: var(--text-primary);
+    min-width: 50px; /* Ensure some space for value */
+    text-align: right;
+}
+
+/* --- END Calculator Styles --- */
+
+.checked {
+    /* Styles applied directly to tr.checked now */
+}
+
+.completion-status {
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    background-color: #f0fff4;
+    color: var(--success-color);
+    font-weight: 500;
+    text-align: center;
+    border: 1px solid #c6f6d5;
+}
+
+.add-section {
+    margin-top: var(--spacing-xl);
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius-lg);
+    background-color: var(--background-primary);
+    border: 1px dashed var(--primary-color);
+}
+
+.add-section h3 {
+    margin-top: 0;
+    color: var(--primary-color);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+input, select {
+    width: 100%;
+    padding: var(--spacing-sm);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    box-sizing: border-box;
+    color: #333; /* Ensure text is visible */
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(204, 0, 0, 0.2);
+}
+
+.button-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-sm);
+}
+
+button {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: none;
+    border-radius: var(--border-radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.add-btn {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.add-btn:hover {
+    background-color: var(--primary-hover);
+}
+
+.cancel-btn {
+    background-color: var(--background-primary);
+    color: var(--text-secondary);
+}
+
+.cancel-btn:hover {
+    background-color: var(--background-secondary);
+}
+
+.sync-button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    display: inline-block;
+    margin-bottom: var(--spacing-lg);
+    border: none;
+    font-weight: 600;
+}
+
+.sync-button:hover {
+    background-color: var(--primary-hover);
+}
+
+.sync-message {
+    display: none !important; /* Hide the notification permanently */
+    position: fixed;
+    bottom: var(--spacing-md); /* e.g., 16px */
+    left: var(--spacing-md);   /* e.g., 16px */
+    padding: 2px 4px; /* Reduced padding by 75% */
+    background-color: var(--success-color);
+    color: white;
+    border-radius: var(--border-radius-md); /* e.g., 6px */
+    font-size: 0.225rem; /* Reduced font-size by 75% - will be very small */
+    z-index: 1000; /* Ensure it's above other elements */
+    /* Visibility (display: none; vs display: block;) is controlled by JavaScript. */
+    /* Ensure it is initially hidden by JS, e.g., syncMessage.style.display = 'none'; */
+    margin-left: 0; /* Override previous margin */
+}
+
+@media (max-width: 768px) {
+    .client-info {
+        flex-direction: column;
+    }
+    .client-date, .client-amount {
+        margin-top: var(--spacing-xs);
+    }
+    .client-amount {
+        text-align: left;
+    }
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+#backup-options {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+#backup-info {
+    margin-bottom: 10px;
+    font-size: 0.8em;
+    color: var(--text-secondary);
+}
+
+#auto-save-indicator {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    padding: 5px 10px;
+    background: rgba(56, 161, 105, 0.9);
+    color: white;
+    border-radius: 4px;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+}
+
+.info-badge {
+    display: inline-block;
+    background: #eee;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.8em;
+    margin-left: 5px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: var(--background-primary);
+    border-radius: var(--border-radius-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.empty-state h3 {
+    margin: 10px 0;
+    color: var(--primary-color);
+}
+
+.empty-state p {
+    color: var(--text-secondary);
+}
+
+.total-accounts-editor {
+    display: flex;
+    align-items: center;
+    margin-top: var(--spacing-xs);
+    gap: var(--spacing-xs);
+}
+
+.total-accounts-editor input {
+    width: 60px;
+    padding: 2px 5px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    font-size: 0.9rem;
+}
+
+.total-accounts-editor button {
+    padding: 2px 6px;
+    font-size: 0.8rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+}
+
+.edit-icon {
+    cursor: pointer;
+    color: var(--primary-color);
+    margin-left: var(--spacing-xs);
+    font-size: 14px; /* Reduce font size */
+    visibility: visible; 
+    opacity: 1;
+    width: 20px; /* Fixed width */
+    height: 20px; /* Fixed height */
+    padding: 0; /* Remove padding */
+    border: none;
+    background: none;
+}
+
+.client-row:hover .edit-icon {
+    opacity: 0.8; /* Just change opacity on hover instead of visibility */
+}
+
+.row-actions {
+    display: flex;
+    align-items: center;
+    gap: 2px; /* Reduce spacing between buttons */
+    width: 44px; /* Fixed width to match header */
+    justify-content: flex-end;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+    display: flex; /* Use flexbox for centering */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    z-index: 1000; /* Ensure it's on top */
+    display: none; /* Initially hidden - controlled by JS */
+}
+
+.modal {
+    background: white;
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-lg);
+    width: 90%;
+    max-width: 600px;
+    box-shadow: var(--shadow-md);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: var(--primary-color);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+
+.modal-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: var(--spacing-lg);
+    gap: var(--spacing-sm);
+}
+
+/* Adjust Add Section label */
+.add-section label[for="opportunity-id"] {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.9rem;
+}
+
+/* Adjust Edit Modal label */
+.modal-form label[for="edit-opportunity-id"] {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* Specific cell styling for td-actions elements */
+.td-actions {
+    padding: 8px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.td-actions button {
+  padding: 4px;
+  margin: 0 2px;
+  background: transparent;
+  border: none;
+}
+
+/* Additional specific Calculator styling */
+.percentage-calculator {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: var(--spacing-sm);
+}
+
+/* --- NEW/UPDATED TABLE STYLES --- */
+.client-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: var(--spacing-md); /* Space before subtotal */
+    min-width: unset; /* Changed from 600px to prevent premature scrolling */
+    table-layout: auto; /* Allow the browser to calculate column widths automatically */
+    font-size: 0.9rem; /* Slightly reduced font size for compactness */
+}
+
+/* Style for table headers */
+.client-table thead {
+    background-color: #333; /* Dark theme header background */
+    background-color: var(--table-header-bg);
+}
+
+.client-table th {
+    font-weight: bold;
+    text-align: left; /* Default alignment for headers */
+    border-bottom: 2px solid #555; /* Prominent border for header */
+    color: var(--table-header-text-color);
+    border-bottom: 2px solid var(--table-header-border-color);
+}
+
+/* New rule for general cell padding */
+.client-table th,
+.client-table td {
+    padding: 6px 8px; /* Reduced padding */
+    line-height: 1.3; /* Adjusted line-height */
+    border-bottom: 1px solid #444; /* Subtle horizontal border for dark theme */
+    /* Ensure other properties like text-align remain as desired by specific column rules */
+}
+
+/* Remove bottom border from the last row's cells in the table body */
+.client-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.month-section .client-table tbody tr:hover {
+  background-color: #3a3a3a; /* Dark theme hover background */
+}
+
+/* Align amount to the right in tables */
+.month-section .client-table td.td-amount {
+  text-align: right;
+}
+
+/* General alignment for other cells, can be overridden by more specific rules */
+.month-section .client-table td {
+  text-align: left;
+}
+
+/* Optional: More specific padding for first/last cells if needed */
+.client-table th:first-child,
+.client-table td:first-child {
+    padding-left: 8px;
+    padding-right: 10px; /* Keep original right padding or adjust as needed */
+}
+
+.client-table th:last-child,
+.client-table td:last-child {
+    padding-left: 10px; /* Keep original left padding or adjust as needed */
+    padding-right: 8px;
+    border-bottom: 1px solid #444; /* Ensure border consistency if overridden elsewhere */
+}
+
+.table-responsive-wrapper {
+    width: 100%;     /* Ensure wrapper takes full width */
+    overflow-x: auto; /* Enable horizontal scrolling */
+    display: block; /* Ensure block-level for correct overflow behavior */
+    -webkit-overflow-scrolling: touch; /* Smoother scrolling on iOS */
+    margin-bottom: var(--spacing-sm); /* Add space below for scrollbar */
+    position: relative; /* For shadow/indicator positioning */
+    margin-top: 8px;    /* Reduced space above table */
+    margin-bottom: 8px; /* Reduced space below table (above subtotal) */
+}
+
+/* Style scrollbar for better dark mode compatibility */
+.table-responsive-wrapper::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-responsive-wrapper::-webkit-scrollbar-track {
+    background: var(--background-secondary);
+    border-radius: 4px;
+}
+
+.table-responsive-wrapper::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color);
+    border-radius: 4px;
+}
+
+/* Add subtle shadow indicator for scrollable tables */
+.table-responsive-wrapper::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 15px;
+    background: linear-gradient(to right, rgba(255,255,255,0), rgba(204,0,0,0.07));
+    pointer-events: none; /* Don't block scrolling */
+    opacity: 0; /* Hidden by default */
+    transition: opacity 0.2s ease;
+}
+
+/* Only show scroll indicator when table is wider than container */
+.table-responsive-wrapper:not([data-scroll="end"])::after {
+    opacity: 1;
+}
+
+/* Add media query specifically for tables at 700px */
+@media (max-width: 700px) {
+    .client-table {
+        min-width: unset; /* Changed from 500px to prevent premature scrolling */
+    }
+    
+    /* Ensure scrolling indicator is always visible in this range */
+    .table-responsive-wrapper::after {
+        opacity: 1;
+    }
+    
+    /* Reduce some column widths at this breakpoint */
+    .th-name, .td-name { 
+        min-width: 120px; /* Was 140px */
+        max-width: 200px; 
+    }
+}
+
+/* Medium-small screens */
+@media (max-width: 600px) {
+    #license-app {
+        padding: var(--spacing-sm);
+    }
+    
+    .container {
+        padding: var(--spacing-md);
+    }
+    
+    .receipts-progress {
+        padding: var(--spacing-md);
+    }
+    
+    .receipts-progress > .summary-box {
+        padding: var(--spacing-sm);
+    }
+    
+    h2 {
+        font-size: 1.4rem;
+    }
+    
+    .client-table th,
+    .client-table td {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        font-size: 0.9rem;
+    }
+    
+    .client-table th {
+        font-size: 0.85rem;
+    }
+    
+    .modal {
+        padding: var(--spacing-md);
+    }
+    
+    .modal-header h3 {
+        font-size: 1.2rem;
+    }
+    
+    /* Adjust column min-widths for better appearance */
+    .th-name, .td-name { min-width: 130px; max-width: 180px; }
+    .th-renewal-date, .td-renewal-date { min-width: 90px; max-width: 90px; }
+    .th-sent-date, .td-sent-date { min-width: 90px; max-width: 90px; }
+    .th-close-date, .td-close-date { min-width: 90px; max-width: 90px; }
+    .th-amount, .td-amount { min-width: 90px; max-width: 90px; }
+}
+
+/* Mobile breakpoint adjustments */
+@media (max-width: 480px) {
+    #license-app {
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+    
+    .container {
+        padding: var(--spacing-sm);
+        border-radius: var(--border-radius-md);
+    }
+    
+    .month-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .add-section {
+        padding: var(--spacing-md);
+    }
+    
+    /* Hide less critical columns on smallest screens */
+    .th-opp-id, .td-opp-id {
+        display: none;
+    }
+    
+    .th-sent-date, .td-sent-date {
+        display: none;
+    }
+    
+    /* Add hint for table scrolling */
+    .table-responsive-wrapper::before {
+        content: "← Scroll →";
+        display: block;
+        text-align: center;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        padding: var(--spacing-xs);
+        opacity: 0.7;
+    }
+    
+    /* Make action buttons easier to tap */
+    .row-actions {
+        gap: 8px;
+    }
+    
+    .edit-icon, 
+    .delete-icon {
+        font-size: 18px; /* Larger icons for better touch targets */
+    }
+    
+    .client-table th,
+    .client-table td {
+        font-size: 0.85rem;
+    }
+    
+    .month-section {
+        padding: var(--spacing-sm);
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    /* Adjust column sizes */
+    .th-name, .td-name { min-width: 120px; max-width: 150px; }
+    .th-renewal-date, .td-renewal-date { min-width: 80px; max-width: 80px; }
+    .th-close-date, .td-close-date { min-width: 80px; max-width: 80px; }
+    .th-amount, .td-amount { min-width: 80px; max-width: 80px; }
+    
+    /* Make forms more compact */
+    .form-field {
+        margin-bottom: var(--spacing-sm);
+    }
+    
+    .button-row {
+        flex-wrap: wrap;
+    }
+    
+    label {
+        font-size: 0.9rem;
+    }
+    
+    /* Modal adjustments */
+    .modal {
+        padding: var(--spacing-sm);
+    }
+    
+    .modal-actions {
+        flex-wrap: wrap;
+    }
+    
+    .modal-actions button {
+        flex: 1;
+        min-width: 120px;
+    }
+    
+    /* Improve subtotal readability */
+    .subtotal-row {
+        font-size: 0.9rem;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 400px) {
+    body {
+        font-size: 0.9rem;
+    }
+    
+    #license-app {
+        padding: var(--spacing-xs);
+    }
+    
+    .container {
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+    
+    h2 {
+        font-size: 1.2rem;
+    }
+    
+    /* Further adjust column sizes */
+    .th-name, .td-name { min-width: 100px; }
+    .th-amount, .td-amount { min-width: 70px; }
+    
+    /* Optimize buttons */
+    button {
+        padding: var(--spacing-xs) var(--spacing-sm);
+        font-size: 0.9rem;
+    }
+    
+    /* Make smaller font for table */
+    .client-table th,
+    .client-table td {
+        font-size: 0.8rem;
+        padding: 4px 6px;
+    }
+    
+    /* Optimize add renewal section */
+    .add-section h3 {
+        font-size: 1.1rem;
+    }
+    
+    .add-section {
+        padding: var(--spacing-sm);
+    }
+    
+    /* Reduce form field spacing */
+    .form-grid {
+        gap: var(--spacing-sm);
+    }
+    
+    input, select {
+        padding: 4px 6px;
+        font-size: 0.9rem;
+    }
+}
+
+/*
+JavaScript to handle scroll indicator (add to main.js or similar):
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Set up scroll detection for all table wrappers
+    const tableWrappers = document.querySelectorAll('.table-responsive-wrapper');
+    
+    tableWrappers.forEach(wrapper => {
+        // Initial check
+        checkScroll(wrapper);
+        
+        // Check on scroll
+        wrapper.addEventListener('scroll', function() {
+            checkScroll(wrapper);
+        });
+        
+        // Check on window resize
+        window.addEventListener('resize', function() {
+            checkScroll(wrapper);
+        });
+    });
+    
+    function checkScroll(wrapper) {
+        if (wrapper.scrollWidth <= wrapper.clientWidth) {
+            // No scroll needed
+            wrapper.setAttribute('data-scroll', 'end');
+        } else if (wrapper.scrollLeft + wrapper.clientWidth >= wrapper.scrollWidth - 5) {
+            // Scrolled to end (with 5px threshold)
+            wrapper.setAttribute('data-scroll', 'end');
+        } else {
+            // Can scroll more
+            wrapper.removeAttribute('data-scroll');
+        }
+    }
+});
+*/ 
+
+/* --- Unified Notes Popup Styles --- */
+.notes-popup {
+  position: absolute;
+  background-color: #3a3a3a;
+  border: 1px solid #777;
+  border-radius: 5px;
+  padding: 10px;
+  z-index: 101;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  min-width: 200px;
+  max-width: 400px; /* Increased max-width */
+  max-height: 250px; /* Increased max-height */
+  min-height: 50px;
+  display: none;
+  pointer-events: none;
+}
+.notes-popup.is-editing {
+  pointer-events: auto;
+}
+.notes-popup .notes-preview-content {
+  font-size: 0.95em;
+  line-height: 1.4;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: #eee;
+  max-width: 400px;
+  max-height: 250px;
+  min-height: 40px;
+}
+.notes-popup textarea.notes-editor-textarea {
+  display: block;
+  width: 100%;
+  min-height: 80px;
+  box-sizing: border-box;
+  border: 1px solid #666;
+  background-color: #2f2f2f;
+  color: #eee;
+  font-family: inherit;
+  font-size: 0.9em;
+  resize: vertical;
+  margin: 0;
+  padding: 5px;
+}
+/* Remove old tooltip/editor styles */
+.notes-preview-tooltip, .notes-editor-popup { display: none !important; }
+
+.td-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Increased gap for more space */
+}
+
+.action-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1em;
+  padding: 5px;
+  border-radius: 4px;
+  border: none;
+  background: none;
+  color: #bbb;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.action-icon:hover {
+  background-color: #555;
+  color: #fff;
+}
+
+.notes-icon {
+  /* color: #aaddff; */
+}
+.edit-icon {
+  /* color: #ffffaa; */
+}
+.delete-icon {
+  color: #ff8888;
+}
+.delete-icon:hover {
+  background-color: #cc0000;
+  color: #fff;
+}
+
+/* Style for last row in tbody */
+.client-table tbody tr:last-child td {
+    border-bottom: none; /* Remove border for last row */
+}
+
+/* Checked row styling */
+.client-row.checked {
+    background-color: #fffaf2; /* Slightly different background for checked */
+}
+
+.client-row.checked .td-name {
+    font-weight: 500; /* Example: Make name slightly bolder */
+}
+
+/* Column Specific Styles */
+.th-checkbox,
+.td-checkbox {
+    width: 40px; /* Reduced from 50px */
+    text-align: center;
+    padding: 6px 8px; /* Consistent with other cell padding */
+}
+
+.td-checkbox .checkbox-wrapper {
+    padding-left: 0; /* Reset padding if parent has it */
+}
+
+/* Widths for other columns - update to ensure proper distribution */
+.th-name, .td-name { 
+    width: 22%; /* Reduced from 25% */
+    min-width: 110px; /* Further reduced */
+    max-width: 240px; 
+    /* text-align: left; */ /* Ensure this doesn't override */
+}
+.th-renewal-date, .td-renewal-date { 
+    width: 11%; /* Reduced from 12% */
+    text-align: center; 
+    min-width: 50px; /* Further reduced */
+    max-width: 90px; /* Reduced from 100px */
+}
+.th-sent-date, .td-sent-date { 
+    width: 11%; /* Reduced from 12% */
+    text-align: center; 
+    min-width: 50px; /* Further reduced */
+    max-width: 90px; /* Reduced from 100px */
+}
+.th-close-date, .td-close-date { 
+    width: 11%; /* Reduced from 12% */
+    text-align: center; 
+    min-width: 50px; /* Further reduced */
+    max-width: 90px; /* Reduced from 100px */
+}
+
+.th-opp-id, .td-opp-id { 
+    width: 14%; /* Reduced from 15% */
+    text-align: left; /* Default left alignment */
+    min-width: 70px; /* Further reduced */
+    max-width: 120px; /* Reduced from 130px */
+}
+.th-actions, .td-actions { 
+    width: 7%; /* Reduced from 8% */
+    text-align: center;
+    min-width: 40px; /* Further reduced */
+    /* padding for td-actions handled by .td-actions rule above */
+}
+
+/* Added styles for Quick Percentage Calculator layout */
+
+/* Container for the horizontal row of results */
+.main-header .percentage-calculator .calculator-results {
+     display: flex;
+     justify-content: center; /* Center the items as a group */
+     gap: 6px; /* Reverted to a wider gap for balance */
+     width: auto; /* Allow shrink-wrapping */
+     margin-top: 5px;
+}
+
+/* Style for each result item (e.g., 5% over 500) */
+.main-header .percentage-calculator .percentage-result-item {
+    display: flex;
+    flex-direction: column; /* Stack label above value */
+    align-items: center; /* Center stack horizontally */
+    text-align: center;
+    padding: 0 2px; /* Reverted to slightly wider padding */
+    min-width: 30px; /* Reverted to a wider min-width for balance */
+}
+
+/* Styles for the label and value spans within each item */
+.main-header .percentage-calculator .result-label {
+    display: block;
+    font-size: 0.7rem;
+    color: #555;
+    line-height: 1.1;
+}
+.main-header .percentage-calculator .result-value {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.1;
+    margin: 0;
+}
+
+/* Ensure calculator content wrapper allows flex */
+.main-header .percentage-calculator .calculator-content {
+    /* Add styles if needed, e.g., padding */
+}
+
+/* Ensure calculator input row is styled appropriately */
+.main-header .percentage-calculator .calc-input-row {
+    /* Styles for label and input alignment if needed */
+     display: flex;        /* Use flexbox for alignment */
+     align-items: center;  /* Vertically align label and input */
+     justify-content: center; /* Center input row content */
+     gap: 5px;             /* Add some space between label and input */
+     margin-bottom: 8px;   /* Space below input row */
+}
+
+/* Ensure summary box has appropriate width if needed */
+.main-header .percentage-calculator.summary-box {
+    /* Adjust width, padding etc. as needed */
+    width: auto; /* Let content determine width */
+    min-width: 127px; /* Ensure it doesn't get too small - matches above */
+}
+
+/* Fancy Message Window Styling */
+#logoHoverMessageWindow {
+    display: none; /* initially hidden */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* for centering */
+    background-color: #333; /* dark background */
+    color: #fff;
+    border: 1px solid #555;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    z-index: 1050; /* ensure it's above other content */
+    max-width: 500px;
+    text-align: left;
+}
+
+.fancy-message-content p {
+    margin-bottom: 1em;
+    line-height: 1.6;
+}
+
+.message-signature {
+    font-style: italic;
+    text-align: right;
+    font-size: 0.9em;
+    margin-top: 20px;
+}
+
+#logoHoverMessageWindow .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.5em;
+    cursor: pointer;
+}
+
+/* Optional Overlay */
+#fancyMessageOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 1040;
+    display: none;
+}
+
+/* SEARCH BAR: Inserted above main container */
+.search-container {
+    margin-top: 10.5px; /* Adjusted top margin (21px - 50%) */
+    margin-bottom: 5px; /* Adjusted bottom margin (10px - 50%) */
+}
+
+/* Main Container for Dynamic Month Sections (Moved) */
+
+/* Conceptual month summary area, if it exists as a separate div */
+.month-summary {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.month-summary p,
+.subtotal-row td p { /* In case p tags are used in subtotal cells */
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.month-summary p:first-child,
+.subtotal-row td p:first-child {
+    margin-top: 0;
+}
+
+.month-summary p:last-child,
+.subtotal-row td p:last-child {
+    margin-bottom: 0;
+}
+
+.month-footer-summary {
+  text-align: center;
+  padding: 10px 0; /* Adjust vertical spacing */
+  margin-top: 12px; /* Space from table/elements above */
+  font-size: 0.9rem; /* Optional: adjust font size */
+  color: var(--text-color-secondary, #777); /* Adjust for theme, ensure visibility */
+}
+
+.month-footer-summary > span { /* Targets the direct children spans holding label + value */
+  margin: 0 8px; /* Provides space around the "|" separator if used, or between items */
+}
+
+.month-footer-summary > span > span { /* Targets the value spans specifically, if needed */
+  font-weight: bold; /* Example: make counter values bold */
+}
+
+/* Target all table headers in month sections */
+.month-section table thead tr th {
+  color: var(--accent-red, #D32F2F);
+}
+
+/* --- Commander Card Styles --- */
+#commander-card {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-md);
+    background-color: white; /* Or var(--background-primary) */
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-sm);
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.commander-section {
+    flex: 1;
+    padding: var(--spacing-sm);
+    text-align: center;
+    /* Optional: Add a light border between sections */
+    /* border-right: 1px solid var(--border-color); */
+}
+
+.commander-section:last-child {
+    border-right: none;
+}
+
+.commander-section h3 {
+    font-size: 1.1rem;
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color); /* Subtle separator for titles */
+    padding-bottom: var(--spacing-sm);
+}
+
+.icon-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px; /* Slightly increased gap */
+    margin-top: var(--spacing-sm);
+}
+
+.commander-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Center content vertically */
+    padding: 8px; /* Reduced padding */
+    border: 1px solid #ddd; /* Lighter border */
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    min-width: 70px; /* Adjusted min-width */
+    max-width: 80px; /* Added max-width for consistency */
+    height: 70px; /* Fixed height */
+    background-color: #f9f9f9; /* Light background */
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.commander-icon:hover {
+    background-color: #f0f0f0;
+    border-color: #ccc;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    transform: translateY(-1px); /* Subtle lift effect */
+}
+
+.commander-icon:active {
+    background-color: #e9e9e9;
+    transform: translateY(0px);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.commander-icon .icon-placeholder {
+    font-size: 1.5em; /* Placeholder icon size */
+    color: var(--primary-color);
+    margin-bottom: 4px; /* Space between icon and label */
+}
+
+.commander-icon .icon-label {
+    font-size: 0.75em; /* Smaller label text */
+    color: var(--text-secondary);
+    text-align: center;
+    line-height: 1.2;
+    /* display: none; /* Initially hidden, shown by title or JS later if preferred over native title */
+}
+
+/* Button styling in Chats Section */
+#commander-chats-section .button {
+    background-color: var(--background-primary); /* Light grey, distinct */
+    color: red; /* Changed to red */
+    border: 1px solid var(--border-color);
+    padding: 10px 15px;
+    margin: 5px; /* Consistent margin */
+    flex-grow: 1; /* Allow buttons to share space */
+}
+
+/* Define .medium-button if it doesn't exist or adjust as needed */
+.medium-button {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+}
+
+/* --- Generic Content Modal Styles --- */
+#generic-content-modal {
+    display: none; /* Initially hidden. JS changes this to 'flex' to show. */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent overlay */
+    justify-content: center; /* Horizontally center the .modal-content */
+    align-items: center; /* Vertically center the .modal-content */
+    z-index: 1050; /* Ensure it's on top of other content/modals */
+    /* opacity: 1; */ /* Default, ensure not 0 */
+    /* visibility: visible; */ /* Default, ensure not hidden (when display is not 'none') */
+}
+
+#generic-content-modal .modal-content {
+    background: white;
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    width: 80%;
+    max-width: 900px;
+    position: relative; /* For close button positioning */
+    max-height: 80vh; /* Max height to prevent overflow */
+    display: flex; /* Use flex for internal layout */
+    flex-direction: column; /* Stack header, body */
+}
+
+#generic-content-modal #generic-modal-title {
+    margin-top: 0;
+    margin-bottom: var(--spacing-md);
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: var(--spacing-sm);
+}
+
+#generic-content-modal #generic-modal-body {
+    flex-grow: 1; /* Allow iframe container to fill space */
+    overflow-y: auto; /* Allow scrolling for iframe content if needed */
+}
+
+#generic-content-modal #generic-modal-iframe {
+    width: 100%;
+    height: calc(100% - 10px); /* Adjust height to fit, considering padding or borders */
+    border: none;
+}
+
+#generic-content-modal .close-button {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    font-size: 1.8rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    background: none;
+    border: none;
+    line-height: 1;
+}
+
+#generic-content-modal .close-button:hover {
+    color: var(--primary-color);
+}
+
+/* Responsive adjustments for Commander Card */
+@media (max-width: 768px) {
+    #commander-card {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    .commander-section {
+        border-right: none; /* Remove side border when stacked */
+        border-bottom: 1px solid var(--border-color); /* Add bottom border */
+        padding-bottom: var(--spacing-md); /* Add padding at the bottom */
+    }
+    .commander-section:last-child {
+        border-bottom: none;
+    }
+    .icon-grid {
+        gap: 10px;
+    }
+    .commander-icon {
+        min-width: 65px;
+        height: 65px;
+    }
+    #commander-chats-section .button {
+        width: 90%;
+    }
+}
+
+@media (max-width: 480px) {
+    .commander-section h3 {
+        font-size: 1rem;
+    }
+    .icon-grid {
+        gap: 8px;
+    }
+    .commander-icon {
+        min-width: 60px;
+        height: 60px;
+        padding: 6px;
+    }
+    .commander-icon .icon-placeholder {
+        font-size: 1.3em;
+    }
+    .commander-icon .icon-label {
+        font-size: 0.7em;
+    }
+    #commander-chats-section .button {
+        font-size: 0.85rem;
+        padding: 6px 12px;
+    }
+}
