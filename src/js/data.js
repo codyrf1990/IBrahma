@@ -9,8 +9,12 @@ import { calculateMonthlySubtotal } from './calculations.js';
  * Saves the current state of the license data (rows and checked status) to local storage.
  */
 export function saveData() {
+    console.log('saveData CALLED. Timestamp:', new Date().toLocaleTimeString());
     try {
         const stateClients = state.clients;
+        console.log('Attempting to save clients:', JSON.stringify(stateClients));
+        console.log('Attempting to save checkedRows:', JSON.stringify(state.checkedRows));
+        console.log('Attempting to save receiptsGoal:', state.receiptsGoal);
         const dataToSave = {
             ...getStateForSave(),
             clients: stateClients.map(c => ({ ...c, notes: c.notes || '' }))
@@ -45,9 +49,11 @@ export function saveData() {
  * Loads initial data from local storage when the application starts.
  */
 export function loadInitialData() {
+    console.log('loadInitialData CALLED. Timestamp:', new Date().toLocaleTimeString());
     try {
         // Load main license data
         const savedData = localStorage.getItem('licenseData');
+        console.log('Raw data from localStorage:', savedData);
         if (savedData) {
             console.log("Loading data from local storage...");
             validateAndImport(savedData);
@@ -116,9 +122,11 @@ export function previewImportData(jsonData) {
  * @param {string} jsonData The JSON string to import.
  */
 export function validateAndImport(jsonData) {
+    console.log('validateAndImport CALLED. Timestamp:', new Date().toLocaleTimeString());
     let data;
     try {
         data = JSON.parse(jsonData);
+        console.log('Parsed data for import:', data);
         if (!data || typeof data !== 'object') {
             throw new Error("Invalid data format: not an object.");
         }

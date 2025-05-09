@@ -71,6 +71,7 @@ export function addLicense() {
 
         updateUIAndSummaries();
         clearForm();
+        state.clients = getAllClientsFromDOM(); // <-- Keep state in sync with DOM
         saveData(); // Save the updated state (saveData needs adjustment later)
         
         // Hide the modal after successful submission
@@ -141,6 +142,7 @@ export function toggleChecked(rowId) {
     console.log('[CheckboxHandler] updateUIAndSummaries() called.');
 
     // --- Persist Changes ---
+    state.clients = getAllClientsFromDOM(); // <-- Keep state in sync with DOM
     saveData(); // Save the updated state 
     console.log('[CheckboxHandler] saveData() called.');
 
@@ -178,6 +180,7 @@ export function deleteRow(rowId) {
             }
 
             updateUIAndSummaries();
+            state.clients = getAllClientsFromDOM(); // <-- Keep state in sync with DOM
             saveData(); // Save changes
             showMessage('License deleted successfully', 'success');
 
@@ -307,6 +310,7 @@ export function saveEditChanges() {
         const allClients = getAllClientsFromDOM(); // Get current data state after edit
         const monthSubtotal = calculateMonthlySubtotal(originalMonth, allClients);
         updateMonthSection(originalMonth, monthSubtotal);
+        state.clients = getAllClientsFromDOM(); // <-- Keep state in sync with DOM
         saveData(); // Save changes
         showMessage('License updated successfully', 'success');
 
@@ -335,6 +339,7 @@ export function updateReceiptsGoal() {
         state.receiptsGoal = newValue;
         console.log('Goal updated state.receiptsGoal to:', state.receiptsGoal); // Log state update
         updateUIAndSummaries(); // Update displays that use receiptsGoal
+        state.clients = getAllClientsFromDOM(); // <-- Keep state in sync with DOM
         saveData(); // Save the change
     } else {
         console.log('Goal validation failed.'); // Log validation failure
