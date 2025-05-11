@@ -32,6 +32,122 @@ import {
 // Import save/load handlers
 import { handleSaveToFile, handleLoadClick, handleFileLoad, updatePercentageCalculator } from './eventHandlers.js';
 
+// --- NEW: Generic Modal Helper Functions ---
+function openGenericModal(title, iframeSrc) {
+    const modal = document.getElementById('generic-content-modal');
+    const modalTitle = document.getElementById('generic-modal-title');
+    const iframe = document.getElementById('generic-modal-iframe');
+
+    if (modal && modalTitle && iframe) {
+        modalTitle.textContent = title;
+        iframe.src = iframeSrc;
+        modal.style.display = 'block'; // Or 'flex' if it's styled with flex
+        // Consider adding a class to body to prevent scrolling if needed
+        // document.body.classList.add('modal-open');
+    } else {
+        console.error('Generic modal elements not found.');
+    }
+}
+
+// Make it globally accessible if not already via other means, or pass to event listeners
+// For simplicity in this step, making it available for event listeners.
+// Consider a more structured approach for managing modal visibility if complexity grows.
+window.closeGenericModal = function() { // Ensure this function is defined if not already
+    const modal = document.getElementById('generic-content-modal');
+    if (modal) {
+        modal.style.display = 'none';
+        const iframe = document.getElementById('generic-modal-iframe');
+        if (iframe) {
+            iframe.src = 'about:blank'; // Clear iframe content on close
+        }
+        // document.body.classList.remove('modal-open');
+    }
+};
+// --- END NEW: Generic Modal Helper Functions ---
+
+// --- NEW: Chat Pro Sidebar Helper Functions ---
+const chatProSidebar = document.getElementById('chatProSidebar');
+const chatProSidebarIframe = document.getElementById('chatProSidebarIframe');
+const btnChatPro = document.getElementById('btn-chat-pro');
+const closeChatProSidebarBtn = document.getElementById('closeChatProSidebarBtn');
+
+function openChatProSidebar() {
+    if (chatProSidebar && chatProSidebarIframe) {
+        // Set the iframe src only if it's not already set or to refresh
+        // if (chatProSidebarIframe.src === 'about:blank' || chatProSidebarIframe.src === '') {
+            chatProSidebarIframe.src = 'src/solidcam_chat_pro.html';
+        // }
+        chatProSidebar.classList.add('open');
+        // document.body.classList.add('chat-sidebar-open'); // Optional: if you want to prevent body scroll
+    } else {
+        console.error('Chat Pro Sidebar elements not found.');
+    }
+}
+
+function closeChatProSidebar() {
+    if (chatProSidebar) {
+        chatProSidebar.classList.remove('open');
+        // document.body.classList.remove('chat-sidebar-open'); // Optional
+        // Optionally clear the iframe to stop any processes
+        // if (chatProSidebarIframe) {
+        //     chatProSidebarIframe.src = 'about:blank';
+        // }
+    } else {
+        console.error('Close Chat Pro Sidebar button not found.');
+    }
+}
+// --- END NEW: Chat Pro Sidebar Helper Functions ---
+
+// --- NEW: Chat Pro Sidebar Resize Logic ---
+const chatProSidebarDragHandle = document.getElementById('chatProSidebarDragHandle');
+let isResizingChat = false;
+let initialChatSidebarWidth = 0;
+let initialChatMouseX = 0;
+
+if (chatProSidebar && chatProSidebarDragHandle) {
+    chatProSidebarDragHandle.addEventListener('mousedown', (e) => {
+        isResizingChat = true;
+        initialChatMouseX = e.clientX;
+        initialChatSidebarWidth = chatProSidebar.offsetWidth;
+        document.body.style.cursor = 'col-resize'; // Optional: change cursor globally during resize
+        chatProSidebar.style.transition = 'none'; // Disable transition during drag for smoother resize
+
+        // Prevent text selection while dragging
+        e.preventDefault(); 
+
+        document.addEventListener('mousemove', handleChatResizeMouseMove);
+        document.addEventListener('mouseup', stopChatResize);
+    });
+}
+
+function handleChatResizeMouseMove(e) {
+    if (!isResizingChat) return;
+
+    const currentMouseX = e.clientX;
+    const deltaX = currentMouseX - initialChatMouseX;
+    let newWidth = initialChatSidebarWidth - deltaX; // Subtract because dragging left should increase width
+
+    // Min and Max width constraints (e.g., 250px to 800px)
+    const minWidth = 250;
+    const maxWidth = 800;
+
+    if (newWidth < minWidth) newWidth = minWidth;
+    if (newWidth > maxWidth) newWidth = maxWidth;
+
+    chatProSidebar.style.width = newWidth + 'px';
+}
+
+function stopChatResize() {
+    if (isResizingChat) {
+        isResizingChat = false;
+        document.body.style.cursor = 'default'; // Reset global cursor
+        chatProSidebar.style.transition = 'right 0.3s ease-in-out'; // Re-enable transition
+        document.removeEventListener('mousemove', handleChatResizeMouseMove);
+        document.removeEventListener('mouseup', stopChatResize);
+    }
+}
+// --- END NEW: Chat Pro Sidebar Resize Logic ---
+
 // --- Global Update Function ---
 
 /**
@@ -176,14 +292,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (event.key === 'Escape') {
             console.log('Escape key pressed'); // Debug log
             const addModal = document.getElementById('add-renewal-modal');
-            // Check if the modal exists and is currently visible (display is not 'none')
             if (addModal && addModal.style.display !== 'none') {
                 hideAddRenewalModal();
             }
-            // Also close generic content modal on Escape
             const genericModal = document.getElementById('generic-content-modal');
             if (genericModal && genericModal.style.display !== 'none') {
-                closeGenericModal(); // Assuming closeGenericModal function exists
+                closeGenericModal(); 
+            }
+            // Close Chat Pro Sidebar on Escape
+            if (chatProSidebar && chatProSidebar.classList.contains('open')) {
+                closeChatProSidebar();
             }
         }
     });
@@ -609,22 +727,26 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnChatStd) {
         btnChatStd.addEventListener('click', () => {
             console.log('SolidCAM Chat Std button clicked');
-            openGenericModal('SolidCAM Chat Standard', 'YOUR_CHAT_LINK_HERE_STD'); // Replace with actual URL
+            openGenericModal('SolidCAM Chat', 'src/pro_chat.html'); // This might need updating if pro_chat.html was removed/renamed
         });
     }
 
     // Enhanced logging for btn-chat-pro
     console.log('[Main.js] Attempting to find #btn-chat-pro for event listener attachment...');
-    const btnChatPro = document.getElementById('btn-chat-pro');
     if (btnChatPro) {
         console.log('[Main.js] Found #btn-chat-pro element:', btnChatPro);
         btnChatPro.addEventListener('click', () => {
             console.log('[Main.js] SolidCAM Chat Pro button CLICKED!');
-            openGenericModal('SolidCAM Chat Pro', 'src/chatbot_pro_interface.html');
+            openChatProSidebar(); // NEW BEHAVIOR
         });
         console.log('[Main.js] Event listener ATTACHED to #btn-chat-pro.');
     } else {
         console.error('[Main.js] CRITICAL: Could not find #btn-chat-pro element. Listener NOT attached.');
+    }
+
+    // Listener for the new sidebar's close button
+    if (closeChatProSidebarBtn) {
+        closeChatProSidebarBtn.addEventListener('click', closeChatProSidebar);
     }
 
     const iconEmailTemplates = document.getElementById('icon-email-templates');

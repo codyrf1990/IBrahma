@@ -341,18 +341,17 @@ h2 {
     border-radius: var(--border-radius-lg);
     padding: var(--spacing-md);
     box-shadow: var(--shadow-sm);
-    margin-bottom: 16px; /* Reduced bottom margin */
+    margin-bottom: 10px; /* Further reduced bottom margin for compactness */
 }
 
 .month-header {
     display: flex;
     justify-content: space-between;
-    padding: var(--spacing-sm) 0;
+    padding-top: 4px;     /* Further reduced from 8px */
+    padding-bottom: 4px;  /* Further reduced from 8px */
     border-bottom: 2px solid var(--border-color);
-    margin-bottom: var(--spacing-md);
+    margin-bottom: 4px;  /* Further reduced from 8px */
     font-weight: 600;
-    padding-top: 8px;    /* Reduced top padding */
-    padding-bottom: 8px; /* Reduced bottom padding */
     align-items: center; /* Vertically align items */
 }
 
@@ -1209,7 +1208,7 @@ button {
 /* New rule for general cell padding */
 .client-table th,
 .client-table td {
-    padding: 6px 8px; /* Reduced padding */
+    padding: 3px 6px; /* top/bottom 3px, left/right 6px (further reduced) */
     line-height: 1.3; /* Adjusted line-height */
     border-bottom: 1px solid #444; /* Subtle horizontal border for dark theme */
     /* Ensure other properties like text-align remain as desired by specific column rules */
@@ -1226,7 +1225,7 @@ button {
 
 /* Align amount to the right in tables */
 .month-section .client-table td.td-amount {
-  text-align: right;
+  text-align: left;
 }
 
 /* General alignment for other cells, can be overridden by more specific rules */
@@ -1243,9 +1242,13 @@ button {
 
 .client-table th:last-child,
 .client-table td:last-child {
-    padding-left: 10px; /* Keep original left padding or adjust as needed */
-    padding-right: 8px;
-    border-bottom: 1px solid #444; /* Ensure border consistency if overridden elsewhere */
+    /* text-align: right; */ /* Removed to allow individual settings */
+    padding-right: var(--spacing-md); /* Ensure padding on the right of the last cell */
+}
+
+.client-table th.th-amount,
+.client-table td.td-amount {
+    text-align: left;
 }
 
 .table-responsive-wrapper {
@@ -1455,6 +1458,9 @@ button {
     /* Improve subtotal readability */
     .subtotal-row {
         font-size: 0.9rem;
+        padding-top: 6px;    /* Original might be larger, e.g., 8px or 10px */
+        padding-bottom: 6px; /* Original might be larger, e.g., 8px or 10px */
+        margin-top: 8px;     /* Original might be larger, e.g., 10px or 15px */
     }
 }
 
@@ -1845,8 +1851,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .month-footer-summary {
   text-align: center;
-  padding: 10px 0; /* Adjust vertical spacing */
-  margin-top: 12px; /* Space from table/elements above */
+  padding: 4px 0; /* Reduced from 10px 0 */
+  margin-top: 4px; /* Reduced from 12px */
   font-size: 0.9rem; /* Optional: adjust font size */
   color: var(--text-color-secondary, #777); /* Adjust for theme, ensure visibility */
 }
@@ -1983,36 +1989,39 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 #generic-content-modal .modal-content {
-    background: white;
-    padding: var(--spacing-lg);
-    border-radius: var(--border-radius-lg);
-    box-shadow: var(--shadow-md);
-    width: 80%;
-    max-width: 900px;
-    position: relative; /* For close button positioning */
-    max-height: 80vh; /* Max height to prevent overflow */
-    display: flex; /* Use flex for internal layout */
-    flex-direction: column; /* Stack header, body */
+    background: var(--background-primary, #FFF);
+    padding: 0; /* REMOVE padding here, iframe will fill it */
+    border-radius: var(--border-radius-lg, 8px);
+    box-shadow: var(--shadow-md, 0 4px 12px rgba(0,0,0,0.1));
+    width: 90%; /* Increased from 60% */
+    max-width: 1200px; /* Increased from 800px */
+    height: 85vh; /* Increased from 70vh */
+    display: flex; /* Use flexbox to manage inner elements */
+    flex-direction: column; /* Stack title, body, footer */
+    overflow: hidden; /* Prevent content from spilling out, iframe will handle scroll */
 }
 
 #generic-content-modal #generic-modal-title {
-    margin-top: 0;
-    margin-bottom: var(--spacing-md);
-    color: var(--primary-color);
-    font-size: 1.5rem;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: var(--spacing-sm);
+    padding: var(--spacing-md, 16px);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary-color, #CC0000);
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
+    text-align: center;
 }
 
 #generic-content-modal #generic-modal-body {
-    flex-grow: 1; /* Allow iframe container to fill space */
-    overflow-y: auto; /* Allow scrolling for iframe content if needed */
+    padding: 0; /* REMOVE padding, iframe will fill this */
+    flex-grow: 1; /* Allow body to take available space */
+    overflow: hidden; /* Iframe will handle its own scroll */
+    display: flex; /* Ensure iframe can fill */
 }
 
 #generic-content-modal #generic-modal-iframe {
     width: 100%;
-    height: calc(100% - 10px); /* Adjust height to fit, considering padding or borders */
-    border: none;
+    height: 100%;
+    border: none; /* Remove iframe border */
+    display: block; /* Good practice for iframes */
 }
 
 #generic-content-modal .close-button {
@@ -2079,4 +2088,77 @@ document.addEventListener('DOMContentLoaded', function() {
         font-size: 0.85rem;
         padding: 6px 12px;
     }
+}
+
+/* --- CHAT PRO SIDEBAR STYLES --- */
+#chatProSidebar {
+    position: fixed;
+    top: 0;
+    right: -420px; /* Start off-screen, width + some buffer */
+    width: 400px;
+    height: 100vh;
+    background-color: var(--background-primary, #f8f8f8);
+    box-shadow: -3px 0px 15px rgba(0,0,0,0.2);
+    z-index: 1100; /* Higher than generic modal overlay if it exists */
+    transition: right 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid var(--border-color, #e0e0e0);
+}
+
+#chatProSidebar.open {
+    right: 0;
+}
+
+.chat-sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: var(--solidcam-secondary, #333); /* Using a theme variable if available */
+    color: var(--solidcam-text-light, #FFF);
+    border-bottom: 1px solid var(--solidcam-primary, #CC0000);
+}
+
+.chat-sidebar-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.chat-sidebar-close-btn {
+    background: none;
+    border: none;
+    color: var(--solidcam-text-light, #FFF);
+    font-size: 1.6rem;
+    cursor: pointer;
+    padding: 0 var(--spacing-xs);
+    line-height: 1;
+}
+
+.chat-sidebar-close-btn:hover {
+    color: var(--solidcam-primary, #CC0000);
+}
+
+#chatProSidebarIframe {
+    flex-grow: 1;
+    border: none;
+    width: 100%;
+    height: 100%; /* Ensure iframe takes full height of its container */
+}
+
+.chat-sidebar-drag-handle {
+    position: absolute;
+    left: -5px; /* Position slightly outside to be grabbable */
+    top: 0;
+    width: 10px; /* Width of the grabbable area */
+    height: 100%;
+    cursor: col-resize; /* Standard cursor for horizontal resizing */
+    background-color: rgba(0,0,0,0.1); /* Subtle visual indicator */
+    z-index: 1; /* Ensure it's above the sidebar content for mouse events */
+}
+
+/* Additional styling for when body has chat-sidebar-open (optional) */
+body.chat-sidebar-open {
+    /* overflow: hidden; */ /* Be cautious with this, can affect main page scroll unexpectedly */
 }

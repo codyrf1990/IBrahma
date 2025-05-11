@@ -1,6 +1,6 @@
-import { state, getStateForSave } from './state.js';
+import { state, getStateForSave, replaceState } from './state.js';
 import { showMessage, parseAmount, formatDate } from './utils.js';
-import { createNewMonthSection, updateMonthSection, sortClientsByDate, sortMonthSections, createAutoSaveIndicator, displaySummaryStatistics } from './domUtils.js';
+import { createNewMonthSection, updateMonthSection, sortClientsByDate, sortMonthSections, createAutoSaveIndicator, displaySummaryStatistics, rebuildClientListFromState, createRowElement } from './domUtils.js';
 import { calculateMonthlySubtotal } from './calculations.js';
 
 // --- Data Persistence Functions ---
@@ -131,23 +131,12 @@ export function validateAndImport(jsonData) {
             throw new Error("Invalid data format: not an object.");
         }
 
-        // Basic validation
+        // Basic validation (ensure this is comprehensive enough or rely on replaceState's defaults)
         if (!Array.isArray(data.clients)) {
             throw new Error("Invalid data format: 'clients' array missing or not an array.");
         }
-        if (data.checkedRows && !Array.isArray(data.checkedRows)) {
-            throw new Error("Invalid data format: 'checkedRows' is not an array.");
-        }
-        if (data.receiptsGoal && typeof data.receiptsGoal !== 'number') {
-            throw new Error("Invalid data format: 'receiptsGoal' is not a number.");
-        }
-
-        if (Array.isArray(data.clients)) {
-            data.clients = data.clients.map(client => ({
-                ...client,
-                notes: client.notes || ''
-            }));
-        }
+        // It's good practice to ensure notes exist, replaceState should also handle this.
+        // data.clients = data.clients.map(client => ({ ...client, notes: client.notes || '' }));
 
     } catch (error) {
         console.error('Error parsing or validating imported data:', error);
@@ -157,135 +146,45 @@ export function validateAndImport(jsonData) {
 
     console.log("Data validated. Proceeding with import.");
 
-    // Clear existing UI and state
+    // --- MODIFICATION START ---
+    // 1. Update state object with loaded data
+    replaceState(data); // This will set state.clients, state.checkedRows, state.receiptsGoal
+
+    // 2. Clear existing UI (main-container)
     const mainContainer = document.getElementById('main-container');
     if (mainContainer) {
         mainContainer.innerHTML = ''; // Clear all existing month sections and rows
+    } else {
+        console.error("validateAndImport: Main container #main-container not found. UI cannot be cleared or rebuilt.");
+        showMessage('Critical error: UI container missing.', 'error');
+        return; // Cannot proceed
     }
-    state.checkedRows = [];
-    state.totals = {}; // Reset totals state
-
-    state.receiptsGoal = data.receiptsGoal || 0;
-    // Restore checkedRows carefully, filtering any potential invalid IDs later if needed
-    state.checkedRows = Array.isArray(data.checkedRows) ? data.checkedRows : [];
-
-    // Update input fields for goal and pool
+    
+    // 3. Update input fields for goal (already handled by replaceState indirectly if goalInput exists and is updated by a general UI refresh)
+    // Re-check if goalInput needs explicit update after replaceState or if updateUIAndSummaries handles it.
+    // For now, let's assume `updateUIAndSummaries` or direct setting in `replaceState` handles UI input fields.
     const goalInput = document.getElementById('receipts-goal-input');
-    const poolInput = document.getElementById('total-pool-input');
     if (goalInput) goalInput.value = state.receiptsGoal;
 
-    // Map to store tbodies for efficient row insertion
-    const monthTbodyMap = new Map();
-    // Temporary store for clients grouped by month from the import data
-    const clientsByMonth = {};
 
-    // First pass: Group clients by month from the imported data
-    data.clients.forEach(client => {
-        if (!client || !client.closeDate) return; // Basic check
-        try {
-            const month = new Date(client.closeDate + 'T00:00:00').toLocaleString('en-US', { month: 'long' }).toLowerCase();
-            if (!clientsByMonth[month]) {
-                clientsByMonth[month] = [];
-            }
-            clientsByMonth[month].push(client);
-        } catch (e) {
-            console.error("validateAndImport: Error grouping client by month", client, e);
-        }
-    });
+    // 4. Rebuild the entire client list display from the now-updated state.clients
+    rebuildClientListFromState(); // This function should use state.clients and createRowElement
 
-    // Second pass: Process clients, rebuild UI, and create month sections
-    data.clients.forEach(client => {
-        try {
-            // Validate essential fields
-            if (!client.id || !client.name || !client.closeDate || !client.renewalDate || typeof client.amount === 'undefined') {
-                console.warn('Skipping invalid client object:', client);
-                return; // Skip this client
-            }
+    // REMOVE THE MANUAL DOM CREATION LOOP - rebuildClientListFromState handles this.
+    // The old loop that iterated data.clients and manually created TRs/TDs is GONE.
+    // --- MODIFICATION END ---
 
-            const month = new Date(client.closeDate + 'T00:00:00').toLocaleString('en-US', { month: 'long' }).toLowerCase();
-            let monthTbody = monthTbodyMap.get(month);
 
-            // Create month section if it doesn't exist
-            if (!monthTbody) {
-                monthTbody = createNewMonthSection(month);
-                if (!monthTbody) {
-                     console.error(`Failed to create or find tbody for month: ${month}. Skipping row.`);
-                    return; // Skip if section/tbody creation failed
-                }
-                monthTbodyMap.set(month, monthTbody);
-            }
+    // Sort and update summaries (these should use the DOM built by rebuildClientListFromState or use state directly)
+    sortClientsByDate(); // Sorts rows within newly created month sections
+    sortMonthSections(); // Sorts the month sections themselves
+    
+    // updateUIAndSummaries() is called in main.js after loadInitialData completes.
+    // If called here, ensure it uses the correct state or DOM.
+    // For now, deferring to main.js call. If issues persist, may need to call it here.
+    // No, main.js calls updateUIAndSummaries AFTER loadInitialData.
+    // loadInitialData calls validateAndImport. So updateUIAndSummaries is called AFTER this.
+    // This seems correct.
 
-            // Create row element with proper attributes
-            const row = document.createElement('tr');
-            row.classList.add('client-row');
-            row.id = client.id;
-            
-            // Set all data attributes consistently
-            row.setAttribute('data-opportunity-id', client.opportunityId || '');
-            row.setAttribute('data-renewal-date', client.renewalDate || '');
-            row.setAttribute('data-sent-date', client.sentDate || '');
-            row.setAttribute('data-close-date', client.closeDate || '');
-
-            row.innerHTML = `
-                <td class="td-checkbox"><input type="checkbox" class="custom-checkbox" data-row-id="${client.id}" ${client.isChecked ? 'checked' : ''}></td>
-                <td class="td-name">${client.name}</td>
-                <td class="td-renewal-date">${formatDate(client.renewalDate)}</td>
-                <td class="td-sent-date">${formatDate(client.sentDate || '')}</td>
-                <td class="td-close-date">${formatDate(client.closeDate)}</td>
-                <td class="td-amount">USD ${client.amount}</td>
-                <td class="td-opp-id">${client.opportunityId || '-'}</td>
-                <td class="td-actions">
-                    <span class="action-icon edit-icon" title="Edit">&#9998;</span>
-                    <span class="action-icon delete-icon" title="Delete">&#10006;</span>
-                 </td>
-            `;
-
-            // Apply checked class if necessary
-            if (client.isChecked) {
-                row.classList.add('checked');
-                // Ensure ID is in state.checkedRows if marked as checked in data
-                if (!state.checkedRows.includes(client.id)) {
-                     state.checkedRows.push(client.id);
-                }
-            } else {
-                 // Ensure ID is NOT in state.checkedRows if not checked
-                 const index = state.checkedRows.indexOf(client.id);
-                 if (index > -1) {
-                     state.checkedRows.splice(index, 1);
-                 }
-            }
-
-            // Append row to the correct month tbody
-            monthTbody.appendChild(row);
-
-        } catch (rowError) {
-            console.error('Error processing individual client during import:', client, rowError);
-            // Continue processing other clients
-        }
-    });
-
-    // Third pass: Update counts and subtotals for all created month sections AFTER rows are added
-    monthTbodyMap.forEach((tbody, month) => {
-        // Calculate subtotal for this month using the helper and the grouped data
-        const monthlySubtotal = calculateMonthlySubtotal(month, clientsByMonth[month] || []);
-        updateMonthSection(month, monthlySubtotal); // Pass the calculated subtotal
-    });
-
-    // Now that all rows and sections are potentially created, sort them
-    // and update the global totals display.
-    sortMonthSections(); // Sort the month sections chronologically
-    sortClientsByDate(); // Sort clients within each month
-
-    // Final UI updates after successful import
-    sortClientsByDate();
-    sortMonthSections();
-
-    console.log("Data validated and imported successfully.");
-
-    // Optionally, save the potentially cleaned/validated data back to localStorage
-    // This ensures consistency if any invalid rows were skipped
-    saveData();
-
-    showMessage('Data imported successfully!', 'success');
-    console.log("Import process completed.");
+    console.log("validateAndImport: Data import processed using replaceState and rebuildClientListFromState.");
 }

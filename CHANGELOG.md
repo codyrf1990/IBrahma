@@ -2,10 +2,10 @@
 
 All notable changes to the License Tracker application will be documented in this file.
 
-## [Unreleased]
+## [Unreleased] - 2025-05-11
 
 ### Added
-- Context files updated for new InstructorAI session, with latest codebase and feature info. [2025-05-07]
+- Context files updated for new InstructorAI session, with latest codebase and feature info. [2025-05-11]
 - Context files (`_app_overview.md`, `_context_core_logic.md`, `_context_data.md`, `_context_features.md`, `_context_structure.md`) updated for new InstructorAI session, with latest codebase and feature info. [2025-05-05]
 - Add Renewal modal now pre-populates with random data for faster testing.
 - Added a hover-activated informational window to the logo area, displaying a message after a 2-second delay.

@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iSubCore</title>
+    <title>iBrahma - Opp Tracker</title>
+    <link rel="icon" type="image/png" href="src/assets/Images/scfav.png" sizes="48x41">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
@@ -15,7 +16,7 @@
                 <h1 class="app-title">iBramah</h1>
                 <p class="app-tagline">Opportunity Tracker</p>
             </div>
-            <img src="PICS/SolidCAM.png" alt="SolidCAM Logo" class="header-logo">
+            <img src="src/assets/Images/SolidCAM.png" alt="SolidCAM Logo" class="header-logo">
             <div class="percentage-calculator summary-box"> <!-- Moved content here -->
                 <h4>Quick % Calc</h4>
                 <div class="calculator-content"> <!-- ADDED WRAPPER -->
@@ -136,7 +137,7 @@
              <div id="kpi-stats-section" class="summary-box summary-box-empty"> <!-- Renamed ID, kept classes -->
                  <h4>Key Stats</h4>
                  <div class="kpi-list">
-                     <p>Total Entered: <span id="kpi-total-confirmed" class="kpi-value">Calculating...</span></p>
+                     <p>Total Entered: <span id="kpi-total-entered-amount" class="kpi-value">Calculating...</span></p>
                      <p>Average Confirmed: <span id="kpi-avg-amount" class="kpi-value">Calculating...</span></p>
                  </div>
              </div>
@@ -248,17 +249,26 @@
     </div>
     <div id="fancyMessageOverlay" style="display:none;"></div>
 
-    <!-- GENERIC CONTENT MODAL START -->
-    <div id="generic-content-modal" class="modal" style="display: none;">
+    <!-- MODAL FOR GENERIC CONTENT -->
+    <div id="generic-content-modal" class="modal-overlay">
         <div class="modal-content">
-            <span class="close-button" onclick="closeGenericModal()">&times;</span>
-            <h3 id="generic-modal-title">Modal Title</h3>
+            <button id="generic-modal-close-btn" class="close-button">&times;</button>
+            <h3 id="generic-modal-title">Generic Modal Title</h3>
             <div id="generic-modal-body">
-                <iframe id="generic-modal-iframe" src="about:blank" style="width:100%; height:500px; border:none;"></iframe>
+                <iframe id="generic-modal-iframe" src="about:blank"></iframe>
             </div>
         </div>
     </div>
-    <!-- GENERIC CONTENT MODAL END -->
+    
+    <!-- NEW CHAT PRO SIDEBAR -->
+    <div id="chatProSidebar" class="chat-sidebar">
+        <div id="chatProSidebarDragHandle" class="chat-sidebar-drag-handle"></div>
+        <div class="chat-sidebar-header">
+            <h3>SolidCAM AI Chat</h3>
+            <button id="closeChatProSidebarBtn" class="chat-sidebar-close-btn">&times;</button>
+        </div>
+        <iframe id="chatProSidebarIframe" src="about:blank"></iframe>
+    </div>
 
     <script type="module" src="src/js/main.js"></script>
 </body>

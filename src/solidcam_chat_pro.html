@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SolidCAM Pro Chat</title>
+    <style>
+        /* SolidCAM Theme Variables */
+        :root {
+            --solidcam-primary: #CC0000; /* SolidCAM Red */
+            --solidcam-primary-hover: #b30000;
+            --solidcam-secondary: #333333; /* Dark Gray */
+            --solidcam-accent: #F0F0F0;   /* Light Gray for backgrounds */
+            --solidcam-text-light: #FFFFFF;
+            --solidcam-text-dark: #333333;
+            --solidcam-border-color: #e0e0e0;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --border-radius-sm: 4px;
+            --border-radius-md: 6px;
+        }
+
+        body, html {
+            height: 100vh; /* Full viewport height */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--solidcam-accent); /* Use accent for the body, container will be white if needed */
+            color: var(--solidcam-text-dark);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            width: 100%; /* Ensure full width */
+            box-sizing: border-box; /* Consistent sizing */
+        }
+
+        .chatbot-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%; /* Ensure full width */
+            max-width: 100%;
+            margin: 0; /* Remove margin */
+            padding: 0; /* Remove padding, handle spacing internally */
+            box-shadow: none; /* Remove shadow as it's part of the outer modal */
+            overflow: hidden;
+            background-color: var(--solidcam-accent); /* Match body or set as needed */
+        }
+
+        .api-config-area {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md); /* Add padding here now that it's a standalone bar */
+            background-color: var(--solidcam-secondary); /* Give it a distinct background */
+            color: var(--solidcam-text-light);
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+        }
+
+        .api-config-area label {
+            font-size: 0.9em;
+            margin-right: var(--spacing-xs);
+        }
+        
+        .api-config-area select, .api-config-area input, .api-config-area button {
+            padding: var(--spacing-sm);
+            border: 1px solid var(--solidcam-border-color);
+            border-radius: var(--border-radius-md);
+            font-size: 0.9em;
+            background-color: var(--solidcam-text-light);
+            color: var(--solidcam-text-dark);
+        }
+
+        .api-config-area button {
+            background-color: var(--solidcam-primary);
+            color: var(--solidcam-text-light);
+            cursor: pointer;
+            border: none;
+        }
+        .api-config-area button:hover {
+            background-color: var(--solidcam-primary-hover);
+        }
+
+        #api-status-indicator {
+            font-size: 0.8em;
+            background-color: #6c757d; /* Default grey */
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--border-radius-sm);
+            color: var(--solidcam-text-light);
+            white-space: nowrap; /* Prevent status text from wrapping awkwardly */
+        }
+
+        .messages-area { /* Adapted from pro_chat.html */
+            flex-grow: 1;
+            overflow-y: auto;
+            border-top: 1px solid var(--solidcam-border-color); /* Add top border */
+            border-bottom: 1px solid var(--solidcam-border-color); /* Add bottom border */
+            border-left: none; /* No side borders if filling space */
+            border-right: none; /* No side borders if filling space */
+            border-radius: 0; /* No border radius if filling space */
+            padding: var(--spacing-md); /* Adjusted padding */
+            margin: 0; /* Remove margin */
+            background-color: #ffffff; /* White background for message area */
+        }
+
+        .message { /* Adapted from pro_chat.html */
+            padding: var(--spacing-sm) var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+            border-radius: var(--border-radius-md); /* Slightly larger radius */
+            max-width: 80%;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+        
+        .message p { /* Added for better text formatting in messages */
+            margin: 0 0 5px 0;
+        }
+        .message .timestamp { /* From chatbot_pro_interface.html */
+            font-size: 0.75em;
+            color: #777; /* Kept subtle */
+            display: block;
+            text-align: right;
+            margin-top: var(--spacing-xs);
+        }
+
+        .user-message { /* Adapted from pro_chat.html */
+            background-color: var(--solidcam-primary);
+            color: var(--solidcam-text-light);
+            align-self: flex-end;
+            margin-left: auto; /* Pushes to the right */
+            border-bottom-right-radius: var(--border-radius-sm); /* More distinct shape */
+        }
+
+        .ai-message { /* Adapted from pro_chat.html */
+            background-color: var(--solidcam-accent); /* Light gray for AI messages */
+            color: var(--solidcam-text-dark);
+            border: 1px solid var(--solidcam-border-color);
+            align-self: flex-start;
+            margin-right: auto; /* Pushes to the left */
+            border-bottom-left-radius: var(--border-radius-sm); /* More distinct shape */
+        }
+
+        .input-area { /* Adapted from pro_chat.html */
+            display: flex;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md);
+            border-top: 1px solid var(--solidcam-border-color);
+            background-color: var(--solidcam-accent);
+        }
+
+        .input-area textarea { /* Adapted from pro_chat.html */
+            flex-grow: 1;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--solidcam-border-color);
+            border-radius: var(--border-radius-md);
+            font-family: inherit;
+            font-size: 1rem;
+            resize: none; 
+            min-height: 40px; /* Min height for 2 rows */
+            max-height: 120px; /* Limit expansion */
+            overflow-y: auto;
+        }
+        .input-area textarea:focus {
+            outline: none;
+            border-color: var(--solidcam-primary);
+            box-shadow: 0 0 0 2px color-mix(in srgb, var(--solidcam-primary) 25%, transparent);
+        }
+
+        .input-area button { /* Adapted from pro_chat.html */
+            padding: var(--spacing-sm) var(--spacing-md);
+            background-color: var(--solidcam-primary);
+            color: var(--solidcam-text-light);
+            border: none;
+            border-radius: var(--border-radius-md);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .input-area button:hover {
+            background-color: var(--solidcam-primary-hover);
+        }
+        
+        .input-area button#clear-chat-btn {
+            background-color: var(--solidcam-secondary); /* Darker button for clear */
+        }
+        .input-area button#clear-chat-btn:hover {
+            background-color: color-mix(in srgb, var(--solidcam-secondary) 85%, black);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="chatbot-container">
+        <div class="api-config-area">
+            <label for="geminiModelSelect">Gemini Model:</label>
+            <select id="geminiModelSelect">
+                <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro (Latest)</option>
+                <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash (Latest)</option>
+                <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
+                <option value="gemini-2.5-flash-preview-04-17">Gemini 2.5 Flash Preview 04-17</option>
+                <option value="gemini-2.5-pro-experimental-03-25">Gemini 2.5 Pro Experimental 03-25</option>
+                <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                <option value="gemini-2.0-flash-preview-image-generation">Gemini 2.0 Flash Preview Image Generation</option>
+                <option value="gemini-2.0-flash-experimental">Gemini 2.0 Flash Experimental</option>
+                <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash-Lite</option>
+                <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash-8B</option>
+                <option value="gemma-3">Gemma 3</option>
+                <option value="gemini-embedding-experimental-03-07">Gemini Embedding Experimental 03-07</option>
+                <!-- Add other models here if needed -->
+            </select>
+            <input type="password" id="api-key-input" placeholder="Enter Gemini API Key">
+            <button id="save-api-key-btn">Connect</button>
+            <span id="api-status-indicator">Status: Not Connected</span>
+        </div>
+
+        <div class="messages-area" id="messagesArea">
+            <!-- Messages will be appended here by JavaScript -->
+             <div class="message ai-message"><p>Welcome to SolidCAM Pro Chat! Please connect to an AI provider to begin.</p><span class="timestamp"></span></div>
+        </div>
+
+        <footer class="input-area">
+            <textarea id="chatInput" rows="2" placeholder="Type your message..."></textarea>
+            <button id="sendButton">Send</button>
+            <button id="clear-chat-btn" title="Clear Chat">Clear</button>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const apiKeyInput = document.getElementById('api-key-input');
+            const saveApiKeyBtn = document.getElementById('save-api-key-btn');
+            const apiStatusIndicator = document.getElementById('api-status-indicator');
+            const geminiModelSelect = document.getElementById('geminiModelSelect');
+
+            const messagesArea = document.getElementById('messagesArea');
+            const chatInput = document.getElementById('chatInput');
+            const sendButton = document.getElementById('sendButton');
+            const clearChatBtn = document.getElementById('clear-chat-btn');
+
+            function updateTimestampForInitialMessage() {
+                const initialMessage = messagesArea.querySelector('.ai-message .timestamp');
+                if (initialMessage) {
+                    initialMessage.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                }
+            }
+            updateTimestampForInitialMessage();
+
+            // Simplified logic for API key display and status on load
+            const savedApiKey = localStorage.getItem('geminiApiKey');
+            if (savedApiKey) {
+                apiKeyInput.value = savedApiKey;
+                apiStatusIndicator.textContent = 'Status: Key for Google Gemini loaded';
+                apiStatusIndicator.style.backgroundColor = '#17a2b8';
+            } else {
+                apiStatusIndicator.textContent = 'Status: Enter Gemini API Key';
+                apiStatusIndicator.style.backgroundColor = '#ffc107';
+            }
+            // Always show API key input and connect button now
+            apiKeyInput.style.display = 'inline-block';
+            saveApiKeyBtn.style.display = 'inline-block';
+
+            // Load and set saved model preference
+            const savedModel = localStorage.getItem('geminiModel');
+            if (savedModel) {
+                geminiModelSelect.value = savedModel;
+            }
+
+            geminiModelSelect.addEventListener('change', () => {
+                localStorage.setItem('geminiModel', geminiModelSelect.value);
+                addMessageToHistory(`Switched to model: ${geminiModelSelect.options[geminiModelSelect.selectedIndex].text}`, 'ai');
+            });
+
+            saveApiKeyBtn.addEventListener('click', () => {
+                const apiKey = apiKeyInput.value.trim();
+
+                if (apiKey) {
+                    localStorage.setItem('geminiApiKey', apiKey);
+                    apiStatusIndicator.textContent = 'Status: Connected to Google Gemini';
+                    apiStatusIndicator.style.backgroundColor = '#28a745'; // Green
+                    addMessageToHistory('Connected to Google Gemini. You can start chatting now.', 'ai');
+                } else {
+                    alert('Please enter your Google Gemini API key.');
+                    apiStatusIndicator.textContent = 'Status: Gemini API Key Required';
+                    apiStatusIndicator.style.backgroundColor = '#dc3545'; // Red
+                    localStorage.removeItem('geminiApiKey'); // Clear if empty
+                }
+            });
+
+            sendButton.addEventListener('click', sendMessage);
+            chatInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            async function sendMessage() {
+                const messageText = chatInput.value.trim();
+                if (messageText) {
+                    addMessageToHistory(messageText, 'user');
+                    chatInput.value = '';
+                    adjustTextareaHeight(chatInput);
+
+                    const apiKey = localStorage.getItem('geminiApiKey');
+                    const selectedModel = geminiModelSelect.value;
+
+                    if (apiKey) {
+                        addMessageToHistory('Thinking...', 'ai');
+                        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`;
+
+                        try {
+                            const response = await fetch(API_URL, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    contents: [
+                                        {
+                                            parts: [
+                                                { text: messageText }
+                                            ]
+                                        }
+                                    ]
+                                })
+                            });
+
+                            // Remove "Thinking..." message
+                            const thinkingMessage = messagesArea.querySelector('.ai-message:last-child');
+                            if (thinkingMessage && thinkingMessage.querySelector('p').textContent === 'Thinking...') {
+                                thinkingMessage.remove();
+                            }
+
+                            if (!response.ok) {
+                                const errorData = await response.json();
+                                console.error('API Error:', errorData);
+                                let errorMessage = `Error: ${response.status} ${response.statusText}`;
+                                if (errorData && errorData.error && errorData.error.message) {
+                                    errorMessage += ` - ${errorData.error.message}`;
+                                }
+                                addMessageToHistory(errorMessage, 'ai');
+                                return;
+                            }
+
+                            const data = await response.json();
+                            
+                            if (data.candidates && data.candidates.length > 0 && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts.length > 0) {
+                                const aiResponse = data.candidates[0].content.parts[0].text;
+                                addMessageToHistory(aiResponse, 'ai');
+                            } else if (data.promptFeedback && data.promptFeedback.blockReason) {
+                                addMessageToHistory(`Blocked: ${data.promptFeedback.blockReason} - ${data.promptFeedback.blockReasonMessage || 'No further details.'}`, 'ai');
+                            } else {
+                                addMessageToHistory('No response from AI or unexpected format.', 'ai');
+                                console.warn('Unexpected API response format:', data);
+                            }
+
+                        } catch (error) {
+                            // Remove "Thinking..." message in case of network or other fetch error
+                            const thinkingMessage = messagesArea.querySelector('.ai-message:last-child');
+                            if (thinkingMessage && thinkingMessage.querySelector('p').textContent === 'Thinking...') {
+                                thinkingMessage.remove();
+                            }
+                            console.error('Fetch Error:', error);
+                            addMessageToHistory(`Network error or failed to fetch: ${error.message}`, 'ai');
+                        }
+                    } else {
+                         setTimeout(() => {
+                            addMessageToHistory('Please connect to Google Gemini by entering your API key in the header.', 'ai');
+                        }, 500);
+                    }
+                }
+            }
+
+            clearChatBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to clear the chat history?')) {
+                    messagesArea.innerHTML = ''; // Clear all messages
+                    addMessageToHistory('Chat cleared. How can I assist you next?', 'ai');
+                }
+            });
+
+            function addMessageToHistory(text, sender) {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', sender + '-message');
+                
+                const p = document.createElement('p');
+                p.textContent = text;
+                messageDiv.appendChild(p);
+
+                const timestampSpan = document.createElement('span');
+                timestampSpan.classList.add('timestamp');
+                timestampSpan.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                messageDiv.appendChild(timestampSpan);
+                
+                messagesArea.appendChild(messageDiv);
+                messagesArea.scrollTop = messagesArea.scrollHeight;
+            }
+            
+            chatInput.addEventListener('input', () => adjustTextareaHeight(chatInput));
+            
+            function adjustTextareaHeight(textarea) {
+                textarea.style.height = 'auto'; 
+                setTimeout(() => {
+                    let newHeight = textarea.scrollHeight;
+                    const maxHeight = parseInt(getComputedStyle(textarea).maxHeight, 10) || 120; // Fallback if not set
+                    if (newHeight > maxHeight) {
+                        newHeight = maxHeight;
+                    }
+                    textarea.style.height = newHeight + 'px';
+                }, 0);
+            }
+            adjustTextareaHeight(chatInput); // Initial adjustment
+
+            // Initialize API status on load - simplified
+            const currentApiKey = localStorage.getItem('geminiApiKey');
+            if (currentApiKey) {
+                apiKeyInput.value = currentApiKey;
+                apiStatusIndicator.textContent = 'Status: Key for Google Gemini loaded';
+                apiStatusIndicator.style.backgroundColor = '#17a2b8';
+            } else {
+                apiStatusIndicator.textContent = 'Status: Enter Gemini API Key';
+                apiStatusIndicator.style.backgroundColor = '#ffc107';
+            }
+            // Ensure controls are visible for key entry
+            apiKeyInput.style.display = 'inline-block'; 
+            saveApiKeyBtn.style.display = 'inline-block';
+
+            // Ensure model select is also visible
+            geminiModelSelect.style.display = 'inline-block';
+
+        });
+    </script>
+</body>
+</html> 

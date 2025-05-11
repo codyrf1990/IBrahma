@@ -424,56 +424,59 @@ export function getAllClientsFromDOM() {
  *                               (totalConfirmed, confirmedCount, averageDealSize, confirmationRate, goal, pool).
  */
 export function displaySummaryStatistics(summaryData) {
-    const { 
-        totalConfirmed = 0, 
-        confirmedCount = 0, 
-        averageDealSize = 0, 
-        goal = 0, 
-        totalEnteredAmount = 0,
-    } = summaryData;
-
-    let elementsFound = true; // Flag to track if all elements are found
-
-    // --- Update Progress Overview Card --- 
+    // Receipts Progress Elements
     const receiptsInfoEl = document.getElementById('receipts-info');
     const receiptsProgressEl = document.getElementById('receipts-progress');
     const receiptsPercentageEl = document.getElementById('receipts-percentage');
-    // const remainingInfoEl = document.getElementById('remaining-info'); // Removed - Element doesn't exist
+    const receiptsGoalInputEl = document.getElementById('receipts-goal-input');
 
+    // KPI Stats Elements
+    const totalEnteredEl = document.getElementById('kpi-total-entered-amount');
+    const avgAmountEl = document.getElementById('kpi-avg-amount');
+
+    // Total Confirmed Whole Card Elements
+    const totalConfirmedWholeValueEl = document.getElementById('total-confirmed-whole-value');
+
+    let elementsFound = true;
+
+    // Default values from summaryData or 0 if not available
+    const confirmedCount = summaryData.confirmedCount || 0;
+    const goal = summaryData.goal || 0;
+    const totalEnteredAmount = summaryData.totalEnteredAmount || 0;
+    const averageDealSize = summaryData.averageDealSize || 0;
+    const totalConfirmedAmount = summaryData.totalConfirmed || 0;
+
+    // --- Update Progress Overview Card ---
     const progressPercentage = goal > 0 ? (confirmedCount / goal) * 100 : 0;
 
-    if (receiptsInfoEl) receiptsInfoEl.textContent = `${confirmedCount} of ${goal} Receipts Confirmed`;
+    if (receiptsInfoEl) receiptsInfoEl.textContent = `${confirmedCount} of ${goal} Receipts Received`;
     else elementsFound = false;
 
-    if (receiptsProgressEl) receiptsProgressEl.style.width = `${Math.min(progressPercentage, 100)}%`; // Cap at 100%
+    if (receiptsProgressEl) receiptsProgressEl.style.width = `${progressPercentage.toFixed(2)}%`;
     else elementsFound = false;
 
-    if (receiptsPercentageEl) receiptsPercentageEl.textContent = `${progressPercentage.toFixed(1)}%`;
+    if (receiptsPercentageEl) receiptsPercentageEl.textContent = `${progressPercentage.toFixed(2)}%`;
     else elementsFound = false;
 
-    // Removed update for remainingInfoEl as it doesn't exist
+    if (receiptsGoalInputEl) receiptsGoalInputEl.value = goal.toString();
+    else elementsFound = false;
 
     // --- Update Key Stats Card --- 
-    const kpiTotalConfirmedEl = document.getElementById('kpi-total-confirmed');
-    const kpiAvgAmountEl = document.getElementById('kpi-avg-amount');
-
-    if (kpiTotalConfirmedEl) kpiTotalConfirmedEl.textContent = calculationsFormatCurrency(totalEnteredAmount);
-    if (kpiAvgAmountEl) kpiAvgAmountEl.textContent = calculationsFormatCurrency(averageDealSize);
-
-    // Update the new Total Confirmed (Whole Number) card
-    const totalConfirmedWholeValueEl = document.getElementById('total-confirmed-whole-value');
-    if (totalConfirmedWholeValueEl) {
-        // Use formatCurrency (aliased as calculationsFormatCurrency) with showCents: false
-        totalConfirmedWholeValueEl.textContent = calculationsFormatCurrency(totalConfirmed, { showCents: false });
+    if (totalEnteredEl && summaryData.hasOwnProperty('totalEnteredAmount')) {
+        totalEnteredEl.textContent = formatCurrency(summaryData.totalEnteredAmount);
+    }
+    if (avgAmountEl && summaryData.hasOwnProperty('averageDealSize')) {
+        avgAmountEl.textContent = formatCurrency(summaryData.averageDealSize);
     }
 
-    // --- Removed Update for Overall Confirmed Total Bar --- 
-    // const confirmedTotalEl = document.getElementById('confirmed-total'); // Removed - Element was deleted
-    // if (confirmedTotalEl) { ... } 
+    // Update the new Total Confirmed (Whole Number) card
+    if (totalConfirmedWholeValueEl && summaryData.hasOwnProperty('totalConfirmed')) {
+        totalConfirmedWholeValueEl.textContent = formatCurrency(summaryData.totalConfirmed, { showCents: false });
+    }
 
     // Log only if any elements weren't found (for debugging)
     if (!elementsFound) {
-        console.warn('displaySummaryStatistics: One or more summary elements not found in the DOM.');
+        console.warn("displaySummaryStatistics: One or more DOM elements were not found. Check IDs.");
     }
 }
 

@@ -13,68 +13,60 @@ import { getStateForSave, replaceState } from './state.js';
  */
 export function addLicense() {
     try {
-        // Get form values
         const name = document.getElementById('account-name').value.trim();
-        const renewalDate = document.getElementById('renewal-date').value; // YYYY-MM-DD
-        const sentDate = document.getElementById('sent-date').value; // YYYY-MM-DD
-        const closeDate = document.getElementById('close-date').value; // YYYY-MM-DD
+        const renewalDate = document.getElementById('renewal-date').value;
+        const sentDate = document.getElementById('sent-date').value;
+        const closeDate = document.getElementById('close-date').value;
         let amount = parseFloat(document.getElementById('amount').value);
         const opportunityId = document.getElementById('opportunity-id').value.trim();
 
-        // Validation
         if (!name || !closeDate) {
-             showMessage('Account Name and Close Date are required', 'error');
-             return;
+            showMessage('Account Name and Close Date are required', 'error');
+            return;
         }
-
         if (isNaN(amount)) {
             amount = 0;
             console.warn('Invalid amount entered, defaulting to 0');
         }
 
-        const month = getMonthFromDate(closeDate);
-
-        // Find or create month section's table body
-        let monthTableBody = document.getElementById(`${month}-clients-body`);
-        if (!monthTableBody) {
-            monthTableBody = createNewMonthSection(month);
-            if (!monthTableBody) {
-                throw new Error(`Failed to create or find table body for month: ${month}`);
-            }
-        }
-
         const rowId = generateId();
-
-        // Prepare license data object
-        const licenseData = {
+        const newLicenseData = {
             id: rowId,
             name,
-            renewalDate, // Keep as YYYY-MM-DD
-            sentDate,    // Keep as YYYY-MM-DD
-            closeDate,   // Keep as YYYY-MM-DD
+            renewalDate,
+            sentDate,
+            closeDate,
             amount,
             opportunityId,
-            isChecked: false // New rows are unchecked by default
+            isChecked: false,
+            notes: '' // Initialize with empty notes
         };
 
-        // Create the row element using the new utility function
-        const newRowElement = createRowElement(licenseData);
+        // 1. Modify state.clients directly
+        state.clients.push(newLicenseData);
 
-        // Append the new row element to the table body
-        monthTableBody.appendChild(newRowElement);
+        // 2. Save the updated state
+        saveData();
 
-        // Add highlight effect
-        newRowElement.classList.add('row-highlight-success');
-        setTimeout(() => {
-            newRowElement.classList.remove('row-highlight-success');
-        }, 1500); // Match animation duration
+        // 3. Rebuild UI from state
+        rebuildClientListFromState();
+        sortClientsByDate();
+        sortMonthSections();
+        updateUIAndSummaries(); // Ensure this uses the new DOM or state.clients
 
-        updateUIAndSummaries();
+        // Optional: Highlight the newly added row after UI rebuild
+        // This requires finding the element, which might be simpler if createRowElement adds a temporary class
+        // or if rebuildClientListFromState can return a map of IDs to elements.
+        // For now, deferring advanced highlight. A simple message is good.
+        const newRowElement = document.getElementById(rowId);
+        if (newRowElement) {
+            newRowElement.classList.add('row-highlight-success');
+            setTimeout(() => {
+                newRowElement.classList.remove('row-highlight-success');
+            }, 1500);
+        }
+
         clearForm();
-        state.clients = getAllClientsFromDOM(); // <-- Keep state in sync with DOM
-        saveData(); // Save the updated state (saveData needs adjustment later)
-        
-        // Hide the modal after successful submission
         hideAddRenewalModal();
         showMessage('Renewal added successfully', 'success');
 
@@ -89,62 +81,44 @@ export function addLicense() {
  * @param {string} rowId - The ID of the row to toggle.
  */
 export function toggleChecked(rowId) {
-    console.log('[CheckboxHandler] Function entered for rowId:', rowId); // Changed initial log slightly
-    const row = document.getElementById(rowId);
-    if (!row) {
-        console.error('[CheckboxHandler] Row element not found for ID:', rowId);
+    console.log('[CheckboxHandler] Function entered for rowId:', rowId);
+    const clientIndex = state.clients.findIndex(client => client.id === rowId);
+
+    if (clientIndex === -1) {
+        console.error('[CheckboxHandler] Client with ID:', rowId, 'not found in state.clients.');
+        showMessage('Error: Client data not found to toggle status.', 'error');
         return;
     }
 
-    const checkbox = row.querySelector('.custom-checkbox');
-    if (!checkbox) {
-         console.error('[CheckboxHandler] Checkbox element not found within row:', rowId);
-         return;
-    }
+    // Determine the new checked status (toggle current)
+    const newCheckedStatus = !state.clients[clientIndex].isChecked;
+    console.log('[CheckboxHandler] Client ID:', rowId, 'New checked status:', newCheckedStatus);
 
-    // We don't have the direct 'event' here, so we read the checkbox's current state
-    const newCheckedStatus = checkbox.checked;
-    console.log('[CheckboxHandler] Associated Client ID:', rowId); // Log client ID
-    console.log('[CheckboxHandler] New checked status (read from DOM):', newCheckedStatus);
+    // 1. Update state.clients
+    state.clients[clientIndex].isChecked = newCheckedStatus;
 
-    // --- State Update ---
-    // This function updates both the DOM class and the state.checkedRows array
-    console.log(`[CheckboxHandler] Attempting to update state/DOM for ID: ${rowId} to ${newCheckedStatus}`);
+    // 2. Update state.checkedRows array
     if (newCheckedStatus) {
-        row.classList.add('checked');
         if (!state.checkedRows.includes(rowId)) {
-            console.log('[CheckboxHandler] Adding rowId to state.checkedRows');
             state.checkedRows.push(rowId);
+            console.log('[CheckboxHandler] Adding rowId to state.checkedRows', state.checkedRows);
         }
     } else {
-        row.classList.remove('checked');
-        console.log('[CheckboxHandler] Removing rowId from state.checkedRows');
         state.checkedRows = state.checkedRows.filter(id => id !== rowId);
+        console.log('[CheckboxHandler] Removing rowId from state.checkedRows', state.checkedRows);
     }
 
-    // --- Update isChecked property in state.clients ---
-    const clientIndex = state.clients.findIndex(client => client.id === rowId);
-    if (clientIndex !== -1) {
-        state.clients[clientIndex].isChecked = newCheckedStatus;
-        console.log(`[CheckboxHandler] Updated state.clients for ID ${rowId}: isChecked = ${newCheckedStatus}`);
-    } else {
-        console.warn(`[CheckboxHandler] Client with ID ${rowId} not found in state.clients.`);
-    }
-    // console.log('[CheckboxHandler] state.checkedRows after update:', JSON.stringify(state.checkedRows));
+    // 3. Save the updated state
+    saveData();
 
-    console.log('[CheckboxHandler] State/DOM update performed.');
-    // Optional: Log state after update
-    // console.log('[CheckboxHandler] state.checkedRows after update:', JSON.stringify(state.checkedRows));
-
-    // --- UI Refresh ---
-    console.log('[CheckboxHandler] Attempting to call updateUIAndSummaries()...');
+    // 4. Rebuild UI from state
+    // For a checkbox toggle, rebuilding the whole list might be overkill but ensures consistency.
+    // A more targeted DOM update could be to find the row and toggle its class, 
+    // then call updateUIAndSummaries. But let's keep it consistent for now.
+    rebuildClientListFromState();
+    sortClientsByDate();
+    sortMonthSections();
     updateUIAndSummaries();
-    console.log('[CheckboxHandler] updateUIAndSummaries() called.');
-
-    // --- Persist Changes ---
-    state.clients = getAllClientsFromDOM(); // <-- Keep state in sync with DOM
-    saveData(); // Save the updated state 
-    console.log('[CheckboxHandler] saveData() called.');
 
     console.log('[CheckboxHandler] Handler execution finished for rowId:', rowId);
 }
@@ -155,36 +129,54 @@ export function toggleChecked(rowId) {
  */
 export function deleteRow(rowId) {
     try {
-        const row = document.getElementById(rowId);
-        if (!row) {
-            throw new Error('Row not found for deletion');
+        const rowElement = document.getElementById(rowId); // Get element for animation
+        if (!rowElement) {
+            // If row not in DOM, still attempt to remove from state if that's desired
+            console.warn('[DeleteRow] Row element not found in DOM for ID:', rowId, '. Attempting state removal.');
         }
 
-        const monthSection = row.closest('.month-section');
-        const month = monthSection ? monthSection.id.replace('-section', '') : null;
-
-        // Add fade-out effect
-        row.classList.add('row-fade-out');
-
-        // Wait for fade animation to complete before removing
-        setTimeout(() => {
-            row.remove();
-
-            // Remove from checkedRows state if present
-            state.checkedRows = state.checkedRows.filter(id => id !== rowId);
-
-            if (month) {
-                const allClients = getAllClientsFromDOM(); // Get current data from DOM
-                const monthSubtotal = calculateMonthlySubtotal(month, allClients);
-                updateMonthSection(month, monthSubtotal); // Update count/subtotal, potentially removes section
+        // 1. Update state: Remove client from state.clients
+        const clientExistsInState = state.clients.some(client => client.id === rowId);
+        if (!clientExistsInState) {
+            console.warn('[DeleteRow] Client ID:', rowId, 'not found in state.clients. No state change for clients array.');
+            // Potentially show error or just log if DOM element also not found
+            if (!rowElement) {
+                 showMessage('Error: Row to delete not found.', 'error');
+                 return;
             }
+        } else {
+            state.clients = state.clients.filter(client => client.id !== rowId);
+        }
 
+        // 2. Update state: Remove from state.checkedRows if present
+        state.checkedRows = state.checkedRows.filter(id => id !== rowId);
+
+        // 3. Save the updated state immediately
+        saveData();
+
+        // 4. Handle DOM animation and subsequent UI rebuild
+        if (rowElement) {
+            rowElement.classList.add('row-fade-out');
+            setTimeout(() => {
+                // a. Rebuild UI from the already updated state
+                rebuildClientListFromState();
+                // b. Sort and update summaries
+                sortClientsByDate();
+                sortMonthSections();
+                updateUIAndSummaries();
+                showMessage('License deleted successfully', 'success');
+            }, 500); // Match transition duration in CSS
+        } else {
+            // If rowElement wasn't found initially but state was updated, still refresh UI
+            rebuildClientListFromState();
+            sortClientsByDate();
+            sortMonthSections();
             updateUIAndSummaries();
-            state.clients = getAllClientsFromDOM(); // <-- Keep state in sync with DOM
-            saveData(); // Save changes
-            showMessage('License deleted successfully', 'success');
+            showMessage('License deleted successfully from data (row not found in UI).', 'success');
+        }
 
-        }, 500); // Match transition duration in CSS
+        // REMOVED: Old DOM manipulations and state.clients = getAllClientsFromDOM()
+        // REMOVED: calculateMonthlySubtotal and updateMonthSection directly (updateUIAndSummaries handles this broadly)
 
     } catch (error) {
         console.error(`Error deleting row: ${rowId}`, error);
@@ -198,13 +190,14 @@ export function deleteRow(rowId) {
 export function saveEditChanges() {
     const rowId = state.editingRowId;
     if (!rowId) {
-        showMessage('No row selected for editing', 'error');
+        showMessage('Error: No row ID available for saving changes.', 'error');
+        closeEditModal();
         return;
     }
 
-    const row = document.getElementById(rowId);
-    if (!row) {
-        showMessage('Row to edit not found in the table', 'error');
+    const clientIndex = state.clients.findIndex(client => client.id === rowId);
+    if (clientIndex === -1) {
+        showMessage('Error: Client to edit not found in current data.', 'error');
         closeEditModal();
         return;
     }
@@ -212,112 +205,50 @@ export function saveEditChanges() {
     try {
         // Get updated values from modal form
         const name = document.getElementById('edit-name').value.trim();
-        const renewalDate = document.getElementById('edit-renewal-date').value; // YYYY-MM-DD
-        const sentDate = document.getElementById('edit-sent-date').value; // YYYY-MM-DD
-        const closeDate = document.getElementById('edit-date').value; // YYYY-MM-DD
+        const renewalDate = document.getElementById('edit-renewal-date').value;
+        const sentDate = document.getElementById('edit-sent-date').value;
+        const closeDate = document.getElementById('edit-date').value;
         let amount = parseFloat(document.getElementById('edit-amount').value);
         const opportunityId = document.getElementById('edit-opportunity-id').value.trim();
 
-         // Basic validation
-        if (!name) {
-             showMessage('Account Name cannot be empty', 'error');
-             return; // Keep modal open
+        if (!name || !closeDate) {
+            showMessage('Account Name and Close Date are required', 'error');
+            return; // Keep modal open for correction
         }
-         if (!closeDate) {
-             showMessage('Close Date cannot be empty', 'error');
-             return; // Keep modal open
-         }
-
         if (isNaN(amount)) {
             amount = 0;
             console.warn('Invalid amount in edit modal, defaulting to 0');
         }
 
-        // Get original month before potential change
-        const originalMonthSection = row.closest('.month-section');
-        const originalMonth = originalMonthSection ? originalMonthSection.id.replace('-section', '') : null;
+        // 1. Update the client object in state.clients
+        const updatedClient = {
+            ...state.clients[clientIndex], // Preserve existing fields like ID, notes, isChecked
+            name,
+            renewalDate,
+            sentDate,
+            closeDate,
+            amount,
+            opportunityId
+        };
+        state.clients[clientIndex] = updatedClient;
 
-        // Update row data attributes and cell content
-        row.setAttribute('data-opportunity-id', opportunityId);
-        row.setAttribute('data-renewal-date', renewalDate || '');
-        row.setAttribute('data-sent-date', sentDate || '');
-        row.setAttribute('data-close-date', closeDate || '');
+        // 2. Save the updated state
+        saveData();
 
-        // Get all cell elements in the row
-        const nameCell = row.querySelector('.td-name');
-        const renewalDateCell = row.querySelector('.td-renewal-date');
-        const sentDateCell = row.querySelector('.td-sent-date');
-        const closeDateCell = row.querySelector('.td-close-date');
-        const amountCell = row.querySelector('.td-amount');
-        const oppIdCell = row.querySelector('.td-opp-id');
-
-        // Ensure proper formatting and order of displayed data (matching createRowElement)
-        if (nameCell) nameCell.textContent = name;
-        if (renewalDateCell) renewalDateCell.textContent = formatDate(renewalDate);
-        if (sentDateCell) sentDateCell.textContent = formatDate(sentDate);
-        if (closeDateCell) closeDateCell.textContent = formatDate(closeDate);
-        if (amountCell) amountCell.textContent = `USD ${formatCurrency(amount)}`;
-        if (oppIdCell) oppIdCell.textContent = opportunityId;
-
-        // Add highlight effect
-        row.classList.add('row-highlight-success');
-        setTimeout(() => {
-            row.classList.remove('row-highlight-success');
-        }, 1500); // Match animation duration
-
-        // Get the new month based on the potentially updated closeDate
-        const newMonth = getMonthFromDate(closeDate);
-        let needsResort = false;
-
-        if (originalMonth && newMonth !== originalMonth) {
-            // Month changed, move the row
-            let newMonthTableBody = document.getElementById(`${newMonth}-clients-body`);
-            if (!newMonthTableBody) {
-                newMonthTableBody = createNewMonthSection(newMonth);
-                if (!newMonthTableBody) {
-                     throw new Error(`Failed to create section for new month: ${newMonth}`);
-                }
-                 needsResort = true; // Need to sort sections if a new one was added
-            }
-            newMonthTableBody.appendChild(row); // Move the row element
-
-            // Update counts/subtotals for both old and new months
-            const allClients = getAllClientsFromDOM(); // Get current data state
-            const originalMonthSubtotal = calculateMonthlySubtotal(originalMonth, allClients);
-            const newMonthSubtotal = calculateMonthlySubtotal(newMonth, allClients);
-
-            updateMonthSection(originalMonth, originalMonthSubtotal);
-            updateMonthSection(newMonth, newMonthSubtotal);
-        } else if (originalMonth) {
-            // Month did not change, just update the original month's totals
-            const allClients = getAllClientsFromDOM(); // Get current data state
-            const monthSubtotal = calculateMonthlySubtotal(originalMonth, allClients);
-            updateMonthSection(originalMonth, monthSubtotal);
-        }
-
-        // Always recalculate totals and update display
+        // 3. Rebuild UI from state
+        rebuildClientListFromState();
+        sortClientsByDate();
+        sortMonthSections();
         updateUIAndSummaries();
 
-        // Sort rows within the affected month(s)
-        sortClientsByDate(); // Could optimize to only sort affected month(s)
-
-        // Sort month sections if a new one was added or if order might change
-        if (needsResort) {
-             sortMonthSections();
-        }
-
+        // 4. Close modal and show success
         closeEditModal();
-        const allClients = getAllClientsFromDOM(); // Get current data state after edit
-        const monthSubtotal = calculateMonthlySubtotal(originalMonth, allClients);
-        updateMonthSection(originalMonth, monthSubtotal);
-        state.clients = getAllClientsFromDOM(); // <-- Keep state in sync with DOM
-        saveData(); // Save changes
-        showMessage('License updated successfully', 'success');
+        showMessage('Changes saved successfully', 'success');
 
     } catch (error) {
-        console.error('Error saving edit changes:', error);
+        console.error('Error saving edit changes for row:', rowId, error);
         showMessage(error.message || 'Failed to save changes', 'error');
-        // Optionally keep the modal open on error?
+        // Optionally, do not close modal on error, or handle differently
     }
 }
 
