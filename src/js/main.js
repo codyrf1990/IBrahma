@@ -1078,5 +1078,80 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- App Suggestions Modal Logic (NEW) ---
+    const appSuggestionsButton = document.getElementById('icon-app-suggestions');
+    const appSuggestionsModal = document.getElementById('app-suggestions-modal');
+    const closeAppSuggestionsModalBtn = document.getElementById('close-app-suggestions-modal-btn');
+    const cancelAppSuggestionBtn = document.getElementById('cancel-app-suggestion-btn');
+    const appSuggestionForm = document.getElementById('app-suggestion-form');
+
+    if (appSuggestionsButton) {
+        appSuggestionsButton.addEventListener('click', () => {
+            if (appSuggestionsModal) {
+                appSuggestionsModal.style.display = 'block'; // Or 'flex' if styled with flex
+            }
+        });
+    }
+
+    if (closeAppSuggestionsModalBtn) {
+        closeAppSuggestionsModalBtn.addEventListener('click', () => {
+            if (appSuggestionsModal) {
+                appSuggestionsModal.style.display = 'none';
+            }
+        });
+    }
+
+    if (cancelAppSuggestionBtn) {
+        cancelAppSuggestionBtn.addEventListener('click', () => {
+            if (appSuggestionsModal) {
+                appSuggestionsModal.style.display = 'none';
+            }
+        });
+    }
+
+    if (appSuggestionForm) {
+        appSuggestionForm.addEventListener('submit', (event) => {
+            event.preventDefault(); // Prevent default form submission
+
+            const title = document.getElementById('suggestion-title').value;
+            const details = document.getElementById('suggestion-details').value;
+            const priority = document.getElementById('suggestion-priority').value;
+            const userName = document.getElementById('suggestion-user-name').value;
+
+            const mailtoEmail = 'cody.solidcam@gmail.com';
+            let subject = `App Suggestion: ${title || 'No Title'}`;
+            
+            // Build plain text body without URL encoding yet
+            let bodyText = "--- App Suggestion ---\n\n";
+            bodyText += `Title: ${title || 'N/A'}\n\n`;
+            bodyText += "Details:\n";
+            bodyText += `${details || 'No details provided.'}\n\n`;
+            bodyText += `Priority: ${priority || 'Medium'}\n\n`;
+            
+            if (userName) {
+                bodyText += `Submitted by: ${userName}\n\n`;
+            }
+            bodyText += "----------------------";
+
+            // Create mailto link with properly encoded body
+            const mailtoLink = `mailto:${mailtoEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
+
+            // Open the user's default email client
+            window.location.href = mailtoLink;
+
+            // Reset form and close modal
+            setTimeout(() => {
+                appSuggestionForm.reset();
+                if (appSuggestionsModal) {
+                    appSuggestionsModal.style.display = 'none';
+                }
+                
+                // Show success message
+                alert('Your suggestion has been prepared and will open in your email client.');
+            }, 100); // Small delay to ensure form reset happens after email client opens
+        });
+    }
+    // --- END App Suggestions Modal Logic ---
+
     console.log("App initialized.");
 });
