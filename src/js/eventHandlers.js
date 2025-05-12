@@ -483,4 +483,42 @@ document.addEventListener('DOMContentLoaded', () => {
      }
 });
 
+// Event listener for the SolidCAM Chat STD button
+const solidcamChatStdButton = document.getElementById('btn-chat-std');
+
+// // Commenting out or removing generic modal variables if no longer exclusively used by this button
+// const genericModal = document.getElementById('generic-content-modal');
+// const genericModalTitle = document.getElementById('generic-modal-title');
+// const genericModalIframe = document.getElementById('generic-modal-iframe');
+// const genericModalCloseButton = document.getElementById('generic-modal-close-btn');
+
+if (solidcamChatStdButton) {
+    solidcamChatStdButton.addEventListener('click', () => {
+        window.open('https://www.solidcamchat.com/', '_blank');
+    });
+} else {
+    console.error('SolidCAM Chat STD button (btn-chat-std) not found.');
+}
+
+// The generic modal close button listener should remain if the modal is used by other features.
+// If it was exclusively for this chat button, it can be removed or conditionally managed.
+// Assuming the generic modal might be used elsewhere, so its close listener is kept separate
+// and not tied directly to the existence of solidcamChatStdButton anymore for its own setup.
+
+const genericModal = document.getElementById('generic-content-modal');
+const genericModalIframe = document.getElementById('generic-modal-iframe');
+const genericModalCloseButton = document.getElementById('generic-modal-close-btn');
+
+if (genericModal && genericModalIframe && genericModalCloseButton) {
+    genericModalCloseButton.addEventListener('click', () => {
+        genericModal.style.display = 'none';
+        genericModalIframe.src = 'about:blank'; // Clear iframe src
+    });
+} else {
+    // Log errors if any of these specific modal components are missing, useful for debugging other modal uses
+    if (!genericModal) console.error('Generic modal (generic-content-modal) not found for close button setup.');
+    if (!genericModalIframe) console.error('Generic modal iframe (generic-modal-iframe) not found for close button setup.');
+    if (!genericModalCloseButton) console.error('Generic modal close button (generic-modal-close-btn) not found for setup.');
+}
+
 // --- Potentially other listeners or initialization code below --- 

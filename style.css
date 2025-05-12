@@ -2,10 +2,12 @@
     /* Color Variables */
     --primary-color: #CC0000;
     --primary-hover: #b30000;
+    --accent-gold: #FFD700;
     --text-primary: #333;
     --text-secondary: #666;
     --background-primary: #f8f8f8;
     --background-secondary: #e6e6e6;
+    --card-background: #ffffff;
     --border-color: #e0e0e0;
     --success-color: #38a169;
     --error-color: #e53e3e;
@@ -30,7 +32,25 @@
     /* Shadows */
     --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
     --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
-    --accent-red: #D32F2F; /* Or your chosen red value */
+}
+
+/* Dark Mode Variables */
+body.dark-mode {
+    --primary-color: #E53935;
+    --primary-hover: #D32F2F;
+    --accent-gold: #FFCA28;
+    --text-primary: #e0e0e0;
+    --text-secondary: #b0b0b0;
+    --background-primary: #121212;
+    --background-secondary: #1e1e1e;
+    --card-background: #2c2c2c;
+    --border-color: #444;
+    --table-header-bg: #333333;
+    --table-header-text-color: #e0e0e0;
+    --table-header-border-color: #444;
+
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
 }
 
 /* Visually Hidden Utility Class */
@@ -52,12 +72,14 @@ body {
     padding: 0;
     background: linear-gradient(135deg, var(--background-primary) 0%, var(--background-secondary) 100%);
     color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #license-app {
     max-width: 1000px;
     margin: 0 auto;
     padding: var(--spacing-lg);
+    transition: background-color 0.3s ease;
 }
 
 /* NEW HEADER STYLING */
@@ -69,7 +91,7 @@ body {
     gap: 20px; /* Space between columns */
     border-bottom: 1px solid #eee; /* Optional separator */
     margin-bottom: 15px; /* Space below header row */
-    background-color: #fff; /* Give header a background */
+    background-color: var(--card-background); /* MODIFIED: Give header a background */
     box-shadow: var(--shadow-sm);
     border-radius: var(--border-radius-lg);
 }
@@ -87,10 +109,7 @@ body {
 }
 
 .main-header .app-title {
-    /* grid-column: 1 / 2; /* Remove - handled by parent group */
-    /* justify-self: start; /* Remove - handled by parent group */
     margin: 0; /* Reset default heading margin */
-    /* Decrease font size significantly */
     font-size: 1.8rem; /* Make title large (adjust value as needed) */
     color: var(--primary-color);
     font-weight: 600; /* Or desired weight */
@@ -107,8 +126,6 @@ body {
     margin-bottom: 0;
     line-height: 1.2;
     text-align: center; /* Center tagline text - already was */
-    /* Ensure it aligns correctly under the left-aligned title */
-    /* padding-left: 5px; /* Remove padding, no longer needed for visual centering */
 }
 
 .main-header .header-logo {
@@ -122,15 +139,13 @@ body {
 .main-header .percentage-calculator {
     grid-column: 3 / 4; /* Place calculator in third column */
     justify-self: end; /* Align to the right */
-    /* Adjust size and appearance */
     width: 127px; /* Adjusted to fit 9-digit input + label */
     padding: 4px 6px; /* Reverted to a slightly larger padding */
     border-radius: 5px; /* Smaller radius */
     font-size: 0.8rem; /* KEEPING AS IS */
     min-width: 127px; /* Matches new width */
     box-shadow: 0 1px 2px rgba(0,0,0,0.08); /* Lighter shadow */
-    /* Keep other necessary styles */
-    background-color: #f9f9f9;
+    background-color: var(--card-background); /* MODIFIED */
     border: 1px solid var(--border-color);
     margin: 0;
     text-align: center; /* Center the title */
@@ -147,7 +162,6 @@ body {
     display: flex;
     flex-direction: column; /* Stack Title / Amount / Results */
     align-items: center; /* Center items horizontally */
-    /* Reduce gap between Title/Amount/Results rows */
     gap: 4px; /* Reduced gap */
     width: 100%; /* Ensure it fills the card for centering */
 }
@@ -158,12 +172,10 @@ body {
      justify-content: center; /* Center the input row content */
      gap: 6px; /* Space between label and input */
      width: 100%; /* Take full width for centering */
-     /* margin-bottom: 0; /* Gap handles spacing */
 }
 
 .main-header .percentage-calculator input[type="number"] {
      width: 36px; /* Further reduced by 30% from 51px, rounded */
-     /* Keep other input styles */
      font-size: 0.8rem;
      padding: 4px 5px; /* Slightly more padding */
      border: 1px solid var(--border-color);
@@ -180,11 +192,7 @@ body {
     flex-direction: row; /* Arrange items horizontally */
     justify-content: center; /* Key for centering items IN the row */
     align-items: center; /* Align items vertically */
-    /* Reduce the gap between the 5%, 10%, 15% units */
     gap: 6px; /* Reverted to a wider gap for balance */
-    /* width: 100%; /* REMOVE this line to allow parent centering */
-    /* font-size: 0.8rem; /* Smaller font for results - moved to children */
-    /* color: var(--text-muted); /* Moved to children */
     margin-top: 5px; /* Restore slight top margin if needed visually */
 }
 
@@ -241,7 +249,6 @@ body {
     gap: 6px; /* Space between icon and text */
     text-decoration: none; /* Remove underline if they were links */
     line-height: 1.2; /* Ensure text vertical alignment */
-    /* Remove any default button styling that might interfere */
     appearance: none;
     -webkit-appearance: none;
 }
@@ -249,7 +256,6 @@ body {
 /* Icon specific styles within buttons */
 .header-actions .button i {
    font-size: 1em; /* Match icon size to text or adjust as needed */
-   /* margin-right: 6px;  Replaced by gap property */
 }
 
 /* Primary Button Style (#show-add-form-btn) */
@@ -298,10 +304,6 @@ body {
 /* Ensure sync buttons don't have conflicting styles if they existed */
 .sync-button {
     /* Reset potentially inherited styles if needed */
-    /* background-color: initial; */
-    /* color: initial; */
-    /* border: initial; */
-    /* padding: initial; */ /* Base styles handle padding now */
 }
 
 /* ==========================
@@ -309,17 +311,10 @@ body {
    ========================== */
 button {
     cursor: pointer;
-    /* Remove default styles if causing issues */
-    /* appearance: none; */
-    /* -webkit-appearance: none; */
-    /* background: none; */
-    /* border: none; */
-    /* padding: 0; */
-    /* font: inherit; */
 }
 
 .container {
-    background-color: white;
+    background-color: var(--card-background); /* MODIFIED */
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-md);
     padding: var(--spacing-lg);
@@ -337,7 +332,7 @@ h2 {
 
 .month-section {
     margin-bottom: var(--spacing-xl);
-    background: white;
+    background: var(--card-background); /* MODIFIED */
     border-radius: var(--border-radius-lg);
     padding: var(--spacing-md);
     box-shadow: var(--shadow-sm);
@@ -359,18 +354,17 @@ h2 {
 .month-header h3 {
     margin-top: 0;
     margin-bottom: 0;
-    color: var(--text-color-secondary, #777); /* Applied new color */
+    color: var(--primary-color); /* MODIFIED: Applied new color */
 }
 
 /* Assuming span within month-header is the subscription count */
 .month-header span { /* Or a more specific class if available */
     margin: 0;
-    color: var(--text-color-secondary, #777); /* Applied new color */
+    color: var(--text-secondary); /* MODIFIED: Applied new color */
 }
 
 /* Updated Client Row Styles using TR */
 .client-row {
-    /* display: table-row; Implicit */
     border-bottom: 1px solid var(--border-color);
     background-color: white;
     vertical-align: middle; /* Ensure vertical alignment */
@@ -529,18 +523,15 @@ h2 {
 
 /* Styles for the Restructured Totals Area */
 .totals-summary {
-    /* Make the container itself the card */
-    background-color: white; /* Card background */
+    background-color: var(--card-background); /* MODIFIED: Card background */
     padding: var(--spacing-md) 0; /* Adjust padding - top/bottom only */
     margin-top: var(--spacing-lg);
     border-radius: var(--border-radius-lg); /* Card border radius */
     border: 1px solid var(--border-color); /* Card border */
     box-shadow: var(--shadow-sm); /* Card shadow */
-    /* Flexbox layout for children */
     display: flex;
     justify-content: space-around; /* Distribute items */
     align-items: flex-start; /* Align items to top for better alignment with varied content */
-    /* gap: var(--spacing-lg); */ /* Remove gap, use padding instead */
     flex-wrap: wrap;
 }
 
@@ -551,7 +542,6 @@ h2 {
     flex: 1; 
     min-width: 200px; 
     background-color: transparent;
-    /* Use padding for spacing */
     padding: 0 var(--spacing-lg); /* Add horizontal padding */
     border-radius: 0;
     box-shadow: none;
@@ -594,7 +584,6 @@ h2 {
 .totals-toggle {
     display: flex;
     gap: var(--spacing-md);
-    /* Remove background/padding if handled by parent */
     background-color: transparent;
     padding: 0;
     margin: 0; 
@@ -602,16 +591,15 @@ h2 {
 }
 
 .toggle-button {
-    /* Keep existing styles, adjust padding/min-width if needed */
-     padding: var(--spacing-sm) var(--spacing-lg);
-     border: 2px solid var(--primary-color);
-     border-radius: var(--border-radius-md);
-     background-color: white;
-     color: var(--primary-color);
-     font-weight: 600;
-     cursor: pointer;
-     transition: all 0.2s ease;
-     min-width: 150px;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border: 2px solid var(--primary-color);
+    border-radius: var(--border-radius-md);
+    background-color: white;
+    color: var(--primary-color);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 150px;
 }
 
 .toggle-button.active {
@@ -678,9 +666,6 @@ h2 {
     text-align: center; 
 }
 
-/* Remove old progress-text flex styles */
-/* #progress-overview .progress-text { ... removed ... } */
-
 /* NEW: Styling for control groups using Flexbox */
 .control-group {
     display: flex;
@@ -699,7 +684,6 @@ h2 {
 
 /* Optional: Push input/button away from label in pool group */
 .pool-group span#pool-info-label {
-     /* margin-right: auto; */ /* Remove or comment out if using min-width */
      color: var(--text-secondary); 
      font-size: 0.95rem;
 }
@@ -959,8 +943,6 @@ button {
     border-radius: var(--border-radius-md); /* e.g., 6px */
     font-size: 0.225rem; /* Reduced font-size by 75% - will be very small */
     z-index: 1000; /* Ensure it's above other elements */
-    /* Visibility (display: none; vs display: block;) is controlled by JavaScript. */
-    /* Ensure it is initially hidden by JS, e.g., syncMessage.style.display = 'none'; */
     margin-left: 0; /* Override previous margin */
 }
 
@@ -1242,7 +1224,6 @@ button {
 
 .client-table th:last-child,
 .client-table td:last-child {
-    /* text-align: right; */ /* Removed to allow individual settings */
     padding-right: var(--spacing-md); /* Ensure padding on the right of the last cell */
 }
 
@@ -1875,7 +1856,7 @@ document.addEventListener('DOMContentLoaded', function() {
     display: flex;
     justify-content: space-between;
     padding: var(--spacing-md);
-    background-color: white; /* Or var(--background-primary) */
+    background-color: var(--card-background); /* MODIFIED */
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-sm);
@@ -1958,9 +1939,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /* Button styling in Chats Section */
 #commander-chats-section .button {
-    background-color: var(--background-primary); /* Light grey, distinct */
-    color: red; /* Changed to red */
-    border: 1px solid var(--border-color);
+    background-color: var(--primary-color);
+    color: #fff;
+    border: 1px solid var(--primary-hover);
     padding: 10px 15px;
     margin: 5px; /* Consistent margin */
     flex-grow: 1; /* Allow buttons to share space */
@@ -2118,11 +2099,12 @@ document.addEventListener('DOMContentLoaded', function() {
     background-color: var(--solidcam-secondary, #333); /* Using a theme variable if available */
     color: var(--solidcam-text-light, #FFF);
     border-bottom: 1px solid var(--solidcam-primary, #CC0000);
+    flex-shrink: 0; /* Prevent header from shrinking */
 }
 
 .chat-sidebar-header h3 {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 0.825rem; /* MODIFIED: Was 1.1rem, now 3/4 size */
     font-weight: 600;
 }
 
@@ -2138,6 +2120,170 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .chat-sidebar-close-btn:hover {
     color: var(--solidcam-primary, #CC0000);
+}
+
+/* NEW: Chat Pro Controls Header */
+.chat-pro-controls-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Pushes selector left, button right */
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--background-secondary); /* Slightly different bg for distinction */
+    flex-shrink: 0; /* Prevent controls header from shrinking */
+}
+
+.model-selector-container {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+#gemini-model-selector {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--border-color);
+    background-color: var(--card-background);
+    color: var(--text-primary);
+    font-size: 0.8rem;
+    max-width: 180px; /* Prevent it from becoming too wide */
+}
+
+#chat-pro-api-settings-btn {
+    padding: var(--spacing-xs) var(--spacing-sm); /* Make it compact */
+    font-size: 0.9rem; /* Adjust icon size if needed via i tag */
+    background-color: transparent; /* Make it look like a settings icon */
+    border: 1px solid transparent;
+    color: var(--text-secondary);
+}
+
+#chat-pro-api-settings-btn:hover {
+    color: var(--primary-color);
+    background-color: var(--background-secondary); /* Subtle hover */
+    border-color: var(--border-color);
+}
+
+#chat-pro-api-settings-btn i {
+    font-size: 1.1em; /* Control icon size */
+}
+
+/* NEW: API Settings Modal for Chat Pro */
+#chat-pro-api-settings-modal .modal-content {
+    max-width: 450px; /* Increased max-width slightly for more content */
+    /* position: absolute; */ /* REMOVED: Revert to default centering via overlay */
+    /* top: 60px; */       /* REMOVED */
+    /* right: 15px; */      /* REMOVED */
+    /* margin: 0; */       /* REMOVED */
+    /* Add margin back if needed for centering, but overlay should handle it */
+    margin: auto; /* Ensures it centers if overlay doesn't fully dictate */
+}
+
+#chat-pro-api-settings-modal.modal-overlay {
+    /* justify-content: flex-start; */ /* REMOVED: Revert to default centering */
+    /* align-items: flex-start; */   /* REMOVED: Revert to default centering */
+    /* These should be inherited from .modal-overlay or re-stated if specific override is needed */
+    display: flex; /* Ensure flex is still active if it was removed */
+    justify-content: center;
+    align-items: center;
+}
+
+.api-settings-modal-body {
+    max-height: calc(100vh - 180px); /* Header and footer height approx */
+    overflow-y: auto;
+    padding: var(--spacing-sm) var(--spacing-md); /* Consistent padding */
+}
+
+.api-settings-section {
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.api-settings-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.api-settings-section h5 {
+    font-size: 1rem;
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: var(--spacing-md);
+}
+
+#chat-pro-api-settings-modal .form-field {
+    margin-bottom: var(--spacing-md);
+}
+
+#chat-pro-api-settings-modal .form-field label {
+    font-size: 0.9em;
+    margin-bottom: var(--spacing-xs);
+    display: block; /* Ensure label is on its own line */
+}
+
+#chat-pro-api-settings-modal .form-field input[type="password"],
+#chat-pro-api-settings-modal .form-field input[type="number"] {
+    width: 100%;
+    padding: var(--spacing-xs) var(--spacing-sm);
+}
+
+#chat-pro-api-settings-modal .form-field input[type="range"] {
+    width: calc(100% - 50px); /* Accommodate value display */
+    vertical-align: middle;
+}
+
+#chat-pro-api-settings-modal .form-field .range-value {
+    display: inline-block;
+    width: 40px;
+    text-align: right;
+    vertical-align: middle;
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    margin-left: var(--spacing-xs);
+}
+
+#chat-pro-api-settings-modal .api-status {
+    color: var(--text-secondary);
+    font-size: 0.85em;
+    margin-top: var(--spacing-sm);
+}
+
+.api-settings-modal-footer {
+    padding: var(--spacing-md);
+    border-top: 1px solid var(--border-color);
+    text-align: right; /* Align save button to the right */
+}
+
+/* Dark mode adjustments for the new API settings parts */
+body.dark-mode #chat-pro-api-settings-modal .modal-content {
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+}
+
+body.dark-mode .api-settings-modal-body {
+    scrollbar-color: var(--border-color) var(--background-secondary); /* For Firefox */
+}
+body.dark-mode .api-settings-modal-body::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+}
+body.dark-mode .api-settings-modal-body::-webkit-scrollbar-track {
+    background-color: var(--background-secondary);
+}
+
+body.dark-mode .api-settings-section {
+    border-bottom-color: var(--border-color);
+}
+
+body.dark-mode #chat-pro-api-settings-modal .form-field .range-value {
+    color: var(--text-secondary);
+}
+
+body.dark-mode .api-settings-modal-footer {
+    border-top-color: var(--border-color);
+}
+
+body.dark-mode #chat-pro-api-settings-modal .api-status {
+    color: var(--text-secondary);
 }
 
 #chatProSidebarIframe {
@@ -2161,4 +2307,462 @@ document.addEventListener('DOMContentLoaded', function() {
 /* Additional styling for when body has chat-sidebar-open (optional) */
 body.chat-sidebar-open {
     /* overflow: hidden; */ /* Be cautious with this, can affect main page scroll unexpectedly */
+}
+
+/* Settings Cog Icon */
+#settings-icon-container {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    z-index: 10; /* Ensure it's above other commander card content */
+}
+
+#settings-cog-icon {
+    font-size: 1.5rem; /* Adjust size as needed */
+    color: var(--text-secondary); /* Initial color, can be themed */
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+#settings-cog-icon:hover {
+    color: var(--primary-color); /* Red on hover */
+    transform: rotate(45deg);
+}
+
+body.dark-mode #settings-cog-icon {
+    color: var(--text-secondary);
+}
+
+body.dark-mode #settings-cog-icon:hover {
+    color: var(--accent-gold); /* Gold on hover in dark mode */
+}
+
+/* Settings Panel Modal */
+#settings-panel-modal .modal-content {
+    /* max-width: 450px; /* Adjust as needed */
+    background-color: var(--card-background); /* Uses themed var */
+}
+
+#settings-panel-modal .settings-modal-content { /* More specific selector for settings panel if needed */
+    /* Custom styles for settings panel if it needs to differ from other modals */
+}
+
+.settings-panel-body {
+    padding: var(--spacing-md) var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--border-color);
+    transition: border-color 0.3s ease;
+}
+
+.setting-item:last-child {
+    border-bottom: none;
+}
+
+.setting-item label {
+    font-weight: 500;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+}
+
+.setting-item span:not(.slider) { /* For (In Construction) text */
+    font-style: italic;
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+/* Toggle Switch Styles */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px; /* Adjusted width */
+    height: 28px; /* Adjusted height */
+}
+
+.switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc; /* Default off state */
+    transition: .4s;
+    border-radius: 28px; /* Fully rounded */
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px; /* Adjusted handle size */
+    width: 20px;  /* Adjusted handle size */
+    left: 4px;    /* Adjusted position */
+    bottom: 4px;  /* Adjusted position */
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--primary-color); /* Red when on */
+}
+
+body.dark-mode input:checked + .slider {
+    background-color: var(--accent-gold); /* Gold when on in dark mode */
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px var(--primary-color);
+}
+
+body.dark-mode input:focus + .slider {
+    box-shadow: 0 0 1px var(--accent-gold);
+}
+
+input:checked + .slider:before {
+    transform: translateX(22px); /* Adjusted translation */
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 28px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/* Ensure settings panel buttons also respect themes */
+#settings-panel-modal .modal-footer button.add-btn {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+#settings-panel-modal .modal-footer button.add-btn:hover {
+    background-color: var(--primary-hover);
+}
+
+body.dark-mode #settings-panel-modal .modal-footer button.add-btn {
+    background-color: var(--accent-gold); /* Gold for save button in dark mode */
+    color: var(--background-primary); /* Dark text on gold button */
+}
+body.dark-mode #settings-panel-modal .modal-footer button.add-btn:hover {
+    background-color: #FFB300; /* Darker gold for hover */
+}
+
+/* ADDED/MODIFIED: Specific dark mode styles for general elements */
+body.dark-mode .main-header .header-logo {
+    filter: brightness(0.9) saturate(0.8); /* Adjust logo for dark background if needed */
+}
+
+body.dark-mode .commander-icon .icon-placeholder {
+    color: var(--accent-gold); /* Gold for icons in dark mode */
+}
+body.dark-mode .commander-section h3 {
+    border-bottom-color: var(--border-color);
+}
+
+body.dark-mode #commander-chats-section .button {
+    background-color: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-hover);
+}
+body.dark-mode #commander-chats-section .button:hover {
+    background-color: var(--primary-hover);
+}
+
+body.dark-mode .month-section .client-table tbody .client-row:nth-child(odd) {
+    background-color: var(--card-background); /* Dark grey */
+}
+body.dark-mode .month-section .client-table tbody .client-row:nth-child(even) {
+    background-color: #333333; /* Slightly different dark grey, matches dark table header */
+}
+body.dark-mode .month-section .client-table tbody .client-row:hover {
+    background-color: #4a4a4a; /* Darker hover for rows */
+}
+
+body.dark-mode .kpi-list p, 
+body.dark-mode #progress-overview #receipts-info, 
+body.dark-mode #progress-overview #remaining-info {
+    color: var(--text-secondary);
+}
+body.dark-mode .kpi-value, 
+body.dark-mode #total-confirmed-whole-card #total-confirmed-whole-value,
+body.dark-mode #receipts-percentage /* Ensure percentage is also themed */ {
+    color: var(--text-primary);
+}
+/* END ADDED/MODIFIED specific dark mode styles */
+
+/* Apply card background to main cards/modals */
+.card, 
+.modal-content, 
+.summary-box,
+.main-header,
+.month-section,
+#commander-card /* Ensure commander card is themed */ {
+    background-color: var(--card-background);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    border: 1px solid var(--border-color); /* Ensure border color also transitions */
+}
+
+body.dark-mode .main-header .header-logo {
+    filter: brightness(0.9) saturate(0.8); /* Adjust logo for dark background if needed */
+}
+
+body.dark-mode .commander-icon .icon-placeholder {
+    color: var(--primary-color); /* Red for icons in dark mode - CHANGED FROM GOLD */
+}
+
+body.dark-mode .commander-section h3 {
+    border-bottom-color: var(--border-color);
+}
+
+body.dark-mode .main-header .header-logo {
+    filter: brightness(0.9) saturate(0.8); /* Adjust logo for dark background if needed */
+}
+
+body.dark-mode .commander-icon {
+    background-color: var(--card-background); /* Dark background for icon buttons */
+    border-color: var(--border-color); /* Dark border for icon buttons */
+}
+
+body.dark-mode .commander-icon .icon-placeholder {
+    color: var(--primary-color); /* Red for icons in dark mode - CHANGED FROM GOLD */
+}
+
+body.dark-mode .commander-section h3 {
+    border-bottom-color: var(--border-color);
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="search"],
+select,
+textarea /* Added textarea */ {
+    background-color: var(--background-secondary); /* Use a slightly lighter dark shade for inputs */
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    padding: var(--spacing-sm); /* Ensure consistent padding */
+    border-radius: var(--border-radius-sm); /* Ensure consistent border-radius */
+}
+
+input[type="text"]::placeholder,
+input[type="number"]::placeholder,
+input[type="date"]::placeholder,
+input[type="search"]::placeholder,
+textarea::placeholder /* Added textarea placeholder */ {
+    color: var(--text-secondary);
+    opacity: 0.7; /* Make placeholder slightly less prominent */
+}
+
+body.dark-mode .client-table th {
+    background-color: var(--table-header-bg); /* MODIFIED: was var(--card-background) */
+    color: var(--primary-color); /* MODIFIED: was var(--table-header-text-color), now explicitly red */
+    border-bottom: 2px solid var(--table-header-border-color);
+}
+
+body.dark-mode .client-table td {
+    background-color: var(--card-background); /* Dark theme background */
+    color: var(--text-primary);
+}
+
+body.dark-mode .client-table td {
+    border-bottom: 1px solid var(--border-color);
+}
+
+body.dark-mode .month-section .client-table tbody .client-row:nth-child(odd) {
+    background-color: var(--card-background); /* Dark grey */
+}
+body.dark-mode .month-section .client-table tbody .client-row:nth-child(even) {
+    background-color: #333333; /* Slightly different dark grey, matches dark table header */
+}
+body.dark-mode .month-section .client-table tbody .client-row:hover {
+    background-color: #4a4a4a; /* Darker hover for rows */
+}
+
+body.dark-mode .kpi-list p, 
+body.dark-mode #progress-overview #receipts-info, 
+body.dark-mode #progress-overview #remaining-info {
+    color: var(--text-secondary);
+}
+body.dark-mode .kpi-value, 
+body.dark-mode #total-confirmed-whole-card #total-confirmed-whole-value,
+body.dark-mode #receipts-percentage /* Ensure percentage is also themed */ {
+    color: var(--text-primary);
+}
+
+/* Dark mode for Update Goal button */
+body.dark-mode #progress-overview #update-goal-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-hover);
+}
+
+body.dark-mode #progress-overview #update-goal-btn:hover {
+    background-color: var(--primary-hover);
+    color: white;
+}
+
+/* Dark mode for Chat Pro Sidebar */
+body.dark-mode #chatProSidebar {
+    background-color: var(--card-background);
+    border-left-color: var(--border-color);
+}
+
+body.dark-mode .chat-sidebar-header {
+    background-color: var(--table-header-bg); /* Using a dark header bg */
+    border-bottom-color: var(--primary-color);
+}
+
+body.dark-mode .chat-sidebar-header h3 {
+    color: var(--text-primary);
+}
+
+body.dark-mode .chat-sidebar-close-btn {
+    color: var(--text-secondary);
+}
+
+body.dark-mode .chat-sidebar-close-btn:hover {
+    color: var(--primary-color);
+}
+
+/* Settings Panel Modal */
+#settings-panel-modal .modal-content {
+    /* max-width: 450px; /* Adjust as needed */
+    background-color: var(--card-background); /* Uses themed var */
+}
+
+/* API Settings Modal Specific Styles */
+#chat-pro-api-modal-title {
+    text-align: center;
+    width: 100%; /* Ensure it takes full width to center text */
+    font-size: 1.4em; /* Slightly larger title */
+    margin-bottom: 20px; /* Add some space below the title */
+    color: var(--primary-color); /* Use a primary color for emphasis */
+}
+
+.api-settings-modal-content .modal-header {
+    display: flex; /* Use flexbox for easier alignment */
+    justify-content: center; /* Center title if it's the only direct child or manage space */
+    align-items: center;
+    position: relative; /* For positioning the close button absolutely if needed */
+}
+
+.default-value-display {
+    font-size: 0.8em;
+    color: var(--text-light-variant); /* Lighter text color */
+    margin-left: 5px;
+    font-style: italic;
+}
+
+/* Adjustments for form fields if default value makes label too long */
+.api-settings-modal-body .form-field label {
+    display: flex; /* Helps align label text and default value span */
+    align-items: center; 
+    flex-wrap: wrap; /* Allow wrapping if line becomes too long */
+}
+
+/* Ensure the close button in the API settings modal is positioned correctly with a centered title */
+#chat-pro-api-settings-modal .modal-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.5em;
+    /* Adjust if existing styles conflict */
+}
+
+/* Info Icon and Tooltip Styles */
+.info-icon {
+    display: inline-flex; /* Use flex to align icon properly */
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    color: var(--text-secondary);
+    cursor: help;
+    position: relative; /* For tooltip positioning */
+    font-size: 1em; /* Match label font size or adjust as needed */
+}
+
+.info-icon .fas {
+    font-size: 0.9em; /* Slightly smaller icon if needed */
+}
+
+.info-icon:hover {
+    color: var(--primary-color);
+}
+
+/* Tooltip Bubble */
+.info-icon::before {
+    content: attr(data-tooltip); /* Get content from data-tooltip attribute */
+    position: absolute;
+    bottom: 135%; /* Position above the icon */
+    left: 50%;
+    transform: translateX(-50%); /* Center the tooltip */
+    width: 250px;
+    padding: 10px;
+    border-radius: var(--border-radius-md);
+    background-color: var(--card-background); /* Use card background for tooltip */
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-size: 0.85em;
+    line-height: 1.4;
+    text-align: left;
+    font-style: normal;
+    box-shadow: var(--shadow-sm);
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+    z-index: 100;
+    white-space: normal; /* Allow text to wrap */
+}
+
+/* Tooltip Arrow */
+.info-icon::after {
+    content: '';
+    position: absolute;
+    bottom: calc(135% - 10px); /* Position arrow at the bottom of the bubble */
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--border-color) transparent transparent transparent;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+    z-index: 100;
+}
+
+.info-icon:hover::before,
+.info-icon:hover::after {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Adjust label to accommodate icon and prevent wrapping issues */
+/* This rule was already present and slightly modified for clarity */
+.api-settings-modal-body .form-field label {
+    display: flex; 
+    align-items: center; 
+    /* flex-wrap: nowrap; /* Decided to allow wrapping if absolutely necessary */
+}
+
+.api-settings-modal-body .form-field label .default-value-display {
+    white-space: nowrap; /* Keep default value on one line if possible */
+    margin-right: 5px; /* Add some space before the info icon */
 }

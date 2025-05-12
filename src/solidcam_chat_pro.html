@@ -21,6 +21,25 @@
             --border-radius-md: 6px;
         }
 
+        /* Dark Mode Variables for Chat Iframe */
+        body.dark-mode {
+            --solidcam-primary: #E53935;
+            --solidcam-primary-hover: #D32F2F;
+            --solidcam-secondary: #2a2a2a; /* Slightly lighter dark for header */
+            --solidcam-accent: #1e1e1e;    /* Darker gray for body/input area backgrounds */
+            --solidcam-text-light: #e0e0e0; /* Text on primary buttons should be light in dark mode */
+            --solidcam-text-dark: #e0e0e0;   /* Primary text color for dark mode */
+            --solidcam-border-color: #444;
+
+            /* Ensure body and container background uses the dark accent */
+            background-color: var(--solidcam-accent);
+            color: var(--solidcam-text-dark);
+        }
+
+        body.dark-mode .chatbot-container {
+            background-color: var(--solidcam-accent);
+        }
+
         body, html {
             height: 100vh; /* Full viewport height */
             margin: 0;
@@ -69,6 +88,18 @@
             font-size: 0.9em;
             background-color: var(--solidcam-text-light);
             color: var(--solidcam-text-dark);
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body.dark-mode .api-config-area select,
+        body.dark-mode .api-config-area input {
+            background-color: #333;
+            color: var(--solidcam-text-dark);
+            border-color: var(--solidcam-border-color);
+        }
+
+        body.dark-mode .api-config-area button {
+            color: #fff; /* Explicitly white text on red button */
         }
 
         .api-config-area button {
@@ -88,19 +119,39 @@
             border-radius: var(--border-radius-sm);
             color: var(--solidcam-text-light);
             white-space: nowrap; /* Prevent status text from wrapping awkwardly */
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark-mode #api-status-indicator {
+            color: var(--solidcam-text-dark); /* Light text for dark mode default status */
+            background-color: #5a5a5a; /* Darker grey for default status in dark mode */
+        }
+        body.dark-mode #api-status-indicator.status-connected {
+            background-color: #28a745; /* Green for connected - ensure high contrast */
+            color: white;
+        }
+        body.dark-mode #api-status-indicator.status-error {
+            background-color: #dc3545; /* Red for error - ensure high contrast */
+            color: white;
         }
 
         .messages-area { /* Adapted from pro_chat.html */
             flex-grow: 1;
             overflow-y: auto;
-            border-top: 1px solid var(--solidcam-border-color); /* Add top border */
-            border-bottom: 1px solid var(--solidcam-border-color); /* Add bottom border */
-            border-left: none; /* No side borders if filling space */
-            border-right: none; /* No side borders if filling space */
-            border-radius: 0; /* No border radius if filling space */
-            padding: var(--spacing-md); /* Adjusted padding */
-            margin: 0; /* Remove margin */
+            border-top: 1px solid var(--solidcam-border-color);
+            border-bottom: 1px solid var(--solidcam-border-color);
+            border-left: none;
+            border-right: none;
+            border-radius: 0;
+            padding: var(--spacing-md);
+            margin: 0;
             background-color: #ffffff; /* White background for message area */
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body.dark-mode .messages-area {
+            background-color: #2c2c2c;
+            border-color: var(--solidcam-border-color);
         }
 
         .message { /* Adapted from pro_chat.html */
@@ -121,6 +172,10 @@
             display: block;
             text-align: right;
             margin-top: var(--spacing-xs);
+            transition: color 0.3s ease;
+        }
+        body.dark-mode .message .timestamp {
+            color: #aaa;
         }
 
         .user-message { /* Adapted from pro_chat.html */
@@ -138,6 +193,13 @@
             align-self: flex-start;
             margin-right: auto; /* Pushes to the left */
             border-bottom-left-radius: var(--border-radius-sm); /* More distinct shape */
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body.dark-mode .ai-message {
+            background-color: #3a3a3a;
+            color: var(--solidcam-text-dark);
+            border-color: var(--solidcam-border-color);
         }
 
         .input-area { /* Adapted from pro_chat.html */
@@ -159,7 +221,17 @@
             min-height: 40px; /* Min height for 2 rows */
             max-height: 120px; /* Limit expansion */
             overflow-y: auto;
+            background-color: var(--solidcam-text-light);
+            color: var(--solidcam-text-dark);
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
+
+        body.dark-mode .input-area textarea {
+            background-color: #333;
+            color: var(--solidcam-text-dark);
+            border-color: var(--solidcam-border-color);
+        }
+
         .input-area textarea:focus {
             outline: none;
             border-color: var(--solidcam-primary);
@@ -188,33 +260,15 @@
             background-color: color-mix(in srgb, var(--solidcam-secondary) 85%, black);
         }
 
+        /* Ensure Send/Clear button text is light in dark mode */
+        body.dark-mode .input-area button {
+            color: #fff; /* Explicitly white text */
+        }
+
     </style>
 </head>
 <body>
     <div class="chatbot-container">
-        <div class="api-config-area">
-            <label for="geminiModelSelect">Gemini Model:</label>
-            <select id="geminiModelSelect">
-                <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro (Latest)</option>
-                <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash (Latest)</option>
-                <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
-                <option value="gemini-2.5-flash-preview-04-17">Gemini 2.5 Flash Preview 04-17</option>
-                <option value="gemini-2.5-pro-experimental-03-25">Gemini 2.5 Pro Experimental 03-25</option>
-                <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-                <option value="gemini-2.0-flash-preview-image-generation">Gemini 2.0 Flash Preview Image Generation</option>
-                <option value="gemini-2.0-flash-experimental">Gemini 2.0 Flash Experimental</option>
-                <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash-Lite</option>
-                <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-                <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash-8B</option>
-                <option value="gemma-3">Gemma 3</option>
-                <option value="gemini-embedding-experimental-03-07">Gemini Embedding Experimental 03-07</option>
-                <!-- Add other models here if needed -->
-            </select>
-            <input type="password" id="api-key-input" placeholder="Enter Gemini API Key">
-            <button id="save-api-key-btn">Connect</button>
-            <span id="api-status-indicator">Status: Not Connected</span>
-        </div>
-
         <div class="messages-area" id="messagesArea">
             <!-- Messages will be appended here by JavaScript -->
              <div class="message ai-message"><p>Welcome to SolidCAM Pro Chat! Please connect to an AI provider to begin.</p><span class="timestamp"></span></div>
@@ -229,10 +283,14 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const apiKeyInput = document.getElementById('api-key-input');
-            const saveApiKeyBtn = document.getElementById('save-api-key-btn');
-            const apiStatusIndicator = document.getElementById('api-status-indicator');
-            const geminiModelSelect = document.getElementById('geminiModelSelect');
+            // --- Globals for API key and model, to be set by parent --- 
+            let currentApiKey = null;
+            let currentSelectedModel = null;
+            let currentTemperature = 0.7; // Default
+            let currentMaxOutputTokens = 2048; // Default
+            let currentTopP = 0.95; // Default
+            let currentTopK = 40; // Default
+            // --- End Globals ---
 
             const messagesArea = document.getElementById('messagesArea');
             const chatInput = document.getElementById('chatInput');
@@ -245,48 +303,55 @@
                     initialMessage.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 }
             }
-            updateTimestampForInitialMessage();
+            // updateTimestampForInitialMessage(); // Call this after the initial welcome message is confirmed or based on API status
 
-            // Simplified logic for API key display and status on load
-            const savedApiKey = localStorage.getItem('geminiApiKey');
-            if (savedApiKey) {
-                apiKeyInput.value = savedApiKey;
-                apiStatusIndicator.textContent = 'Status: Key for Google Gemini loaded';
-                apiStatusIndicator.style.backgroundColor = '#17a2b8';
-            } else {
-                apiStatusIndicator.textContent = 'Status: Enter Gemini API Key';
-                apiStatusIndicator.style.backgroundColor = '#ffc107';
-            }
-            // Always show API key input and connect button now
-            apiKeyInput.style.display = 'inline-block';
-            saveApiKeyBtn.style.display = 'inline-block';
-
-            // Load and set saved model preference
-            const savedModel = localStorage.getItem('geminiModel');
-            if (savedModel) {
-                geminiModelSelect.value = savedModel;
-            }
-
-            geminiModelSelect.addEventListener('change', () => {
-                localStorage.setItem('geminiModel', geminiModelSelect.value);
-                addMessageToHistory(`Switched to model: ${geminiModelSelect.options[geminiModelSelect.selectedIndex].text}`, 'ai');
-            });
-
-            saveApiKeyBtn.addEventListener('click', () => {
-                const apiKey = apiKeyInput.value.trim();
-
-                if (apiKey) {
-                    localStorage.setItem('geminiApiKey', apiKey);
-                    apiStatusIndicator.textContent = 'Status: Connected to Google Gemini';
-                    apiStatusIndicator.style.backgroundColor = '#28a745'; // Green
-                    addMessageToHistory('Connected to Google Gemini. You can start chatting now.', 'ai');
+            // Function to update the UI based on received config
+            function updateChatInterfaceBasedOnConfig() {
+                if (currentApiKey) {
+                    // Potentially update a status indicator within the iframe if one existed.
+                    // For now, the main action is enabling chat.
+                    console.log(`[Iframe] API Key: ${currentApiKey ? 'Present' : 'Missing'}, Model: ${currentSelectedModel}, Temp: ${currentTemperature}, Tokens: ${currentMaxOutputTokens}, TopP: ${currentTopP}, TopK: ${currentTopK}`);
+                    const welcomeMsg = messagesArea.querySelector('.ai-message p');
+                    if (welcomeMsg && welcomeMsg.textContent.includes('connect to an AI provider') || welcomeMsg.textContent.includes('Waiting for AI provider')) {
+                         messagesArea.innerHTML = ''; // Clear "Please connect..." or "Waiting..." message
+                         addMessageToHistory(`Connected with model: ${currentSelectedModel}. Parameters (Temp: ${currentTemperature}, Tokens: ${currentMaxOutputTokens}, TopP: ${currentTopP}, TopK: ${currentTopK}) applied. Ready to chat!`, 'ai');
+                    }
                 } else {
-                    alert('Please enter your Google Gemini API key.');
-                    apiStatusIndicator.textContent = 'Status: Gemini API Key Required';
-                    apiStatusIndicator.style.backgroundColor = '#dc3545'; // Red
-                    localStorage.removeItem('geminiApiKey'); // Clear if empty
+                    messagesArea.innerHTML = ''; // Clear previous messages
+                    addMessageToHistory('Welcome to SolidCAM Pro Chat! Please connect to an AI provider via the settings in the sidebar header.', 'ai');
+                }
+                updateTimestampForInitialMessage(); // Update timestamp for the new initial message
+            }
+
+            // --- Listener for messages from parent window ---
+            window.addEventListener('message', (event) => {
+                // IMPORTANT: Add origin check in production for security
+                // if (event.origin !== 'expected_origin') return;
+
+                if (event.data && event.data.type === 'CHAT_PRO_CONFIG') {
+                    console.log('[Iframe] Received CHAT_PRO_CONFIG:', event.data);
+                    currentApiKey = event.data.apiKey;
+                    currentSelectedModel = event.data.selectedModel;
+                    // Store new parameters
+                    currentTemperature = event.data.temperature !== undefined ? event.data.temperature : currentTemperature;
+                    currentMaxOutputTokens = event.data.maxOutputTokens !== undefined ? event.data.maxOutputTokens : currentMaxOutputTokens;
+                    currentTopP = event.data.topP !== undefined ? event.data.topP : currentTopP;
+                    currentTopK = event.data.topK !== undefined ? event.data.topK : currentTopK;
+                    updateChatInterfaceBasedOnConfig();
+                } else if (event.data && event.data.type === 'TOGGLE_DARK_MODE') {
+                    // Dark mode toggling remains as it was
+                    if (event.data.isDark) {
+                        document.body.classList.add('dark-mode');
+                    } else {
+                        document.body.classList.remove('dark-mode');
+                    }
                 }
             });
+            // --- End Listener for messages from parent window ---
+            
+            // Initial welcome message (will be replaced if config is received)
+            addMessageToHistory('Welcome to SolidCAM Pro Chat! Waiting for AI provider configuration...', 'ai');
+            updateTimestampForInitialMessage();
 
             sendButton.addEventListener('click', sendMessage);
             chatInput.addEventListener('keypress', function(e) {
@@ -303,28 +368,42 @@
                     chatInput.value = '';
                     adjustTextareaHeight(chatInput);
 
-                    const apiKey = localStorage.getItem('geminiApiKey');
-                    const selectedModel = geminiModelSelect.value;
-
-                    if (apiKey) {
+                    // Use apiKey and selectedModel received from parent
+                    if (currentApiKey && currentSelectedModel) {
                         addMessageToHistory('Thinking...', 'ai');
-                        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`;
+                        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${currentSelectedModel}:generateContent?key=${currentApiKey}`;
+
+                        // Construct generationConfig
+                        const generationConfig = {};
+                        if (currentTemperature !== null && currentTemperature !== undefined) generationConfig.temperature = Number(currentTemperature);
+                        if (currentMaxOutputTokens !== null && currentMaxOutputTokens !== undefined) generationConfig.maxOutputTokens = Number(currentMaxOutputTokens);
+                        if (currentTopP !== null && currentTopP !== undefined) generationConfig.topP = Number(currentTopP);
+                        if (currentTopK !== null && currentTopK !== undefined) generationConfig.topK = Number(currentTopK);
+
+                        console.log('[Iframe] Sending to API with generationConfig:', generationConfig); // Log the config being sent
 
                         try {
+                            const requestBody = {
+                                contents: [
+                                    {
+                                        parts: [
+                                            { text: messageText }
+                                        ]
+                                    }
+                                ]
+                            };
+
+                            // Add generationConfig to requestBody if it has any properties
+                            if (Object.keys(generationConfig).length > 0) {
+                                requestBody.generationConfig = generationConfig;
+                            }
+
                             const response = await fetch(API_URL, {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json'
                                 },
-                                body: JSON.stringify({
-                                    contents: [
-                                        {
-                                            parts: [
-                                                { text: messageText }
-                                            ]
-                                        }
-                                    ]
-                                })
+                                body: JSON.stringify(requestBody)
                             });
 
                             // Remove "Thinking..." message
@@ -366,9 +445,7 @@
                             addMessageToHistory(`Network error or failed to fetch: ${error.message}`, 'ai');
                         }
                     } else {
-                         setTimeout(() => {
-                            addMessageToHistory('Please connect to Google Gemini by entering your API key in the header.', 'ai');
-                        }, 500);
+                         addMessageToHistory('AI provider not configured. Please connect via the settings in the sidebar header.', 'ai');
                     }
                 }
             }
@@ -412,22 +489,9 @@
             }
             adjustTextareaHeight(chatInput); // Initial adjustment
 
-            // Initialize API status on load - simplified
-            const currentApiKey = localStorage.getItem('geminiApiKey');
-            if (currentApiKey) {
-                apiKeyInput.value = currentApiKey;
-                apiStatusIndicator.textContent = 'Status: Key for Google Gemini loaded';
-                apiStatusIndicator.style.backgroundColor = '#17a2b8';
-            } else {
-                apiStatusIndicator.textContent = 'Status: Enter Gemini API Key';
-                apiStatusIndicator.style.backgroundColor = '#ffc107';
-            }
-            // Ensure controls are visible for key entry
-            apiKeyInput.style.display = 'inline-block'; 
-            saveApiKeyBtn.style.display = 'inline-block';
-
-            // Ensure model select is also visible
-            geminiModelSelect.style.display = 'inline-block';
+            // --- Dark Mode Message Listener --- (This was already here, ensure it coexists with CHAT_PRO_CONFIG)
+            // window.addEventListener('message', (event) => { ... }); // Already handled above by merging
+            // --- End Dark Mode Message Listener ---
 
         });
     </script>

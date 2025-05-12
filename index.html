@@ -35,6 +35,9 @@
 
         <!-- COMMANDER CARD START -->
         <div id="commander-card" class="card">
+            <div id="settings-icon-container">
+                <i class="fas fa-cog" id="settings-cog-icon" title="Settings"></i>
+            </div>
             <div id="commander-system-section" class="commander-section">
                 <h3>System</h3>
                 <div class="icon-grid">
@@ -264,12 +267,163 @@
     <div id="chatProSidebar" class="chat-sidebar">
         <div id="chatProSidebarDragHandle" class="chat-sidebar-drag-handle"></div>
         <div class="chat-sidebar-header">
-            <h3>SolidCAM AI Chat</h3>
+            <h3>Pro</h3>
             <button id="closeChatProSidebarBtn" class="chat-sidebar-close-btn">&times;</button>
         </div>
+
+        <!-- Chat Pro Controls Header -->
+        <div class="chat-pro-controls-header">
+            <div class="model-selector-container">
+                <label for="gemini-model-selector" class="visually-hidden">Gemini Model:</label>
+                <select id="gemini-model-selector" aria-label="Select Gemini Model">
+                    <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro (Latest)</option>
+                    <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash (Latest)</option>
+                    <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
+                    <option value="gemini-2.0-flash">Gemini 2.0 Flash</option> 
+                    <option value="gemini-pro">Gemini Pro</option> <!-- Kept existing Gemini Pro as it was distinct -->
+                    <option value="gemini-2.5-flash-preview-04-17">Gemini 2.5 Flash Preview 04-17</option>
+                    <option value="gemini-2.5-pro-experimental-03-25">Gemini 2.5 Pro Experimental 03-25</option>
+                    <option value="gemini-2.0-flash-preview-image-generation">Gemini 2.0 Flash Preview Image Generation</option>
+                    <option value="gemini-2.0-flash-experimental">Gemini 2.0 Flash Experimental</option>
+                    <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash-Lite</option>
+                    <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                    <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash-8B</option>
+                    <option value="gemma-3">Gemma 3</option>
+                    <option value="gemini-embedding-experimental-03-07">Gemini Embedding Experimental 03-07</option>
+                </select>
+            </div>
+            <button id="chat-pro-api-settings-btn" class="button icon-button" title="API Settings">
+                <i class="fas fa-key"></i> <span class="visually-hidden">API Settings</span>
+            </button>
+        </div>
+        <!-- END: Chat Pro Controls Header -->
+
         <iframe id="chatProSidebarIframe" src="about:blank"></iframe>
+
+        <!-- API Settings Modal for Chat Pro -->
+        <div id="chat-pro-api-settings-modal" class="modal-overlay" style="display: none;">
+            <div class="modal-content api-settings-modal-content">
+                <div class="modal-header">
+                    <h4 id="chat-pro-api-modal-title">Gemini API Configuration</h4>
+                    <button id="close-chat-pro-api-settings-modal-btn" class="modal-close" aria-label="Close API Settings">&times;</button>
+                </div>
+                <div class="modal-body api-settings-modal-body">
+                    <div class="api-settings-section">
+                        <h5>Credentials</h5>
+                        <div class="form-field">
+                            <label for="chat-pro-api-key">API Key:</label>
+                            <input type="password" id="chat-pro-api-key" placeholder="Enter your Gemini API key">
+                        </div>
+                        <button id="chat-pro-connect-btn" class="button add-btn" style="width: 100%; margin-top: 10px;">Connect</button>
+                        <div id="chat-pro-status" class="api-status" style="margin-top: 10px; text-align: center; font-size: 0.9em;">
+                            Status: Not Connected
+                        </div>
+                    </div>
+
+                    <div class="api-settings-section">
+                        <h5>Model Parameters</h5>
+                        <div class="form-field">
+                            <label for="chat-pro-temperature">Temperature: 
+                                <span class="default-value-display" id="default-temp-display">(Default: 0.7)</span>
+                                <span class="info-icon" data-tooltip="Controls randomness. Higher values (e.g., 0.9) for more creative/random output; lower values (e.g., 0.2) for more focused/deterministic output. Use case: Creative writing (high), factual summary (low)."> <i class="fas fa-info-circle"></i></span>
+                            </label>
+                            <input type="range" id="chat-pro-temperature" min="0" max="1" step="0.1" value="0.7">
+                            <span class="range-value">0.7</span>
+                        </div>
+                        <div class="form-field">
+                            <label for="chat-pro-max-tokens">Max Output Tokens: 
+                                <span class="default-value-display" id="default-max-tokens-display">(Default: 2048)</span>
+                                <span class="info-icon" data-tooltip="Maximum number of tokens (approx. words/sub-words) the model will generate. Use case: Control response length. Shorter for quick answers, longer for detailed explanations."> <i class="fas fa-info-circle"></i></span>
+                            </label>
+                            <input type="number" id="chat-pro-max-tokens" value="1024" min="1">
+                        </div>
+                        <div class="form-field">
+                            <label for="chat-pro-top-p">Top-P: 
+                                <span class="default-value-display" id="default-top-p-display">(Default: 0.95)</span>
+                                <span class="info-icon" data-tooltip="Nucleus sampling. Selects the smallest set of tokens whose cumulative probability exceeds P. Model samples only from this set. Use case: Alternative to Temperature for controlling randomness. 0.1 means only tokens in the top 10% probability mass are considered."> <i class="fas fa-info-circle"></i></span>
+                            </label>
+                            <input type="range" id="chat-pro-top-p" min="0" max="1" step="0.01" value="0.95">
+                            <span class="range-value">0.95</span>
+                        </div>
+                        <div class="form-field">
+                            <label for="chat-pro-top-k">Top-K: 
+                                <span class="default-value-display" id="default-top-k-display">(Default: 40)</span>
+                                <span class="info-icon" data-tooltip="Filters vocabulary to the K most probable next tokens at each step. Use case: Limits model's choices to high-probability tokens, can prevent improbable tokens. Set to 0 to disable."> <i class="fas fa-info-circle"></i></span>
+                            </label>
+                            <input type="number" id="chat-pro-top-k" value="40" min="1">
+                        </div>
+                    </div>
+
+                    <div class="api-settings-section">
+                        <h5>Safety Settings (Placeholders)</h5>
+                        <div class="form-field">
+                            <label>Harassment:</label>
+                            <span>Block None (Placeholder)</span>
+                        </div>
+                        <div class="form-field">
+                            <label>Hate Speech:</label>
+                            <span>Block Medium and Above (Placeholder)</span>
+                        </div>
+                        <div class="form-field">
+                            <label>Sexually Explicit:</label>
+                            <span>Block Most (Placeholder)</span>
+                        </div>
+                         <div class="form-field">
+                            <label>Dangerous Content:</label>
+                            <span>Block Medium and Above (Placeholder)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="api-settings-section">
+                        <h5>Advanced Options</h5>
+                        <p style="text-align: center; color: var(--text-secondary); font-size: 0.9em;">(Further customization options will be available here)</p>
+                    </div>
+
+                </div>
+                <div class="modal-footer api-settings-modal-footer">
+                    <button id="chat-pro-save-settings-btn" class="button add-btn">Save Settings</button>
+                </div>
+            </div>
+        </div>
+        <!-- END: API Settings Modal -->
     </div>
 
+    <!-- Settings Panel Modal -->
+    <div id="settings-panel-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content settings-modal-content"> <!-- Added settings-modal-content for specific styling -->
+            <div class="modal-header">
+                <h3>Settings</h3>
+                <button id="close-settings-panel" class="modal-close">&times;</button>
+            </div>
+            <div class="settings-panel-body">
+                <div class="setting-item">
+                    <label for="dark-mode-toggle">Dark Mode</label>
+                    <label class="switch">
+                        <input type="checkbox" id="dark-mode-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label>Placeholder Setting 1</label>
+                    <span>(In Construction)</span>
+                </div>
+                <div class="setting-item">
+                    <label>Placeholder Setting 2</label>
+                    <span>(In Construction)</span>
+                </div>
+                <div class="setting-item">
+                    <label>Another Placeholder</label>
+                    <span>(In Construction)</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="save-settings-btn" class="add-btn">Save Settings</button>
+            </div>
+        </div>
+    </div>
+    <!-- END Settings Panel Modal -->
+
     <script type="module" src="src/js/main.js"></script>
+    <script src="src/js/settings.js"></script>
 </body>
 </html>
