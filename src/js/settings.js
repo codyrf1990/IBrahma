@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const settingsCogIcon = document.getElementById('settings-cog-icon');
+    const iconSystemSettings = document.getElementById('icon-system-settings');
     const settingsPanelModal = document.getElementById('settings-panel-modal');
     const closeSettingsPanelButton = document.getElementById('close-settings-panel');
     const darkModeToggle = document.getElementById('dark-mode-toggle');
@@ -48,8 +48,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Event listener for settings cog icon
-    if (settingsCogIcon) {
-        settingsCogIcon.addEventListener('click', openSettingsPanel);
+    if (iconSystemSettings) {
+        iconSystemSettings.addEventListener('click', openSettingsPanel);
     }
 
     // Event listener for close button in settings panel

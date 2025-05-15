@@ -1,6 +1,6 @@
 # Application Features (iBramah - Opportunity Tracker)
 
-This document lists the features of the iBramah Opportunity Tracker, their current status (based on `index.html` structure), and illustrative user stories.
+This document lists the features of the iBramah Opportunity Tracker, their current status (based on `index.html` structure), and illustrative user stories. This summary is current as of 2025-05-14.
 
 ## Feature List & Status
 

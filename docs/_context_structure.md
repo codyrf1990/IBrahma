@@ -1,6 +1,6 @@
 # Project File and Component Structure (iBramah - Opportunity Tracker)
 
-This document outlines the project's file and folder structure, and the HTML component hierarchy as defined in `index.html`.
+This document outlines the project's file and folder structure, and the HTML component hierarchy as defined in `index.html`. This summary is current as of 2025-05-14.
 
 ## 1. File/Folder Structure (Current Workspace)
 

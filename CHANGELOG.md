@@ -2,6 +2,11 @@
 
 All notable changes to the License Tracker application will be documented in this file.
 
+## [Unreleased] - 2025-05-14
+
+### Added
+- Context files updated for new InstructorAI session, with latest codebase and feature info. [2025-05-14]
+
 ## [Unreleased] - 2025-05-11
 
 ### Added

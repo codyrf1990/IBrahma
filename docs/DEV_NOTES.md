@@ -7,3 +7,6 @@
 ---
 **Session Update: 2025-05-11**
 - All `docs/_context_*.md` files have been reviewed and updated to reflect the current understanding of the codebase primarily based on `index.html` and project structure. This was part of a full context refresh.
+
+**Session Update: 2025-05-14**
+- All context files (`_app_overview.md`, `_context_core_logic.md`, `_context_data.md`, `_context_features.md`, `_context_structure.md`) have been reviewed and updated for a new InstructorAI session. Documentation is now current as of this date, with all files reflecting the latest codebase, features, and structure.

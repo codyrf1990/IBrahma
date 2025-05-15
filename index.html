@@ -35,9 +35,7 @@
 
         <!-- COMMANDER CARD START -->
         <div id="commander-card" class="card">
-            <div id="settings-icon-container">
-                <i class="fas fa-cog" id="settings-cog-icon" title="Settings"></i>
-            </div>
+
             <div id="commander-system-section" class="commander-section">
                 <h3>System</h3>
                 <div class="icon-grid">
@@ -430,14 +428,14 @@
     <!-- END Settings Panel Modal -->
 
     <!-- App Suggestions Modal -->
-    <div id="app-suggestions-modal" class="modal-overlay" style="display: none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Submit an App Suggestion</h3>
-                <button id="close-app-suggestions-modal-btn" class="modal-close">&times;</button>
+    <div id="app-suggestion-modal-overlay" class="modal-overlay" style="display: none;">
+        <div id="app-suggestion-modal">
+            <div class="app-suggestion-modal-header">
+                <h2 id="app-suggestion-modal-title"><i class="fas fa-lightbulb" aria-hidden="true"></i> Submit an App Suggestion</h2>
+                <button id="app-suggestion-modal-close-btn" class="modal-close-button" aria-label="Close suggestion modal">&times;</button>
             </div>
             <form id="app-suggestion-form">
-                <div class="modal-form">
+                <div class="app-suggestion-modal-body">
                     <div class="form-field">
                         <label for="suggestion-title">Suggestion Title</label>
                         <input type="text" id="suggestion-title" required placeholder="Brief title for your suggestion">
@@ -459,9 +457,9 @@
                         <input type="text" id="suggestion-user-name" placeholder="Your name">
                     </div>
                 </div>
-                <div class="modal-actions">
-                    <button type="button" id="cancel-app-suggestion-btn" class="cancel-btn">Cancel</button>
-                    <button type="submit" id="send-app-suggestion-btn" class="add-btn">Send Suggestion</button>
+                <div class="app-suggestion-modal-footer">
+                    <button type="button" id="app-suggestion-cancel-btn" class="button secondary-button">Cancel</button>
+                    <button type="submit" id="app-suggestion-send-btn" class="button primary-button">Send Suggestion</button>
                 </div>
             </form>
         </div>
@@ -470,5 +468,67 @@
 
     <script type="module" src="src/js/main.js"></script>
     <script src="src/js/settings.js"></script>
+    <!-- Custom Help Modal Overlay -->
+    <div id="custom-help-modal-overlay" class="modal-overlay" style="display: none;">
+        <div id="custom-help-modal">
+            <div class="custom-help-modal-header">
+                <h2 id="custom-help-modal-title"><i class="fas fa-question-circle" aria-hidden="true"></i> Opportunity Tracker Help</h2>
+                <button id="custom-help-modal-close-btn" class="modal-close-button" aria-label="Close help modal">&times;</button>
+            </div>
+            <div class="custom-help-modal-body">
+                <section id="help-intro">
+                    <h3>Introduction</h3>
+                    <p>This guide provides a quick overview of the iBramah Opportunity Tracker features to help you get started.</p>
+                </section>
+
+                <section id="help-renewal-management">
+                    <h3>Core Renewal Management</h3>
+                    <p><strong>Adding Renewals:</strong> Click "Add Renewal" in the Commander Card. Fill in Account Name, Renewal Date, Sent Date, Close Date, Amount, and Opportunity ID, then click "Add Renewal".</p>
+                    <p><strong>Editing Renewals:</strong> Click the <i class="fas fa-pencil-alt" aria-hidden="true"></i> (Edit) icon on a renewal row. Modify details and click "Save Changes".</p>
+                    <p><strong>Deleting Renewals:</strong> Click the <i class="fas fa-trash-alt" aria-hidden="true"></i> (Delete) icon on a renewal row and confirm.</p>
+                    <p><strong>Confirming Renewals:</strong> Check the box next to a renewal to mark it 'confirmed'. This updates progress and KPIs.</p>
+                </section>
+
+                <section id="help-data">
+                    <h3>Data Management</h3>
+                    <p><strong>Saving Data:</strong> Click the <i class="fas fa-save" aria-hidden="true"></i> (Save Data) icon in the Commander Card to download your data as a JSON file.</p>
+                    <p><strong>Loading Data:</strong> Click the <i class="fas fa-folder-open" aria-hidden="true"></i> (Load Data) icon and select your saved JSON file.</p>
+                    <p><strong>Auto-Save:</strong> Changes are automatically saved to your browser. Look for the "Changes saved" indicator.</p>
+                </section>
+
+                <section id="help-progress-kpi">
+                    <h3>Progress & KPI Tracking</h3>
+                    <p><strong>Progress Overview:</strong> Track confirmed renewals against your goal. Update your goal by entering a new value in the "Goal" input and clicking "Update Goal".</p>
+                    <p><strong>Key Stats:</strong>
+                        <ul>
+                            <li><strong>Total Confirmed:</strong> Total value of confirmed renewals.</li>
+                            <li><strong>Average Confirmed:</strong> Average value of confirmed renewals.</li>
+                            <li><strong>Total Entered:</strong> Total value of all entered renewals (refer to <code>#kpi-total-confirmed</code> for the specific element, or clarify if another element represents this).</li>
+                        </ul>
+                    </p>
+                </section>
+
+                <section id="help-commander-card">
+                    <h3>Commander Card Quick Actions</h3>
+                    <p><strong>System:</strong> <i class="fas fa-save" aria-hidden="true"></i> Save, <i class="fas fa-folder-open" aria-hidden="true"></i> Load, <i class="fas fa-plus-circle" aria-hidden="true"></i> Add Renewal, <i class="fas fa-cog" aria-hidden="true"></i> Settings, <i class="fas fa-user-circle" aria-hidden="true"></i> Profile, <i class="fas fa-question-circle" aria-hidden="true"></i> Help (this window).</p>
+                    <p><strong>AI Chats:</strong> Launch "SolidCAM Chat Std" or "SolidCAM Chat Pro" (in a sidebar).</p>
+                    <p><strong>Utilities:</strong> Access <i class="fas fa-envelope" aria-hidden="true"></i> Email, <i class="fas fa-calculator" aria-hidden="true"></i> Calculator, <i class="fas fa-sticky-note" aria-hidden="true"></i> Notes.</p>
+                </section>
+
+                <section id="help-search">
+                    <h3>Finding Renewals</h3>
+                    <p>Use the Search Bar (above the main list, placeholder "Search by Name or Opp ID...") to quickly filter renewals.</p>
+                </section>
+
+                <section id="help-quick-calc">
+                    <h3>Quick Percentage Calculator</h3>
+                    <p>Located in the header. Enter an 'Amount' in the 'Quick % Calc' field to see 5%, 10%, and 15% calculated instantly in the adjacent result areas.</p>
+                </section>
+            </div>
+            <div class="custom-help-modal-footer">
+                <p>iBramah Opportunity Tracker - Version 1.0.0</p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

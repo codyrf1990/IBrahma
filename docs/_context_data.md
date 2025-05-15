@@ -1,26 +1,26 @@
 # Data Models, Schemas, and Flow (iBramah - Opportunity Tracker)
 
-This document describes the data models, schemas for persistent storage, and the overall data flow within the iBramah Opportunity Tracker application, based on `index.html` and typical web application practices.
+This document describes the data models, schemas for persistent storage, and the overall data flow within the iBramah Opportunity Tracker application as of 2025-05-14.
 
 ## 1. Core Data Model: Renewal/Opportunity Entry
 
-Each renewal or opportunity is represented as an object with the following properties. This structure is used for entries in the main data list and for the forms in the Add/Edit modals.
+Each renewal or opportunity is represented as an object with the following properties (as used in state.js, data.js, eventHandlers.js):
 
-*   `id`: (String) A unique identifier for the entry (likely auto-generated, e.g., UUID or timestamp-based).
-*   `accountName`: (String) The name of the account or client.
-*   `renewalDate`: (String) The date of renewal (YYYY-MM-DD format from `<input type="date">`).
-*   `sentDate`: (String) The date the renewal was sent (YYYY-MM-DD format).
-*   `closeDate`: (String) The date the opportunity is expected to close or did close (YYYY-MM-DD format). This is crucial for monthly grouping.
-*   `amount`: (Number) The monetary value of the opportunity/renewal (USD).
-*   `opportunityId`: (String) The specific ID for the opportunity (e.g., from a CRM).
-*   `isChecked`: (Boolean, not directly in forms but implied for tracking confirmed deals for progress/KPIs) Indicates if a renewal is confirmed.
-*   `notes`: (String, optional) Any additional notes or comments related to the entry.
+*   `id`: (String) Unique identifier (auto-generated, e.g., UUID or timestamp-based).
+*   `name`: (String) Account or client name.
+*   `renewalDate`: (String) Renewal date (YYYY-MM-DD).
+*   `sentDate`: (String) Date renewal was sent (YYYY-MM-DD).
+*   `closeDate`: (String) Close date (YYYY-MM-DD). Used for grouping by month.
+*   `amount`: (Number) Value of the opportunity/renewal (USD).
+*   `opportunityId`: (String) Opportunity ID (e.g., from CRM).
+*   `isChecked`: (Boolean) Whether the renewal is confirmed (used for KPIs/progress).
+*   `notes`: (String) Optional notes/comments.
 
 **Example Renewal Object:**
 ```json
 {
   "id": "unique-entry-id-123",
-  "accountName": "Acme Corp",
+  "name": "Acme Corp",
   "renewalDate": "2024-09-15",
   "sentDate": "2024-07-01",
   "closeDate": "2024-08-30",
@@ -31,54 +31,49 @@ Each renewal or opportunity is represented as an object with the following prope
 }
 ```
 
-## 2. Application State (Conceptual)
+## 2. Application State
 
-While not explicitly defined in `index.html`, `main.js` would manage an application state, likely including:
+The application state is managed in `state.js` and used throughout the modular JS files. Key state fields include:
 
-*   `renewals`: (Array of Renewal Objects) The primary list of all renewal entries.
-*   `receiptsGoal`: (Number) The user-defined goal for the number of receipts/confirmed deals (e.g., 55).
-*   `searchTerm`: (String) The current value in the search input field.
-*   `editingEntryId`: (String/null) The ID of the entry currently being edited, if any.
+*   `clients`: (Array) List of all renewal/opportunity objects.
+*   `receiptsGoal`: (Number) User-defined goal for confirmed receipts.
+*   `checkedRows`: (Array) IDs of renewals marked as confirmed.
+*   `searchTerm`: (String) Current search/filter value.
+*   `editingRowId`: (String|null) ID of the entry being edited (transient).
+*   `lastSaved`: (Date|null) Timestamp of last save (not persisted to file).
 
 ## 3. Persistent Storage
 
-### 3.1. JSON File (User-Initiated Save/Load)
-
-*   **Schema:** When data is saved to a file, it's likely a JSON object containing the application state, primarily the array of renewal objects and potentially other settings like the `receiptsGoal`.
+### JSON File (Manual Save/Load)
+- **Schema:** When saving, the app exports a JSON object with the current state (array of renewal objects, receiptsGoal, checkedRows, searchTerm).
     ```json
     {
-      "renewals": [
-        // ... array of renewal objects as defined in section 1 ...
+      "clients": [
+        // ... array of renewal objects ...
       ],
       "receiptsGoal": 55,
-      "version": "1.0" // Optional: for future schema migrations
+      "checkedRows": ["id1", "id2"],
+      "searchTerm": "Acme"
     }
     ```
-*   **Interaction:**
-    *   **Save (`#icon-save-to-file`):** The current `renewals` array and `receiptsGoal` are stringified into JSON and offered as a download.
-    *   **Load (`#icon-load-from-file` & `#file-input`):** A user-selected JSON file is read, parsed. The `renewals` array and `receiptsGoal` from the file replace the current application state. The UI is then re-rendered.
+- **Save:** User clicks "Save to File"; state is stringified and downloaded as JSON.
+- **Load:** User clicks "Load from File"; JSON is parsed, validated, and replaces state. UI is updated.
 
-### 3.2. Browser `localStorage` (Auto-Save/Session Persistence - Conceptual)
-
-*   **Purpose:** To automatically save the current state of renewals and settings (like `receiptsGoal`) so users don't lose data if they close the browser tab or navigate away accidentally.
-*   **Data Stored:** Similar to the JSON file structure, likely storing the stringified `renewals` array and `receiptsGoal` under specific keys (e.g., `ibramah_renewals_data`, `ibramah_receipts_goal`).
-*   **Triggers:**
-    *   **Save:** After adding, editing, deleting a renewal, or updating the goal.
-    *   **Load:** On application initialization, data is loaded from `localStorage` if available.
+### localStorage (Auto-Save)
+- **Purpose:** Auto-saves state after any change (add/edit/delete/update goal/check).
+- **Data Stored:** Stringified state object (same schema as above).
+- **Triggers:** After any data mutation, state is saved to localStorage. On app load, state is restored from localStorage if present.
 
 ## 4. Data Flow
 
-1.  **Initialization:**
-    *   App starts -> Attempts to load data from `localStorage`.
-    *   If `localStorage` data exists and is valid, it populates the internal `renewals` array and `receiptsGoal`.
-    *   If not, app starts with an empty/default state.
-    *   The UI is rendered based on this initial state.
-
-2.  **User Adds/Edits/Deletes Renewal:**
-    *   User interacts with a modal form.
-    *   On submission (Add/Save Changes) or confirmation (Delete):
-        *   Input data is validated.
-        *   The internal `renewals` array is modified (add, update, or remove an entry).
+1. **Initialization:**
+    - App loads data from localStorage (if available); else, starts with default state.
+    - UI is rendered from state.
+2. **User Actions (Add/Edit/Delete):**
+    - User interacts with modals/forms.
+    - Data is validated and state is updated; UI re-renders; auto-save triggers.
+3. **Save/Load:**
+    - Manual save/load uses JSON file with full state.
         *   The UI is updated to reflect the change (new row added, existing row modified/removed, month sections potentially updated).
         *   Summary statistics (KPIs, progress) are recalculated and re-displayed.
         *   The new state (updated `renewals` array) is saved to `localStorage` (auto-save).
@@ -119,4 +114,4 @@ While not explicitly defined in `index.html`, `main.js` would manage an applicat
 *   **`#total-confirmed-whole-card` (`#total-confirmed-whole-value`):** Total sum of `amount` for entries where `isChecked=true` (likely mirrors `#kpi-total-confirmed`).
 *   **Quick % Calculator (`.percentage-calculator`):** Ad-hoc calculations, data is transient and local to the calculator, not part of the main app data model.
 
-This outlines the expected data structures and flow. The actual implementation in `src/js/main.js` will contain the definitive logic.
+This outlines the expected data structures and flow. The actual implementation in `src/js/main.js` will contain the definitive logic. This summary is current as of 2025-05-14.

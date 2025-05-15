@@ -1016,13 +1016,42 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- Custom Help Modal Logic ---
+    const helpModalOverlay = document.getElementById('custom-help-modal-overlay');
+    const helpModalCloseBtn = document.getElementById('custom-help-modal-close-btn');
     const iconSystemHelp = document.getElementById('icon-system-help');
+
+    function openHelpModal() {
+        if (helpModalOverlay) {
+            helpModalOverlay.style.display = 'flex';
+            setTimeout(() => helpModalOverlay.classList.add('active'), 10); // for fade-in if desired
+        }
+    }
+    function closeHelpModal() {
+        if (helpModalOverlay) {
+            helpModalOverlay.style.display = 'none';
+            helpModalOverlay.classList.remove('active');
+        }
+    }
     if (iconSystemHelp) {
-        iconSystemHelp.addEventListener('click', () => {
-            console.log('System Help icon clicked');
-            // openGenericModal('Help', 'placeholder_help.html'); // Example
+        iconSystemHelp.addEventListener('click', openHelpModal);
+    }
+    if (helpModalCloseBtn) {
+        helpModalCloseBtn.addEventListener('click', closeHelpModal);
+    }
+    if (helpModalOverlay) {
+        helpModalOverlay.addEventListener('click', (event) => {
+            if (event.target === helpModalOverlay) {
+                closeHelpModal();
+            }
         });
     }
+    // Optional: Escape key closes help modal if open
+    window.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && helpModalOverlay && helpModalOverlay.style.display !== 'none') {
+            closeHelpModal();
+        }
+    });
 
     // const btnChatStd = document.getElementById('btn-chat-std');
     // if (btnChatStd) {
@@ -1078,36 +1107,52 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- App Suggestions Modal Logic (NEW) ---
+    // --- App Suggestions Modal Logic (Updated for new structure) ---
     const appSuggestionsButton = document.getElementById('icon-app-suggestions');
-    const appSuggestionsModal = document.getElementById('app-suggestions-modal');
-    const closeAppSuggestionsModalBtn = document.getElementById('close-app-suggestions-modal-btn');
-    const cancelAppSuggestionBtn = document.getElementById('cancel-app-suggestion-btn');
+    const appSuggestionModalOverlay = document.getElementById('app-suggestion-modal-overlay');
+    const appSuggestionModalCloseBtn = document.getElementById('app-suggestion-modal-close-btn');
+    const appSuggestionCancelBtn = document.getElementById('app-suggestion-cancel-btn');
     const appSuggestionForm = document.getElementById('app-suggestion-form');
-
+    // Open
+    function openSuggestionModal() {
+        if (appSuggestionModalOverlay) {
+            appSuggestionModalOverlay.style.display = 'flex';
+            setTimeout(() => appSuggestionModalOverlay.classList.add('active'), 10);
+        }
+    }
+    // Close
+    function closeSuggestionModal() {
+        if (appSuggestionModalOverlay) {
+            appSuggestionModalOverlay.style.display = 'none';
+            appSuggestionModalOverlay.classList.remove('active');
+        }
+        // Optionally clear form fields
+        if (appSuggestionForm) {
+            appSuggestionForm.reset();
+        }
+    }
     if (appSuggestionsButton) {
-        appSuggestionsButton.addEventListener('click', () => {
-            if (appSuggestionsModal) {
-                appSuggestionsModal.style.display = 'block'; // Or 'flex' if styled with flex
+        appSuggestionsButton.addEventListener('click', openSuggestionModal);
+    }
+    if (appSuggestionModalCloseBtn) {
+        appSuggestionModalCloseBtn.addEventListener('click', closeSuggestionModal);
+    }
+    if (appSuggestionCancelBtn) {
+        appSuggestionCancelBtn.addEventListener('click', closeSuggestionModal);
+    }
+    if (appSuggestionModalOverlay) {
+        appSuggestionModalOverlay.addEventListener('click', (event) => {
+            if (event.target === appSuggestionModalOverlay) {
+                closeSuggestionModal();
             }
         });
     }
-
-    if (closeAppSuggestionsModalBtn) {
-        closeAppSuggestionsModalBtn.addEventListener('click', () => {
-            if (appSuggestionsModal) {
-                appSuggestionsModal.style.display = 'none';
-            }
-        });
-    }
-
-    if (cancelAppSuggestionBtn) {
-        cancelAppSuggestionBtn.addEventListener('click', () => {
-            if (appSuggestionsModal) {
-                appSuggestionsModal.style.display = 'none';
-            }
-        });
-    }
+    // Escape key closes modal if open
+    window.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && appSuggestionModalOverlay && appSuggestionModalOverlay.style.display !== 'none') {
+            closeSuggestionModal();
+        }
+    });
 
     if (appSuggestionForm) {
         appSuggestionForm.addEventListener('submit', (event) => {

@@ -1,84 +1,45 @@
 # Core Logic and Control Flow (iBramah - Opportunity Tracker)
 
-This document outlines the main business logic, algorithms, and control flow of the iBramah Opportunity Tracker application, primarily inferred from `index.html` and the expected behavior of `src/js/main.js`.
+This document outlines the main business logic, algorithms, and control flow of the iBramah Opportunity Tracker application, reflecting the modular JavaScript and UI as of 2025-05-14.
 
-## 1. Application Initialization (`main.js` - `DOMContentLoaded`)
-
-*   **Load Initial Data:** On page load, the application likely attempts to load existing data. This could be from `localStorage` (for auto-saved sessions) or a default state if no saved data is found.
-*   **Render UI:** Dynamically generates month sections and populates them with renewal entries based on the loaded data.
-*   **Calculate and Display Summaries:** Computes and displays initial summary statistics (e.g., total confirmed, progress overview, KPIs).
-*   **Attach Event Listeners:** Sets up event listeners for all interactive elements:
-    *   Buttons in the Commander Card (Save, Load, Add, Settings, Profile, Help, AI Chats, Utilities).
-    *   Buttons in the Add New Renewal modal (Add, Cancel).
-    *   Buttons in the Edit Renewal modal (Save, Cancel, Close).
-    *   Search input field.
-    *   Update Goal button for receipts.
-    *   Controls for the Quick Percentage Calculator.
-    *   Dynamic elements like delete/edit buttons on renewal rows (likely using event delegation).
-    *   Close buttons for modals and sidebars.
-    *   Drag handle for the Chat Pro sidebar.
+## 1. Application Initialization
+- On DOMContentLoaded, the app loads data from localStorage (if available) or initializes with default state.
+- UI is dynamically rendered: month sections and renewals are generated from state.
+- Summary statistics (totals, KPIs, progress) are calculated and displayed.
+- Event listeners are attached for all interactive elements: Commander Card actions, modal buttons, search, goal updating, calculator, and dynamic row actions.
 
 ## 2. Core Workflows
 
-### 2.1. Adding a New Renewal
+### Adding a New Renewal
+- User clicks "Add Renewal" (Commander Card).
+- Modal opens; user enters details.
+- On submit: data is validated, renewal is added to state, UI updates, summaries recalc, modal closes, success message, auto-save triggers.
 
-1.  **Trigger:** User clicks the "Add Renewal" icon (`#icon-add-renewal`) in the Commander Card.
-2.  **Action:** The "Add New Renewal" modal (`#add-renewal-modal`) is displayed.
-3.  **User Input:** User fills in the form fields (Account Name, Renewal Date, Sent Date, Close Date, Amount, Opportunity ID).
-4.  **Submission:** User clicks the "Add Renewal" button within the modal.
-5.  **Logic (`main.js`):
-    *   Retrieves and validates form data.
-    *   Creates a new renewal object.
-    *   Adds the new object to the internal data structure (e.g., an array of renewals).
-    *   Updates the UI: Adds a new row to the appropriate month section in `#main-container`. If a new month section is needed, it's created.
-    *   Recalculates and updates all summary displays (Progress Overview, KPI Stats, Total Confirmed).
-    *   Hides the modal.
-    *   Displays a success message.
-    *   Triggers auto-save (if implemented).
+### Editing a Renewal
+- User clicks "Edit" on a renewal row.
+- Edit modal opens, pre-filled.
+- On save: data validated, state updated, UI row updated, summaries recalc, modal closes, success message, auto-save.
 
-### 2.2. Editing an Existing Renewal
+### Deleting a Renewal
+- User clicks "Delete" on a renewal row.
+- Confirmation modal opens.
+- On confirm: renewal removed from state, UI updates, summaries recalc, modal closes, success message, auto-save.
 
-1.  **Trigger:** User clicks an "Edit" button associated with a specific renewal entry (dynamically generated).
-2.  **Action:** The "Edit License" modal (`#edit-modal`) is displayed, pre-filled with the data of the selected renewal.
-The `edit-row-id` hidden input is populated.
-3.  **User Input:** User modifies the form fields.
-4.  **Submission:** User clicks the "Save Changes" button within the modal.
-5.  **Logic (`main.js`):
-    *   Retrieves the `edit-row-id` and updated form data.
-    *   Validates the data.
-    *   Finds the corresponding renewal object in the internal data structure and updates it.
-    *   Updates the specific row in the UI in `#main-container`.
-    *   Recalculates and updates all summary displays.
-    *   Hides the modal.
-    *   Displays a success message.
-    *   Triggers auto-save.
+### Saving & Loading Data
+- **Save to File:** User triggers save; state is stringified and downloaded as JSON.
+- **Load from File:** User selects file; JSON is parsed, validated, replaces state, UI re-renders, summaries recalc.
+- **Auto-Save:** Any data mutation triggers localStorage save and updates the indicator.
 
-### 2.3. Deleting a Renewal
+### Progress & KPI Tracking
+- Progress bar and stats update in real time as renewals are confirmed or goal is changed.
+- User can update the goal; state and UI reflect changes instantly.
 
-1.  **Trigger:** User clicks a "Delete" button associated with a specific renewal entry (dynamically generated).
-2.  **Action:** A confirmation modal (`#confirmation-modal`) is displayed.
-3.  **User Confirmation:** User clicks "Confirm".
-4.  **Logic (`main.js`):
-    *   Removes the renewal object from the internal data structure.
-    *   Removes the corresponding row from the UI in `#main-container`.
-    *   If a month section becomes empty, it might be removed.
-    *   Recalculates and updates all summary displays.
-    *   Hides the confirmation modal.
-    *   Displays a success message.
-    *   Triggers auto-save.
+### Utilities & AI Integration
+- Commander Card provides quick access to utilities (calculator, notes, email templates) and AI chat (Std/Pro).
+- "SolidCAM Chat Pro" opens in a draggable sidebar; settings and API key management handled via modal.
 
-### 2.4. Saving Data to File
-
-1.  **Trigger:** User clicks the "Save to File" icon (`#icon-save-to-file`) in the Commander Card.
-2.  **Logic (`main.js`):
-    *   Retrieves the current renewal data from the internal data structure.
-    *   Converts the data to a JSON string.
-    *   Prompts the user to download the JSON file (e.g., using a dynamically created `<a>` tag with `download` attribute).
-    *   Displays a success message.
-
-### 2.5. Loading Data from File
-
-1.  **Trigger:** User clicks the "Load from File" icon (`#icon-load-from-file`) in the Commander Card.
+### Search & Filtering
+- Search input filters renewals in real time by account name or opportunity ID.
 2.  **Action:** The hidden file input (`#file-input`) is triggered.
 3.  **User Selection:** User selects a JSON file.
 4.  **Logic (`main.js`):
@@ -153,4 +114,4 @@ The `edit-row-id` hidden input is populated.
 *   **Modal States:** Modals (`#add-renewal-modal`, `#edit-modal`, `#confirmation-modal`, `#generic-content-modal`) manage distinct phases of user interaction.
 *   **Visual Indicators:** `#auto-save-indicator`, progress bars, KPI value updates (`Calculating...` to actual values).
 
-This document provides a conceptual overview of the core logic. The actual implementation details reside in `src/js/main.js` and its potential helper modules.
+This document provides a conceptual overview of the core logic. The actual implementation details reside in `src/js/main.js` and its potential helper modules. This summary is current as of 2025-05-14.
