@@ -437,15 +437,15 @@ export function handleFileLoad(event) {
                 replaceState(loadedState); // Update the application state
 
                 console.log("[Load] Triggering UI refresh...");
-                console.log("[FileLoad] State replaced. Rebuilding UI from loaded state...");
-                rebuildClientListFromState(); // New call to rebuild the list
+                rebuildClientListFromState();
 
-                console.log("[FileLoad] UI rebuilt. Updating totals and sorting...");
-                updateTotals(); // Call function to recalculate totals based on new DOM
-                sortAllSectionsAndRows(); // Call function to sort the newly created rows/sections
+                console.log("[FileLoad] Sorting and updating UI...");
+                sortClientsByDate();
+                sortMonthSections();
+                updateUIAndSummaries();
 
-                console.log("[FileLoad] UI refresh process completed.");
-                showMessage("Data loaded successfully!", "success"); // User feedback
+                console.log("[FileLoad] Data loaded successfully.");
+                showMessage("Data loaded successfully!", "success");
             } else {
                 console.error("[Load] Invalid file format or missing key properties.", loadedState);
                 showMessage("Error: Invalid file format. Could not load data.", "error");
@@ -468,30 +468,7 @@ export function handleFileLoad(event) {
 
     reader.readAsText(file); // Start reading the file as text
     console.log("[Load] Started reading file as text...");
-}
-
-// Utility functions
-function updateTotals() {
-    // This function should recalculate totals and update the UI as needed.
-    // If you already have this logic elsewhere, you may want to import it instead.
-    // Placeholder: implement as needed or replace with correct import.
-    // For now, we call updateUIAndSummaries for summary stats only.
-    if (typeof updateUIAndSummaries === 'function') {
-        updateUIAndSummaries();
-    }
-}
-
-function sortAllSectionsAndRows() {
-    // This function should sort month sections and rows.
-    // If you already have this logic elsewhere, you may want to import it instead.
-    // Placeholder: implement as needed or replace with correct import.
-    if (typeof sortClientsByDate === 'function') sortClientsByDate();
-    if (typeof sortMonthSections === 'function') sortMonthSections();
-}
-
-// Note: `updateTotalAccounts` from original script seems redundant now,
-// as totals are managed differently. If specific functionality is needed,
-// it should be reimplemented based on the new structure. 
+} 
 
 // --- Initialize Event Listeners ---
 

@@ -297,9 +297,7 @@ if (chatProSidebar && chatProSidebarDragHandle) {
         // Prevent default browser actions for mousedown, like text selection or image dragging
         // Only capture for primary button to avoid issues with other pointer types/buttons
         if (e.button !== 0) return;
-        e.preventDefault(); 
-        
-        console.log('[POINTERDOWN] target:', e.target, 'currentTarget:', e.currentTarget, 'pointerId:', e.pointerId); // DEBUG
+        e.preventDefault();
 
         isResizingChat = true;
         activePointerId = e.pointerId; // Store the pointerId
@@ -326,14 +324,9 @@ function handleChatResizeMouseMove(e) {
     if (!isResizingChat || e.pointerId !== activePointerId) return; // Process only the captured pointer
     // No need to preventDefault here as pointermove on a captured element won't scroll by default
 
-    console.log('[POINTERMOVE] target:', e.target, 'currentTarget:', e.currentTarget, 'pointerId:', e.pointerId); // DEBUG
-    // const sidebarRect = chatProSidebar.getBoundingClientRect(); // DEBUG - No longer strictly needed if target is consistent
-
     const currentMouseX = e.clientX;
     const deltaX = currentMouseX - initialChatMouseX;
     let newWidth = initialChatSidebarWidth - deltaX;
-
-    console.log(`initialX: ${initialChatMouseX}, currentX: ${e.clientX}, deltaX: ${deltaX}, initialWidth: ${initialChatSidebarWidth}, newWidth: ${newWidth}`);
 
     const minWidth = 200; // Minimum width
     const maxWidth = Math.min(800, window.innerWidth - 20); // Maximum width, ensuring it stays mostly on screen
@@ -346,8 +339,6 @@ function handleChatResizeMouseMove(e) {
 
 function stopChatResize(e) { // Accept event argument
     if (isResizingChat) {
-        console.log('[POINTERUP/CANCEL] target:', e.target, 'currentTarget:', e.currentTarget, 'pointerId:', e.pointerId); // DEBUG
-        
         if (activePointerId !== null && e.target.hasPointerCapture(activePointerId)) {
             e.target.releasePointerCapture(activePointerId); // Release the captured pointer
         }
@@ -618,53 +609,36 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Checkbox click
             if (target.matches('.custom-checkbox')) {
-                console.log('[Delegation] Checkbox clicked:', target);
                 const rowId = target.getAttribute('data-row-id');
-                console.log('[Delegation] Row ID:', rowId);
                 if (rowId) {
-                     // Call the actual handler function from eventHandlers.js
                      toggleChecked(rowId);
                  }
             }
-            
+
             // Edit icon click
             if (target.matches('.edit-icon')) {
-                console.log('[Delegation] Edit icon clicked:', target);
                 const row = target.closest('.client-row');
                 const rowId = row ? row.id : null;
-                console.log('[Delegation] Row ID for edit:', rowId);
                  if (rowId) {
-                     // Call the actual handler function from domUtils.js
                      openEditModal(rowId);
                  }
             }
 
             // Delete icon click
             if (target.matches('.delete-icon')) {
-                console.log('[Delegation] Delete icon clicked:', target);
                 const row = target.closest('.client-row');
                 const rowId = row ? row.id : null;
-                console.log('[Delegation] Row ID for delete:', rowId);
                  if (rowId) {
-                     console.log('[Delegation] Entered if(rowId) block, preparing for modal.');
-                     console.log('[Delegation] Showing confirmation modal for:', rowId);
                      const rowElement = document.getElementById(rowId);
                      const clientName = rowElement?.querySelector('.td-name')?.textContent || 'this entry';
 
-                     // Use the new confirmation modal
                      showConfirmationModal(
                          `Are you sure you want to delete the entry for "${clientName}" (ID: ${rowId})?`,
-                         () => { // onConfirm callback
-                             console.log('[Delegation] Modal confirmed for:', rowId);
-                             deleteRow(rowId); // Call the original delete function
-                         },
-                         () => { // onCancel callback
-                             console.log('[Delegation] Modal cancelled for:', rowId);
-                         }
+                         () => { deleteRow(rowId); },
+                         () => { /* Cancelled */ }
                      );
 
                  } else {
-                     console.warn('[Delegation] Delete clicked, but could not find parent row ID.');
                      showMessage('Could not identify the row to delete.', 'error');
                  }
             }
