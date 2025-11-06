@@ -1,7 +1,7 @@
 import { state } from './state.js';
 import {
-    formatCurrency, formatDate, parseDate, parseAmount, showMessage, getMonthFromDate, 
-    calculateTotalConfirmedAmount, calculateAverageConfirmedAmount, calculateConfirmationRate, getSampleFormData
+    formatCurrency, formatDate, parseDate, parseAmount, showMessage, getMonthFromDate,
+    calculateTotalConfirmedAmount, calculateAverageConfirmedAmount, calculateConfirmationRate
 } from './utils.js';
 import { formatCurrency as calculationsFormatCurrency, calculateMonthlySubtotal } from './calculations.js'; // Add import at the top
 
@@ -643,50 +643,26 @@ export function showConfirmationModal(message, onConfirmCallback, onCancelCallba
 }
 
 /**
- * Shows the Add Renewal modal.
+ * Shows the Add Renewal modal with blank fields.
  */
 export function showAddRenewalModal() {
     const modal = document.getElementById('add-renewal-modal');
     if (modal) {
-        const sampleData = getSampleFormData();
-        console.log('[showAddRenewalModal] Received sample data:', sampleData);
-
-        // --- Start Date Input Debug ---
+        // Clear all input fields to ensure form is blank
         const renewalDateInput = document.getElementById('renewal-date');
         const sentDateInput = document.getElementById('sent-date');
         const closeDateInput = document.getElementById('close-date');
-
-        console.log('[showAddRenewalModal] Found Date Inputs:', { renewalDateInput, sentDateInput, closeDateInput });
-
-        if (renewalDateInput) {
-            console.log('[showAddRenewalModal] Setting Renewal Date value:', sampleData.renewalDate);
-            renewalDateInput.value = sampleData.renewalDate;
-        } else {
-            console.error('[showAddRenewalModal] Renewal Date Input not found!');
-        }
-
-        if (sentDateInput) {
-            console.log('[showAddRenewalModal] Setting Sent Date value:', sampleData.sentDate);
-            sentDateInput.value = sampleData.sentDate;
-        } else {
-            console.error('[showAddRenewalModal] Sent Date Input not found!');
-        }
-
-        if (closeDateInput) {
-            console.log('[showAddRenewalModal] Setting Close Date value:', sampleData.closeDate);
-            closeDateInput.value = sampleData.closeDate;
-        } else {
-            console.error('[showAddRenewalModal] Close Date Input not found!');
-        }
-        // --- End Date Input Debug ---
-
-        // Set other fields as before
         const nameInput = document.getElementById('account-name');
         const amountInput = document.getElementById('amount');
         const oppIdInput = document.getElementById('opportunity-id');
-        if (nameInput) nameInput.value = sampleData.name;
-        if (amountInput) amountInput.value = sampleData.amount;
-        if (oppIdInput) oppIdInput.value = sampleData.opportunityId;
+
+        if (renewalDateInput) renewalDateInput.value = '';
+        if (sentDateInput) sentDateInput.value = '';
+        if (closeDateInput) closeDateInput.value = '';
+        if (nameInput) nameInput.value = '';
+        if (amountInput) amountInput.value = '';
+        if (oppIdInput) oppIdInput.value = '';
+
         modal.style.display = 'flex';
         document.getElementById('account-name')?.focus();
     } else {
