@@ -225,11 +225,17 @@ export function toggleView(view) {
  * Clears all input fields in the add license form.
  */
 export function clearForm() {
-    document.getElementById('account-name').value = '';
-    document.getElementById('close-date').value = '';
-    document.getElementById('renewal-date').value = '';
-    document.getElementById('amount').value = '';
-    document.getElementById('opportunity-id').value = '';
+    const nameEl = document.getElementById('account-name');
+    const closeDateEl = document.getElementById('close-date');
+    const renewalDateEl = document.getElementById('renewal-date');
+    const amountEl = document.getElementById('amount');
+    const opportunityIdEl = document.getElementById('opportunity-id');
+
+    if (nameEl) nameEl.value = '';
+    if (closeDateEl) closeDateEl.value = '';
+    if (renewalDateEl) renewalDateEl.value = '';
+    if (amountEl) amountEl.value = '';
+    if (opportunityIdEl) opportunityIdEl.value = '';
 }
 
 /**
@@ -357,12 +363,19 @@ export function openEditModal(rowId) {
     const opportunityId = row.getAttribute('data-opportunity-id') || '';
 
     // Populate modal fields
-    document.getElementById('edit-name').value = name;
-    document.getElementById('edit-renewal-date').value = renewalDate; // Already YYYY-MM-DD
-    document.getElementById('edit-sent-date').value = sentDate; // Already YYYY-MM-DD
-    document.getElementById('edit-date').value = closeDate; // Already YYYY-MM-DD
-    document.getElementById('edit-amount').value = parseAmount(amountStr).toFixed(2);
-    document.getElementById('edit-opportunity-id').value = opportunityId;
+    const editNameEl = document.getElementById('edit-name');
+    const editRenewalDateEl = document.getElementById('edit-renewal-date');
+    const editSentDateEl = document.getElementById('edit-sent-date');
+    const editCloseDateEl = document.getElementById('edit-date');
+    const editAmountEl = document.getElementById('edit-amount');
+    const editOpportunityIdEl = document.getElementById('edit-opportunity-id');
+
+    if (editNameEl) editNameEl.value = name;
+    if (editRenewalDateEl) editRenewalDateEl.value = renewalDate;
+    if (editSentDateEl) editSentDateEl.value = sentDate;
+    if (editCloseDateEl) editCloseDateEl.value = closeDate;
+    if (editAmountEl) editAmountEl.value = parseAmount(amountStr).toFixed(2);
+    if (editOpportunityIdEl) editOpportunityIdEl.value = opportunityId;
 
     // Display the modal using flex to enable centering
     modal.style.display = 'flex';

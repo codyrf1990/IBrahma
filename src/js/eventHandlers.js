@@ -13,12 +13,25 @@ import { getStateForSave, replaceState } from './state.js';
  */
 export function addLicense() {
     try {
-        const name = document.getElementById('account-name').value.trim();
-        const renewalDate = document.getElementById('renewal-date').value;
-        const sentDate = document.getElementById('sent-date').value;
-        const closeDate = document.getElementById('close-date').value;
-        let amount = parseFloat(document.getElementById('amount').value);
-        const opportunityId = document.getElementById('opportunity-id').value.trim();
+        const nameEl = document.getElementById('account-name');
+        const renewalDateEl = document.getElementById('renewal-date');
+        const sentDateEl = document.getElementById('sent-date');
+        const closeDateEl = document.getElementById('close-date');
+        const amountEl = document.getElementById('amount');
+        const opportunityIdEl = document.getElementById('opportunity-id');
+
+        if (!nameEl || !closeDateEl || !amountEl) {
+            console.error('[addLicense] Required form elements not found');
+            showMessage('Error: Form elements not found', 'error');
+            return;
+        }
+
+        const name = nameEl.value.trim();
+        const renewalDate = renewalDateEl?.value || '';
+        const sentDate = sentDateEl?.value || '';
+        const closeDate = closeDateEl.value;
+        let amount = parseFloat(amountEl.value);
+        const opportunityId = opportunityIdEl?.value.trim() || '';
 
         if (!name || !closeDate) {
             showMessage('Account Name and Close Date are required', 'error');
@@ -204,12 +217,26 @@ export function saveEditChanges() {
 
     try {
         // Get updated values from modal form
-        const name = document.getElementById('edit-name').value.trim();
-        const renewalDate = document.getElementById('edit-renewal-date').value;
-        const sentDate = document.getElementById('edit-sent-date').value;
-        const closeDate = document.getElementById('edit-date').value;
-        let amount = parseFloat(document.getElementById('edit-amount').value);
-        const opportunityId = document.getElementById('edit-opportunity-id').value.trim();
+        const nameEl = document.getElementById('edit-name');
+        const renewalDateEl = document.getElementById('edit-renewal-date');
+        const sentDateEl = document.getElementById('edit-sent-date');
+        const closeDateEl = document.getElementById('edit-date');
+        const amountEl = document.getElementById('edit-amount');
+        const opportunityIdEl = document.getElementById('edit-opportunity-id');
+
+        if (!nameEl || !closeDateEl || !amountEl) {
+            console.error('[saveEditChanges] Required edit form elements not found');
+            showMessage('Error: Edit form elements not found', 'error');
+            closeEditModal();
+            return;
+        }
+
+        const name = nameEl.value.trim();
+        const renewalDate = renewalDateEl?.value || '';
+        const sentDate = sentDateEl?.value || '';
+        const closeDate = closeDateEl.value;
+        let amount = parseFloat(amountEl.value);
+        const opportunityId = opportunityIdEl?.value.trim() || '';
 
         if (!name || !closeDate) {
             showMessage('Account Name and Close Date are required', 'error');
@@ -270,7 +297,6 @@ export function updateReceiptsGoal() {
         state.receiptsGoal = newValue;
         console.log('Goal updated state.receiptsGoal to:', state.receiptsGoal); // Log state update
         updateUIAndSummaries(); // Update displays that use receiptsGoal
-        state.clients = getAllClientsFromDOM(); // <-- Keep state in sync with DOM
         saveData(); // Save the change
     } else {
         console.log('Goal validation failed.'); // Log validation failure

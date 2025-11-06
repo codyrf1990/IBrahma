@@ -378,11 +378,10 @@ function stopChatResize(e) { // Accept event argument
 export function updateUIAndSummaries() {
     console.log("Updating UI and Summaries...");
     try {
-        // 1. Get Data and Settings
-        const clients = getAllClientsFromDOM(); // MODIFIED: Get data from DOM
-        // Log the data retrieved from DOM at the start of the update process
-        console.log('[UpdateUI] Data retrieved from DOM:', JSON.stringify(clients, null, 2)); // MODIFIED: Log message
-        
+        // 1. Get Data and Settings - Use state as source of truth
+        const clients = state.clients;
+        console.log('[UpdateUI] Using state.clients:', clients.length, 'entries');
+
         const goalInput = document.getElementById('receipts-goal-input');
         const goal = goalInput ? parseInt(goalInput.value, 10) : state.receiptsGoal;
         state.receiptsGoal = goal || 0;
@@ -610,6 +609,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Event Delegation for dynamic content in main-container
     const mainContainer = document.getElementById('main-container');
     if (mainContainer) {
+        // Notes editor state variables (must be declared before use)
+        let currentNotesEditor = { popup: null, globalClickListener: null };
+        let currentNotesTooltip = null;
+
         mainContainer.addEventListener('click', (event) => {
             const target = event.target;
             
@@ -665,62 +668,8 @@ document.addEventListener('DOMContentLoaded', () => {
                      showMessage('Could not identify the row to delete.', 'error');
                  }
             }
-            
-            // Notes icon click
-            if (target.matches('.notes-icon')) {
-                console.log('[Delegation] Notes icon clicked:', target);
-                event.stopPropagation();
-                if (currentNotesEditor.popup) closeNotesEditor(true);
-                if (currentNotesTooltip) {
-                    currentNotesTooltip.remove();
-                    currentNotesTooltip = null;
-                }
-                const row = target.closest('.client-row');
-                if (!row) return;
-                const rowId = row.id;
-                const currentNote = row.dataset.notes || '';
-                const popup = document.createElement('div');
-                popup.className = 'notes-editor-popup';
-                popup.dataset.rowId = rowId;
-                const textarea = document.createElement('textarea');
-                textarea.value = currentNote;
-                popup.appendChild(textarea);
 
-                // --- Position the popup below the icon, but keep it on screen ---
-                const iconRect = target.getBoundingClientRect();
-                const popupWidth = 260; // Approximate, should match/min-width in CSS
-                const popupHeight = 100; // Approximate, for bottom edge check
-                const gap = 5;
-                let popupLeft = iconRect.left + window.scrollX;
-                let popupTop = iconRect.bottom + window.scrollY + gap;
-
-                // Clamp right edge
-                const maxLeft = window.scrollX + window.innerWidth - popupWidth - 8; // 8px margin
-                if (popupLeft > maxLeft) popupLeft = maxLeft;
-                // Clamp left edge
-                if (popupLeft < window.scrollX + 4) popupLeft = window.scrollX + 4;
-                // Clamp bottom edge (optional, if popup would go off bottom)
-                const maxTop = window.scrollY + window.innerHeight - popupHeight - 8;
-                if (popupTop > maxTop) popupTop = maxTop;
-                // Clamp top edge (optional, if icon is near bottom)
-                if (popupTop < window.scrollY + 4) popupTop = window.scrollY + 4;
-
-                popup.style.position = 'absolute';
-                popup.style.top = `${popupTop}px`;
-                popup.style.left = `${popupLeft}px`;
-                document.body.appendChild(popup);
-                textarea.focus();
-                // Prevent immediate close
-                setTimeout(() => {
-                    const globalClickListener = (e) => {
-                        if (currentNotesEditor.popup && !currentNotesEditor.popup.contains(e.target)) {
-                            closeNotesEditor(true);
-                        }
-                    };
-                    document.addEventListener('click', globalClickListener, true);
-                    currentNotesEditor = { popup, globalClickListener };
-                }, 0);
-            }
+            // Notes icon click handling is done below with separate event listeners (line 771+)
         });
         
         let notesHoverTimeoutId = null;
@@ -820,8 +769,6 @@ document.addEventListener('DOMContentLoaded', () => {
             currentNotesEditor = { popup: popupElement, globalClickListener };
             textarea.focus();
         });
-
-        let currentNotesEditor = { popup: null, globalClickListener: null };
 
         // Global click listener for closing the notes editor
         function globalClickListener(e) {
