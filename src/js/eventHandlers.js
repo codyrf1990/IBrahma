@@ -13,12 +13,25 @@ import { getStateForSave, replaceState } from './state.js';
  */
 export function addLicense() {
     try {
-        const name = document.getElementById('account-name').value.trim();
-        const renewalDate = document.getElementById('renewal-date').value;
-        const sentDate = document.getElementById('sent-date').value;
-        const closeDate = document.getElementById('close-date').value;
-        let amount = parseFloat(document.getElementById('amount').value);
-        const opportunityId = document.getElementById('opportunity-id').value.trim();
+        const nameEl = document.getElementById('account-name');
+        const renewalDateEl = document.getElementById('renewal-date');
+        const sentDateEl = document.getElementById('sent-date');
+        const closeDateEl = document.getElementById('close-date');
+        const amountEl = document.getElementById('amount');
+        const opportunityIdEl = document.getElementById('opportunity-id');
+
+        if (!nameEl || !closeDateEl || !amountEl) {
+            console.error('[addLicense] Required form elements not found');
+            showMessage('Error: Form elements not found', 'error');
+            return;
+        }
+
+        const name = nameEl.value.trim();
+        const renewalDate = renewalDateEl?.value || '';
+        const sentDate = sentDateEl?.value || '';
+        const closeDate = closeDateEl.value;
+        let amount = parseFloat(amountEl.value);
+        const opportunityId = opportunityIdEl?.value.trim() || '';
 
         if (!name || !closeDate) {
             showMessage('Account Name and Close Date are required', 'error');
@@ -204,12 +217,26 @@ export function saveEditChanges() {
 
     try {
         // Get updated values from modal form
-        const name = document.getElementById('edit-name').value.trim();
-        const renewalDate = document.getElementById('edit-renewal-date').value;
-        const sentDate = document.getElementById('edit-sent-date').value;
-        const closeDate = document.getElementById('edit-date').value;
-        let amount = parseFloat(document.getElementById('edit-amount').value);
-        const opportunityId = document.getElementById('edit-opportunity-id').value.trim();
+        const nameEl = document.getElementById('edit-name');
+        const renewalDateEl = document.getElementById('edit-renewal-date');
+        const sentDateEl = document.getElementById('edit-sent-date');
+        const closeDateEl = document.getElementById('edit-date');
+        const amountEl = document.getElementById('edit-amount');
+        const opportunityIdEl = document.getElementById('edit-opportunity-id');
+
+        if (!nameEl || !closeDateEl || !amountEl) {
+            console.error('[saveEditChanges] Required edit form elements not found');
+            showMessage('Error: Edit form elements not found', 'error');
+            closeEditModal();
+            return;
+        }
+
+        const name = nameEl.value.trim();
+        const renewalDate = renewalDateEl?.value || '';
+        const sentDate = sentDateEl?.value || '';
+        const closeDate = closeDateEl.value;
+        let amount = parseFloat(amountEl.value);
+        const opportunityId = opportunityIdEl?.value.trim() || '';
 
         if (!name || !closeDate) {
             showMessage('Account Name and Close Date are required', 'error');
@@ -270,7 +297,6 @@ export function updateReceiptsGoal() {
         state.receiptsGoal = newValue;
         console.log('Goal updated state.receiptsGoal to:', state.receiptsGoal); // Log state update
         updateUIAndSummaries(); // Update displays that use receiptsGoal
-        state.clients = getAllClientsFromDOM(); // <-- Keep state in sync with DOM
         saveData(); // Save the change
     } else {
         console.log('Goal validation failed.'); // Log validation failure
@@ -411,15 +437,15 @@ export function handleFileLoad(event) {
                 replaceState(loadedState); // Update the application state
 
                 console.log("[Load] Triggering UI refresh...");
-                console.log("[FileLoad] State replaced. Rebuilding UI from loaded state...");
-                rebuildClientListFromState(); // New call to rebuild the list
+                rebuildClientListFromState();
 
-                console.log("[FileLoad] UI rebuilt. Updating totals and sorting...");
-                updateTotals(); // Call function to recalculate totals based on new DOM
-                sortAllSectionsAndRows(); // Call function to sort the newly created rows/sections
+                console.log("[FileLoad] Sorting and updating UI...");
+                sortClientsByDate();
+                sortMonthSections();
+                updateUIAndSummaries();
 
-                console.log("[FileLoad] UI refresh process completed.");
-                showMessage("Data loaded successfully!", "success"); // User feedback
+                console.log("[FileLoad] Data loaded successfully.");
+                showMessage("Data loaded successfully!", "success");
             } else {
                 console.error("[Load] Invalid file format or missing key properties.", loadedState);
                 showMessage("Error: Invalid file format. Could not load data.", "error");
@@ -442,30 +468,7 @@ export function handleFileLoad(event) {
 
     reader.readAsText(file); // Start reading the file as text
     console.log("[Load] Started reading file as text...");
-}
-
-// Utility functions
-function updateTotals() {
-    // This function should recalculate totals and update the UI as needed.
-    // If you already have this logic elsewhere, you may want to import it instead.
-    // Placeholder: implement as needed or replace with correct import.
-    // For now, we call updateUIAndSummaries for summary stats only.
-    if (typeof updateUIAndSummaries === 'function') {
-        updateUIAndSummaries();
-    }
-}
-
-function sortAllSectionsAndRows() {
-    // This function should sort month sections and rows.
-    // If you already have this logic elsewhere, you may want to import it instead.
-    // Placeholder: implement as needed or replace with correct import.
-    if (typeof sortClientsByDate === 'function') sortClientsByDate();
-    if (typeof sortMonthSections === 'function') sortMonthSections();
-}
-
-// Note: `updateTotalAccounts` from original script seems redundant now,
-// as totals are managed differently. If specific functionality is needed,
-// it should be reimplemented based on the new structure. 
+} 
 
 // --- Initialize Event Listeners ---
 
