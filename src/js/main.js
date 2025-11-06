@@ -1,6 +1,6 @@
 console.log('main.js: Module execution started.'); // Log module start
 import { state, setSearchTerm, updateClientNote } from './state.js';
-import { showMessage, getMonthFromDate, getSampleFormData } from './utils.js';
+import { showMessage, getMonthFromDate } from './utils.js';
 import { loadInitialData, saveData, previewImportData, validateAndImport } from './data.js';
 import { 
     toggleView, 
