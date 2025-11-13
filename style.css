@@ -342,25 +342,30 @@ h2 {
 .month-header {
     display: flex;
     justify-content: space-between;
-    padding-top: 4px;     /* Further reduced from 8px */
-    padding-bottom: 4px;  /* Further reduced from 8px */
-    border-bottom: 2px solid var(--border-color);
-    margin-bottom: 4px;  /* Further reduced from 8px */
-    font-weight: 600;
-    align-items: center; /* Vertically align items */
+    padding: 16px 20px; /* Increased padding for better prominence */
+    border-bottom: 2px solid var(--primary-color);
+    border-radius: 4px 4px 0 0; /* Rounded top corners */
+    margin-bottom: 8px;
+    font-weight: 700;
+    align-items: center;
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.09) 0%, rgba(220, 53, 69, 0.04) 100%); /* Slightly stronger gradient */
 }
 
-/* Assuming h3 within month-header is the title */
+/* Month title */
 .month-header h3 {
     margin-top: 0;
     margin-bottom: 0;
-    color: var(--primary-color); /* MODIFIED: Applied new color */
+    color: var(--primary-color);
+    font-size: 1.2rem; /* Slightly larger */
+    font-weight: 700;
 }
 
-/* Assuming span within month-header is the subscription count */
-.month-header span { /* Or a more specific class if available */
+/* Confirmed deals count */
+.month-header span {
     margin: 0;
-    color: var(--text-secondary); /* MODIFIED: Applied new color */
+    color: var(--text-primary); /* More prominent */
+    font-weight: 600;
+    font-size: 0.98rem;
 }
 
 /* Updated Client Row Styles using TR */
@@ -380,9 +385,9 @@ h2 {
     background-color: #ffffff; /* Default white for even */
 }
 
-.client-row:hover {
-    background-color: #f5f5f5; /* Slightly darker hover as requested */
-    cursor: default;
+/* Ensure all table cells inherit the row background for zebra striping */
+.month-section .client-table tbody .client-row td {
+    background-color: inherit;
 }
 
 /* Visual Feedback Classes */
@@ -435,10 +440,9 @@ h2 {
     opacity: 0.7;
     transition: opacity 0.2s ease, background-color 0.2s ease;
     margin: 0;
-    min-width: 32px; /* Consistent width for all icons */
-    min-height: 32px; /* Consistent height for all icons */
-    width: 32px; /* Fixed width */
-    height: 32px; /* Fixed height */
+    min-width: 24px; /* Minimum clickable width */
+    min-height: 24px; /* Minimum clickable height */
+    /* Removed fixed width/height to eliminate visible rectangle artifacts */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -448,7 +452,7 @@ h2 {
 .edit-icon:hover,
 .delete-icon:hover {
     opacity: 1;
-    background-color: rgba(204, 0, 0, 0.05); /* Subtle background on hover */
+    background-color: transparent; /* No background */
 }
 
 .client-row:hover .edit-icon,
@@ -461,7 +465,7 @@ h2 {
     display: flex;
     align-items: center;
     justify-content: center; /* Distribute space evenly */
-    gap: 0.4rem; /* Minimum gap between items */
+    gap: 0.2rem; /* Reduced gap for tighter icon grouping */
     width: 100%; /* Ensure container fills cell width */
     height: 100%;
     padding: 0.1rem 0.2rem; /* Slight padding for better visual appearance */
@@ -474,13 +478,13 @@ h2 {
     width: 110px;
     text-align: center;
     vertical-align: middle;
-    padding: 0 4px; /* Reduced padding to keep buttons tight */
+    padding: 0 16px 0 4px; /* Increased right padding for spacing from edge */
 }
 
 /* Styling for individual action buttons/icons */
 .action-button {
     cursor: pointer;
-    padding: 4px; /* Add padding to increase clickable area and visual space */
+    padding: 0; /* Remove padding to eliminate background rectangle */
     border-radius: 4px; /* Slightly rounded background on hover */
     transition: transform 0.15s ease, background-color 0.15s ease, opacity 0.15s ease;
     display: inline-block; /* Ensure padding applies correctly */
@@ -492,7 +496,7 @@ h2 {
 
 .action-button:hover {
     transform: scale(1.1); /* Slightly enlarge on hover */
-    background-color: rgba(0, 0, 0, 0.1); /* Subtle background highlight */
+    background-color: transparent; /* No background */
     opacity: 0.9;
 }
 
@@ -1065,8 +1069,8 @@ button {
 .row-actions {
     display: flex;
     align-items: center;
-    gap: 2px; /* Reduce spacing between buttons */
-    width: 44px; /* Fixed width to match header */
+    gap: 10px; /* Increased spacing for better touch targets and readability */
+    min-width: 85px; /* Increased to accommodate better spacing */
     justify-content: flex-end;
 }
 
@@ -1141,20 +1145,6 @@ button {
   margin-bottom: 4px;
 }
 
-/* Specific cell styling for td-actions elements */
-.td-actions {
-    padding: 8px;
-    text-align: center;
-    vertical-align: middle;
-}
-
-.td-actions button {
-  padding: 4px;
-  margin: 0 2px;
-  background: transparent;
-  border: none;
-}
-
 /* Additional specific Calculator styling */
 .percentage-calculator {
   display: flex;
@@ -1169,7 +1159,7 @@ button {
     border-collapse: collapse;
     margin-bottom: var(--spacing-md); /* Space before subtotal */
     min-width: unset; /* Changed from 600px to prevent premature scrolling */
-    table-layout: auto; /* Allow the browser to calculate column widths automatically */
+    table-layout: fixed; /* Force columns to respect width constraints */
     font-size: 0.9rem; /* Slightly reduced font size for compactness */
 }
 
@@ -1180,7 +1170,8 @@ button {
 }
 
 .client-table th {
-    font-weight: bold;
+    font-weight: 700;
+    font-size: 1rem;
     text-align: left; /* Default alignment for headers */
     border-bottom: 2px solid #555; /* Prominent border for header */
     color: var(--table-header-text-color);
@@ -1229,9 +1220,10 @@ button {
 /* New rule for general cell padding */
 .client-table th,
 .client-table td {
-    padding: 3px 6px; /* top/bottom 3px, left/right 6px (further reduced) */
-    line-height: 1.3; /* Adjusted line-height */
-    border-bottom: 1px solid #444; /* Subtle horizontal border for dark theme */
+    padding: 10px 14px; /* More generous spacing for comfort */
+    line-height: 1.5; /* Improved line-height for comfortable reading */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06); /* Subtle horizontal border */
+    font-size: 0.97rem; /* Increased for better readability */
     /* Ensure other properties like text-align remain as desired by specific column rules */
 }
 
@@ -1240,13 +1232,13 @@ button {
     border-bottom: none;
 }
 
-.month-section .client-table tbody tr:hover {
-  background-color: #3a3a3a; /* Dark theme hover background */
+.month-section .client-table tbody .client-row:hover {
+  background-color: #e8e8e8 !important; /* More visible hover effect */
+  transition: background-color 0.2s ease;
 }
 
-/* Align amount to the right in tables */
-.month-section .client-table td.td-amount {
-  text-align: left;
+.month-section .client-table tbody .client-row:hover td {
+  background-color: inherit; /* Ensure all cells inherit row hover */
 }
 
 /* General alignment for other cells, can be overridden by more specific rules */
@@ -1266,14 +1258,13 @@ button {
     padding-right: var(--spacing-md); /* Ensure padding on the right of the last cell */
 }
 
-.client-table th.th-amount,
-.client-table td.td-amount {
-    text-align: left;
+.client-table th.th-amount {
+    text-align: right;
 }
 
 .table-responsive-wrapper {
     width: 100%;     /* Ensure wrapper takes full width */
-    overflow-x: auto; /* Enable horizontal scrolling */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
     display: block; /* Ensure block-level for correct overflow behavior */
     -webkit-overflow-scrolling: touch; /* Smoother scrolling on iOS */
     margin-bottom: var(--spacing-sm); /* Add space below for scrollbar */
@@ -1623,19 +1614,12 @@ document.addEventListener('DOMContentLoaded', function() {
 /* Remove old tooltip/editor styles */
 .notes-preview-tooltip, .notes-editor-popup { display: none !important; }
 
-.td-actions {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px; /* Increased gap for more space */
-}
-
 .action-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-size: 1.1em;
-  padding: 5px;
+  padding: 0; /* Remove padding to eliminate background rectangle */
   border-radius: 4px;
   border: none;
   background: none;
@@ -1645,7 +1629,7 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .action-icon:hover {
-  background-color: #555;
+  background-color: transparent; /* No background */
   color: #fff;
 }
 
@@ -1659,7 +1643,7 @@ document.addEventListener('DOMContentLoaded', function() {
   color: #ff8888;
 }
 .delete-icon:hover {
-  background-color: #cc0000;
+  background-color: transparent; /* No background */
   color: #fff;
 }
 
@@ -1690,36 +1674,73 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 /* Widths for other columns - update to ensure proper distribution */
-.th-name, .td-name { 
+.th-name, .td-name {
     width: 22%; /* Reduced from 25% */
     min-width: 110px; /* Further reduced */
-    max-width: 240px; 
+    max-width: 240px;
     /* text-align: left; */ /* Ensure this doesn't override */
 }
-.th-renewal-date, .td-renewal-date { 
+.td-name {
+    overflow: hidden; /* Clip overflowing text */
+    text-overflow: ellipsis; /* Show "..." for truncated text */
+    white-space: nowrap; /* Prevent text wrapping */
+}
+.th-renewal-date, .td-renewal-date {
     width: 11%; /* Reduced from 12% */
-    text-align: center; 
+    text-align: center;
     min-width: 50px; /* Further reduced */
     max-width: 90px; /* Reduced from 100px */
 }
-.th-sent-date, .td-sent-date { 
+.td-renewal-date {
+    overflow: hidden; /* Clip overflowing text */
+    text-overflow: ellipsis; /* Show "..." for truncated text */
+    white-space: nowrap; /* Prevent text wrapping */
+}
+.th-sent-date, .td-sent-date {
     width: 11%; /* Reduced from 12% */
-    text-align: center; 
+    text-align: center;
     min-width: 50px; /* Further reduced */
     max-width: 90px; /* Reduced from 100px */
 }
-.th-close-date, .td-close-date { 
+.td-sent-date {
+    overflow: hidden; /* Clip overflowing text */
+    text-overflow: ellipsis; /* Show "..." for truncated text */
+    white-space: nowrap; /* Prevent text wrapping */
+}
+.th-close-date, .td-close-date {
     width: 11%; /* Reduced from 12% */
-    text-align: center; 
+    text-align: center;
     min-width: 50px; /* Further reduced */
     max-width: 90px; /* Reduced from 100px */
+}
+.td-close-date {
+    overflow: hidden; /* Clip overflowing text */
+    text-overflow: ellipsis; /* Show "..." for truncated text */
+    white-space: nowrap; /* Prevent text wrapping */
+}
+.th-amount, .td-amount {
+    width: 11%; /* Match other numeric columns */
+    text-align: right; /* Right-align currency values */
+    min-width: 80px;
+    max-width: 110px;
+}
+.td-amount {
+    overflow: hidden; /* Clip overflowing text */
+    text-overflow: ellipsis; /* Show "..." for truncated text */
+    white-space: nowrap; /* Prevent text wrapping */
+    font-variant-numeric: tabular-nums; /* Monospaced numbers for better alignment */
 }
 
-.th-opp-id, .td-opp-id { 
+.th-opp-id, .td-opp-id {
     width: 14%; /* Reduced from 15% */
     text-align: left; /* Default left alignment */
     min-width: 70px; /* Further reduced */
     max-width: 120px; /* Reduced from 130px */
+}
+.td-opp-id {
+    overflow: hidden; /* Clip overflowing text */
+    text-overflow: ellipsis; /* Show "..." for truncated text */
+    white-space: nowrap; /* Prevent text wrapping */
 }
 .th-actions, .td-actions { 
     width: 7%; /* Reduced from 8% */
@@ -2604,13 +2625,18 @@ body.dark-mode #commander-chats-section .button:hover {
 }
 
 body.dark-mode .month-section .client-table tbody .client-row:nth-child(odd) {
-    background-color: var(--card-background); /* Dark grey */
+    background-color: #252525; /* Even darker for better contrast */
 }
 body.dark-mode .month-section .client-table tbody .client-row:nth-child(even) {
-    background-color: #333333; /* Slightly different dark grey, matches dark table header */
+    background-color: #3a3a3a; /* Lighter grey for stronger distinction */
 }
 body.dark-mode .month-section .client-table tbody .client-row:hover {
-    background-color: #4a4a4a; /* Darker hover for rows */
+    background-color: rgba(220, 53, 69, 0.25) !important; /* More prominent hover effect */
+    transition: background-color 0.2s ease;
+}
+
+body.dark-mode .month-section .client-table tbody .client-row:hover td {
+    background-color: inherit; /* Ensure all cells inherit row hover */
 }
 
 body.dark-mode .kpi-list p, 
@@ -2689,6 +2715,20 @@ textarea::placeholder /* Added textarea placeholder */ {
     opacity: 0.7; /* Make placeholder slightly less prominent */
 }
 
+/* Dark mode month header */
+body.dark-mode .month-header {
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.16) 0%, rgba(220, 53, 69, 0.08) 100%); /* Stronger gradient for visibility */
+    border-bottom-color: rgba(220, 53, 69, 0.6); /* More prominent border */
+}
+
+body.dark-mode .month-header h3 {
+    color: #ff6b7a; /* Brighter red for dark mode */
+}
+
+body.dark-mode .month-header span {
+    color: var(--text-primary);
+}
+
 body.dark-mode .client-table th {
     background-color: var(--table-header-bg); /* MODIFIED: was var(--card-background) */
     color: var(--primary-color); /* MODIFIED: was var(--table-header-text-color), now explicitly red */
@@ -2710,22 +2750,8 @@ body.dark-mode .sort-indicator.sort-desc::after {
 }
 
 body.dark-mode .client-table td {
-    background-color: var(--card-background); /* Dark theme background */
     color: var(--text-primary);
-}
-
-body.dark-mode .client-table td {
     border-bottom: 1px solid var(--border-color);
-}
-
-body.dark-mode .month-section .client-table tbody .client-row:nth-child(odd) {
-    background-color: var(--card-background); /* Dark grey */
-}
-body.dark-mode .month-section .client-table tbody .client-row:nth-child(even) {
-    background-color: #333333; /* Slightly different dark grey, matches dark table header */
-}
-body.dark-mode .month-section .client-table tbody .client-row:hover {
-    background-color: #4a4a4a; /* Darker hover for rows */
 }
 
 body.dark-mode .kpi-list p, 
