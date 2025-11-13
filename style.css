@@ -1187,6 +1187,45 @@ button {
     border-bottom: 2px solid var(--table-header-border-color);
 }
 
+/* Sortable table headers */
+.client-table th.th-sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s ease;
+    position: relative;
+}
+
+.client-table th.th-sortable:hover {
+    background-color: rgba(220, 53, 69, 0.15);
+}
+
+.client-table th.th-sortable.sort-active {
+    background-color: rgba(220, 53, 69, 0.1);
+    font-weight: 700;
+}
+
+/* Sort indicator (arrow) */
+.sort-indicator {
+    display: inline-block;
+    margin-left: 4px;
+    font-size: 0.7em;
+    opacity: 0.4;
+}
+
+.th-sortable.sort-active .sort-indicator {
+    opacity: 1;
+}
+
+.sort-indicator.sort-asc::after {
+    content: '▲';
+    color: var(--primary-color);
+}
+
+.sort-indicator.sort-desc::after {
+    content: '▼';
+    color: var(--primary-color);
+}
+
 /* New rule for general cell padding */
 .client-table th,
 .client-table td {
@@ -2388,244 +2427,6 @@ body.dark-mode #generic-content-modal #generic-modal-title {
     }
 }
 
-/* --- CHAT PRO SIDEBAR STYLES --- */
-#chatProSidebar {
-    position: fixed;
-    top: 0;
-    right: -420px; /* Start off-screen, width + some buffer */
-    width: 400px;
-    height: 100vh;
-    background-color: var(--background-primary, #f8f8f8);
-    box-shadow: -3px 0px 15px rgba(0,0,0,0.2);
-    z-index: 1100; /* Higher than generic modal overlay if it exists */
-    transition: right 0.3s ease-in-out;
-    display: flex;
-    flex-direction: column;
-    border-left: 1px solid var(--border-color, #e0e0e0);
-}
-
-#chatProSidebar.open {
-    right: 0;
-}
-
-.chat-sidebar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--spacing-sm) var(--spacing-md);
-    background-color: var(--solidcam-secondary, #333); /* Using a theme variable if available */
-    color: var(--solidcam-text-light, #FFF);
-    border-bottom: 1px solid var(--solidcam-primary, #CC0000);
-    flex-shrink: 0; /* Prevent header from shrinking */
-}
-
-.chat-sidebar-header h3 {
-    margin: 0;
-    font-size: 0.825rem; /* MODIFIED: Was 1.1rem, now 3/4 size */
-    font-weight: 600;
-}
-
-.chat-sidebar-close-btn {
-    background: none;
-    border: none;
-    color: var(--solidcam-text-light, #FFF);
-    font-size: 1.6rem;
-    cursor: pointer;
-    padding: 0 var(--spacing-xs);
-    line-height: 1;
-}
-
-.chat-sidebar-close-btn:hover {
-    color: var(--solidcam-primary, #CC0000);
-}
-
-/* NEW: Chat Pro Controls Header */
-.chat-pro-controls-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between; /* Pushes selector left, button right */
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-bottom: 1px solid var(--border-color);
-    background-color: var(--background-secondary); /* Slightly different bg for distinction */
-    flex-shrink: 0; /* Prevent controls header from shrinking */
-}
-
-.model-selector-container {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-}
-
-#gemini-model-selector {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--border-radius-sm);
-    border: 1px solid var(--border-color);
-    background-color: var(--card-background);
-    color: var(--text-primary);
-    font-size: 0.8rem;
-    max-width: 180px; /* Prevent it from becoming too wide */
-}
-
-#chat-pro-api-settings-btn {
-    padding: var(--spacing-xs) var(--spacing-sm); /* Make it compact */
-    font-size: 0.9rem; /* Adjust icon size if needed via i tag */
-    background-color: transparent; /* Make it look like a settings icon */
-    border: 1px solid transparent;
-    color: var(--text-secondary);
-}
-
-#chat-pro-api-settings-btn:hover {
-    color: var(--primary-color);
-    background-color: var(--background-secondary); /* Subtle hover */
-    border-color: var(--border-color);
-}
-
-#chat-pro-api-settings-btn i {
-    font-size: 1.1em; /* Control icon size */
-}
-
-/* NEW: API Settings Modal for Chat Pro */
-#chat-pro-api-settings-modal .modal-content {
-    max-width: 450px; /* Increased max-width slightly for more content */
-    /* position: absolute; */ /* REMOVED: Revert to default centering via overlay */
-    /* top: 60px; */       /* REMOVED */
-    /* right: 15px; */      /* REMOVED */
-    /* margin: 0; */       /* REMOVED */
-    /* Add margin back if needed for centering, but overlay should handle it */
-    margin: auto; /* Ensures it centers if overlay doesn't fully dictate */
-}
-
-#chat-pro-api-settings-modal.modal-overlay {
-    /* justify-content: flex-start; */ /* REMOVED: Revert to default centering */
-    /* align-items: flex-start; */   /* REMOVED: Revert to default centering */
-    /* These should be inherited from .modal-overlay or re-stated if specific override is needed */
-    display: flex; /* Ensure flex is still active if it was removed */
-    justify-content: center;
-    align-items: center;
-}
-
-.api-settings-modal-body {
-    max-height: calc(100vh - 180px); /* Header and footer height approx */
-    overflow-y: auto;
-    padding: var(--spacing-sm) var(--spacing-md); /* Consistent padding */
-}
-
-.api-settings-section {
-    margin-bottom: var(--spacing-lg);
-    padding-bottom: var(--spacing-md);
-    border-bottom: 1px solid var(--border-color);
-}
-
-.api-settings-section:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-}
-
-.api-settings-section h5 {
-    font-size: 1rem;
-    color: var(--primary-color);
-    margin-top: 0;
-    margin-bottom: var(--spacing-md);
-}
-
-#chat-pro-api-settings-modal .form-field {
-    margin-bottom: var(--spacing-md);
-}
-
-#chat-pro-api-settings-modal .form-field label {
-    font-size: 0.9em;
-    margin-bottom: var(--spacing-xs);
-    display: block; /* Ensure label is on its own line */
-}
-
-#chat-pro-api-settings-modal .form-field input[type="password"],
-#chat-pro-api-settings-modal .form-field input[type="number"] {
-    width: 100%;
-    padding: var(--spacing-xs) var(--spacing-sm);
-}
-
-#chat-pro-api-settings-modal .form-field input[type="range"] {
-    width: calc(100% - 50px); /* Accommodate value display */
-    vertical-align: middle;
-}
-
-#chat-pro-api-settings-modal .form-field .range-value {
-    display: inline-block;
-    width: 40px;
-    text-align: right;
-    vertical-align: middle;
-    font-size: 0.9em;
-    color: var(--text-secondary);
-    margin-left: var(--spacing-xs);
-}
-
-#chat-pro-api-settings-modal .api-status {
-    color: var(--text-secondary);
-    font-size: 0.85em;
-    margin-top: var(--spacing-sm);
-}
-
-.api-settings-modal-footer {
-    padding: var(--spacing-md);
-    border-top: 1px solid var(--border-color);
-    text-align: right; /* Align save button to the right */
-}
-
-/* Dark mode adjustments for the new API settings parts */
-body.dark-mode #chat-pro-api-settings-modal .modal-content {
-    background-color: var(--card-background);
-    border: 1px solid var(--border-color);
-}
-
-body.dark-mode .api-settings-modal-body {
-    scrollbar-color: var(--border-color) var(--background-secondary); /* For Firefox */
-}
-body.dark-mode .api-settings-modal-body::-webkit-scrollbar-thumb {
-    background-color: var(--border-color);
-}
-body.dark-mode .api-settings-modal-body::-webkit-scrollbar-track {
-    background-color: var(--background-secondary);
-}
-
-body.dark-mode .api-settings-section {
-    border-bottom-color: var(--border-color);
-}
-
-body.dark-mode #chat-pro-api-settings-modal .form-field .range-value {
-    color: var(--text-secondary);
-}
-
-body.dark-mode .api-settings-modal-footer {
-    border-top-color: var(--border-color);
-}
-
-body.dark-mode #chat-pro-api-settings-modal .api-status {
-    color: var(--text-secondary);
-}
-
-#chatProSidebarIframe {
-    flex-grow: 1;
-    border: none;
-    width: 100%;
-    height: 100%; /* Ensure iframe takes full height of its container */
-}
-
-.chat-sidebar-drag-handle {
-    position: absolute;
-    left: -5px; /* Position slightly outside to be grabbable */
-    top: 0;
-    width: 10px; /* Width of the grabbable area */
-    height: 100%;
-    cursor: col-resize; /* Standard cursor for horizontal resizing */
-    background-color: rgba(0,0,0,0.1); /* Subtle visual indicator */
-    z-index: 1; /* Ensure it's above the sidebar content for mouse events */
-}
-
-/* Additional styling for when body has chat-sidebar-open (optional) */
-body.chat-sidebar-open {
-    /* overflow: hidden; */ /* Be cautious with this, can affect main page scroll unexpectedly */
-}
-
 /* Settings Cog Icon */
 #settings-icon-container {
     position: absolute;
@@ -2894,6 +2695,20 @@ body.dark-mode .client-table th {
     border-bottom: 2px solid var(--table-header-border-color);
 }
 
+/* Dark mode sortable headers */
+body.dark-mode .client-table th.th-sortable:hover {
+    background-color: rgba(220, 53, 69, 0.25);
+}
+
+body.dark-mode .client-table th.th-sortable.sort-active {
+    background-color: rgba(220, 53, 69, 0.2);
+}
+
+body.dark-mode .sort-indicator.sort-asc::after,
+body.dark-mode .sort-indicator.sort-desc::after {
+    color: #ff6b7a; /* Brighter red for dark mode */
+}
+
 body.dark-mode .client-table td {
     background-color: var(--card-background); /* Dark theme background */
     color: var(--text-primary);
@@ -2936,72 +2751,10 @@ body.dark-mode #progress-overview #update-goal-btn:hover {
     color: white;
 }
 
-/* Dark mode for Chat Pro Sidebar */
-body.dark-mode #chatProSidebar {
-    background-color: var(--card-background);
-    border-left-color: var(--border-color);
-}
-
-body.dark-mode .chat-sidebar-header {
-    background-color: var(--table-header-bg); /* Using a dark header bg */
-    border-bottom-color: var(--primary-color);
-}
-
-body.dark-mode .chat-sidebar-header h3 {
-    color: var(--text-primary);
-}
-
-body.dark-mode .chat-sidebar-close-btn {
-    color: var(--text-secondary);
-}
-
-body.dark-mode .chat-sidebar-close-btn:hover {
-    color: var(--primary-color);
-}
-
 /* Settings Panel Modal */
 #settings-panel-modal .modal-content {
     /* max-width: 450px; /* Adjust as needed */
     background-color: var(--card-background); /* Uses themed var */
-}
-
-/* API Settings Modal Specific Styles */
-#chat-pro-api-modal-title {
-    text-align: center;
-    width: 100%; /* Ensure it takes full width to center text */
-    font-size: 1.4em; /* Slightly larger title */
-    margin-bottom: 20px; /* Add some space below the title */
-    color: var(--primary-color); /* Use a primary color for emphasis */
-}
-
-.api-settings-modal-content .modal-header {
-    display: flex; /* Use flexbox for easier alignment */
-    justify-content: center; /* Center title if it's the only direct child or manage space */
-    align-items: center;
-    position: relative; /* For positioning the close button absolutely if needed */
-}
-
-.default-value-display {
-    font-size: 0.8em;
-    color: var(--text-light-variant); /* Lighter text color */
-    margin-left: 5px;
-    font-style: italic;
-}
-
-/* Adjustments for form fields if default value makes label too long */
-.api-settings-modal-body .form-field label {
-    display: flex; /* Helps align label text and default value span */
-    align-items: center; 
-    flex-wrap: wrap; /* Allow wrapping if line becomes too long */
-}
-
-/* Ensure the close button in the API settings modal is positioned correctly with a centered title */
-#chat-pro-api-settings-modal .modal-close {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 1.5em;
-    /* Adjust if existing styles conflict */
 }
 
 /* Info Icon and Tooltip Styles */
@@ -3082,4 +2835,195 @@ body.dark-mode .chat-sidebar-close-btn:hover {
 .api-settings-modal-body .form-field label .default-value-display {
     white-space: nowrap; /* Keep default value on one line if possible */
     margin-right: 5px; /* Add some space before the info icon */
+}
+/* ========================================
+   YEAR TABS STYLING
+   ======================================== */
+
+/* Year Tabs Container */
+#year-tabs-container {
+    margin: var(--spacing-md) auto;
+    max-width: var(--max-content-width);
+    padding: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border-color);
+}
+
+.year-tabs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm) var(--spacing-md);
+    border-bottom: 2px solid var(--primary-color);
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.06) 0%, rgba(220, 53, 69, 0.02) 100%);
+}
+
+.year-tabs-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.year-tabs {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+    padding: var(--spacing-md);
+    align-items: center;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.01) 0%, transparent 100%);
+}
+
+.year-tab {
+    padding: 10px 20px;
+    border: 2px solid var(--border-color);
+    background: var(--card-background);
+    color: var(--text-primary);
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    min-width: 70px;
+    text-align: center;
+}
+
+.year-tab:hover {
+    border-color: var(--primary-color);
+    background: var(--background-secondary);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.year-tab.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+.year-tab.active:hover {
+    background: var(--primary-hover);
+    border-color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+#add-year-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    font-size: 0.875rem;
+    border: 1px solid var(--border-color);
+    background: var(--card-background);
+    color: var(--text-primary);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#add-year-btn:hover {
+    background: var(--background-secondary);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+#add-year-btn i {
+    font-size: 0.85em;
+}
+
+/* Year indicator in Add Renewal modal */
+#add-renewal-year-indicator {
+    color: var(--primary-color);
+    font-weight: 600;
+    font-size: 0.9em;
+}
+
+/* Dark mode adjustments */
+body.dark-mode #year-tabs-container {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .year-tabs-header {
+    border-bottom-color: var(--primary-color);
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.12) 0%, rgba(220, 53, 69, 0.05) 100%);
+}
+
+body.dark-mode .year-tabs-header h3 {
+    color: #ff6b7a;
+}
+
+body.dark-mode .year-tabs {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 0%, transparent 100%);
+}
+
+body.dark-mode .year-tab {
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode .year-tab:hover {
+    border-color: var(--primary-color);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .year-tab.active {
+    box-shadow: 0 2px 10px rgba(220, 53, 69, 0.5);
+}
+
+body.dark-mode #add-year-btn {
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode #add-year-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary-color);
+    color: #ff6b7a;
+}
+
+body.dark-mode #add-renewal-year-indicator {
+    color: #ff6b7a;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .year-tabs-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--spacing-sm);
+        padding-bottom: var(--spacing-sm);
+    }
+
+    #add-year-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .year-tab {
+        flex: 1 1 auto;
+        min-width: 65px;
+    }
+}
+
+@media (max-width: 480px) {
+    .year-tabs-header h3 {
+        font-size: 1rem;
+    }
+
+    .year-tab {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        min-width: 55px;
+    }
+
+    #add-year-btn {
+        font-size: 0.85rem;
+        padding: 6px 12px;
+    }
 }

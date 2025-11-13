@@ -43,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (chatProIframe && chatProIframe.contentWindow) {
             const isCurrentlyDark = document.body.classList.contains('dark-mode');
             chatProIframe.contentWindow.postMessage({ type: 'TOGGLE_DARK_MODE', isDark: isCurrentlyDark }, '*');
-            console.log('[settings.js] Sent dark mode sync to iframe. Dark:', isCurrentlyDark);
         }
     };
 
@@ -87,17 +86,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load dark mode preference on page load
     const savedDarkMode = localStorage.getItem('darkMode');
-    if (savedDarkMode === 'enabled') {
-        if (darkModeToggle) {
-            darkModeToggle.checked = true;
-        }
-        applyDarkMode(true); // This will now also message the iframe
-    } else {
-        if (darkModeToggle) {
-            darkModeToggle.checked = false; 
-        }
-        applyDarkMode(false); // This will now also message the iframe
+    // Default to dark mode if no preference is saved
+    const shouldBeDark = savedDarkMode === null ? true : savedDarkMode === 'enabled';
+
+    if (darkModeToggle) {
+        darkModeToggle.checked = shouldBeDark;
     }
+    applyDarkMode(shouldBeDark);
 
     // Placeholder for "In Construction" items
     const inConstructionItems = document.querySelectorAll('.setting-item span:not(.slider)');

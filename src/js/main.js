@@ -1,13 +1,12 @@
-console.log('main.js: Module execution started.'); // Log module start
-import { state, setSearchTerm, updateClientNote } from './state.js';
+import { state, setSearchTerm, updateClientNote, loadSortPreferences } from './state.js';
 import { showMessage, getMonthFromDate } from './utils.js';
 import { loadInitialData, saveData, previewImportData, validateAndImport } from './data.js';
-import { 
-    toggleView, 
-    openEditModal, 
-    closeEditModal, 
-    fixRowStructure, 
-    clearForm, 
+import {
+    toggleView,
+    openEditModal,
+    closeEditModal,
+    fixRowStructure,
+    clearForm,
     displaySummaryStatistics,
     displayEntrySummary,
     getAllClientsFromDOM,
@@ -17,7 +16,9 @@ import {
     showConfirmationModal,
     showAddRenewalModal,
     hideAddRenewalModal,
-    updateRowVisibility
+    updateRowVisibility,
+    sortRowsByField,
+    updateSortIndicators
 } from './domUtils.js';
 import { addLicense, toggleChecked, deleteRow, saveEditChanges, updateReceiptsGoal } from './eventHandlers.js';
 import { 
@@ -31,6 +32,8 @@ import {
 } from './calculations.js';
 // Import save/load handlers
 import { handleSaveToFile, handleLoadClick, handleFileLoad, updatePercentageCalculator } from './eventHandlers.js';
+// Import year tabs functions
+import { initializeYearTabs, rebuildYearTabs, switchYear } from './yearTabs.js';
 
 // --- NEW: Generic Modal Helper Functions ---
 function openGenericModal(title, iframeSrc) {
@@ -65,301 +68,6 @@ window.closeGenericModal = function() { // Ensure this function is defined if no
 };
 // --- END NEW: Generic Modal Helper Functions ---
 
-// --- NEW: Chat Pro Sidebar Helper Functions ---
-const chatProSidebar = document.getElementById('chatProSidebar');
-const chatProSidebarIframe = document.getElementById('chatProSidebarIframe');
-const btnChatPro = document.getElementById('btn-chat-pro');
-const closeChatProSidebarBtn = document.getElementById('closeChatProSidebarBtn');
-
-function openChatProSidebar() {
-    if (chatProSidebar && chatProSidebarIframe) {
-        if (chatProSidebarIframe.src !== 'src/solidcam_chat_pro.html') {
-            chatProSidebarIframe.src = 'src/solidcam_chat_pro.html';
-            chatProSidebarIframe.addEventListener('load', function syncAndConfigOnce() {
-                console.log('[Main.js] Chat Pro iframe loaded. Syncing dark mode and sending initial config.');
-                if (typeof window.syncChatIframeDarkMode === 'function') {
-                    window.syncChatIframeDarkMode();
-                }
-                sendChatConfigToIframe(); // <-- NEW: Send initial config
-                chatProSidebarIframe.removeEventListener('load', syncAndConfigOnce);
-            });
-        } else {
-            if (typeof window.syncChatIframeDarkMode === 'function') {
-                window.syncChatIframeDarkMode();
-            }
-            // If iframe already loaded and sidebar is just being reopened, send current config
-            sendChatConfigToIframe(); // <-- NEW: Send config on reopen
-        }
-        chatProSidebar.classList.add('open');
-    } else {
-        console.error('Chat Pro Sidebar elements not found.');
-    }
-}
-
-function closeChatProSidebar() {
-    if (chatProSidebar) {
-        chatProSidebar.classList.remove('open');
-        // document.body.classList.remove('chat-sidebar-open'); // Optional
-        // Optionally clear the iframe to stop any processes
-        // if (chatProSidebarIframe) {
-        //     chatProSidebarIframe.src = 'about:blank';
-        // }
-    } else {
-        console.error('Close Chat Pro Sidebar button not found.');
-    }
-}
-// --- END NEW: Chat Pro Sidebar Helper Functions ---
-
-// --- NEW: Chat Pro API Settings Modal Helper Functions ---
-const chatProApiSettingsModal = document.getElementById('chat-pro-api-settings-modal');
-const chatProApiKeyInput = document.getElementById('chat-pro-api-key');
-const chatProConnectBtn = document.getElementById('chat-pro-connect-btn');
-const chatProStatus = document.getElementById('chat-pro-status');
-const chatProSaveSettingsBtn = document.getElementById('chat-pro-save-settings-btn'); // Added
-
-// Model Parameter Inputs
-const chatProTemperatureSlider = document.getElementById('chat-pro-temperature');
-const chatProTemperatureValueSpan = chatProTemperatureSlider ? chatProTemperatureSlider.nextElementSibling : null; // Assuming span is next sibling
-const chatProMaxTokensInput = document.getElementById('chat-pro-max-tokens');
-const chatProTopPSlider = document.getElementById('chat-pro-top-p');
-const chatProTopPValueSpan = chatProTopPSlider ? chatProTopPSlider.nextElementSibling : null; // Assuming span is next sibling
-const chatProTopKInput = document.getElementById('chat-pro-top-k');
-
-// LocalStorage keys
-const LS_API_KEY = 'geminiProApiKey'; // Updated for clarity
-const LS_TEMPERATURE = 'geminiProTemperature';
-const LS_MAX_TOKENS = 'geminiProMaxTokens';
-const LS_TOP_P = 'geminiProTopP';
-const LS_TOP_K = 'geminiProTopK';
-const LS_SELECTED_MODEL = 'geminiProSelectedModel'; // For the main model selector
-
-// Define default model parameter values
-const DEFAULT_TEMPERATURE = '0.7';
-const DEFAULT_MAX_TOKENS = '2048';
-const DEFAULT_TOP_P = '0.95';
-const DEFAULT_TOP_K = '40';
-
-function openChatProApiSettingsModal() {
-    if (chatProApiSettingsModal) {
-        // Load and display API key
-        const savedApiKey = localStorage.getItem(LS_API_KEY);
-        if (savedApiKey && chatProApiKeyInput) {
-            chatProApiKeyInput.value = savedApiKey;
-        }
-        if (chatProStatus && chatProApiKeyInput) {
-            chatProStatus.textContent = chatProApiKeyInput.value ? 'Status: Key loaded from local storage' : 'Status: Not Connected';
-        }
-
-        // Load and display Model Parameters & their defaults
-        const tempDisplay = document.getElementById('default-temp-display');
-        const maxTokensDisplay = document.getElementById('default-max-tokens-display');
-        const topPDisplay = document.getElementById('default-top-p-display');
-        const topKDisplay = document.getElementById('default-top-k-display');
-
-        if (chatProTemperatureSlider) {
-            chatProTemperatureSlider.value = localStorage.getItem(LS_TEMPERATURE) || DEFAULT_TEMPERATURE;
-            if (chatProTemperatureValueSpan) chatProTemperatureValueSpan.textContent = chatProTemperatureSlider.value;
-            if (tempDisplay) tempDisplay.textContent = `(Default: ${DEFAULT_TEMPERATURE})`;
-        }
-        if (chatProMaxTokensInput) {
-            chatProMaxTokensInput.value = localStorage.getItem(LS_MAX_TOKENS) || DEFAULT_MAX_TOKENS; 
-            if (maxTokensDisplay) maxTokensDisplay.textContent = `(Default: ${DEFAULT_MAX_TOKENS})`;
-        }
-        if (chatProTopPSlider) {
-            chatProTopPSlider.value = localStorage.getItem(LS_TOP_P) || DEFAULT_TOP_P;
-            if (chatProTopPValueSpan) chatProTopPValueSpan.textContent = chatProTopPSlider.value;
-            if (topPDisplay) topPDisplay.textContent = `(Default: ${DEFAULT_TOP_P})`;
-        }
-        if (chatProTopKInput) {
-            chatProTopKInput.value = localStorage.getItem(LS_TOP_K) || DEFAULT_TOP_K;
-            if (topKDisplay) topKDisplay.textContent = `(Default: ${DEFAULT_TOP_K})`;
-        }
-        chatProApiSettingsModal.style.display = 'block'; // Or 'flex'
-    } else {
-        console.error('Chat Pro API Settings Modal not found.');
-    }
-}
-
-function closeChatProApiSettingsModal() {
-    if (chatProApiSettingsModal) {
-        chatProApiSettingsModal.style.display = 'none';
-    }
-}
-
-function handleChatProConnect() {
-    if (chatProApiKeyInput && chatProStatus) {
-        const apiKey = chatProApiKeyInput.value.trim();
-        if (apiKey) {
-            localStorage.setItem(LS_API_KEY, apiKey);
-            chatProStatus.textContent = 'Status: Connected (Key Saved)';
-            console.log('Chat Pro API Key saved:', apiKey);
-            // No longer call sendChatConfigToIframe directly, save button will do it.
-            // Or, we can call it if the user expects connect to also apply current settings.
-            // For now, let's assume "Connect" just saves the key, and "Save Settings" saves all.
-        } else {
-            chatProStatus.textContent = 'Status: API Key cannot be empty.';
-            localStorage.removeItem(LS_API_KEY);
-        }
-    } else {
-        console.error('Chat Pro API Key input or status element not found.');
-    }
-}
-
-// NEW: Function to save all settings from the modal
-function handleSaveChatProSettings() {
-    console.log('Saving Chat Pro API settings...');
-    if (chatProApiKeyInput) {
-        const apiKey = chatProApiKeyInput.value.trim();
-        if (apiKey) {
-            localStorage.setItem(LS_API_KEY, apiKey);
-            if(chatProStatus) chatProStatus.textContent = 'Status: Connected (Key Saved)';
-            console.log('API Key saved:', apiKey);
-        } else {
-            localStorage.removeItem(LS_API_KEY);
-            if(chatProStatus) chatProStatus.textContent = 'Status: API Key cannot be empty. Not saved.';
-            console.log('API Key cleared.');
-        }
-    }
-
-    if (chatProTemperatureSlider) localStorage.setItem(LS_TEMPERATURE, chatProTemperatureSlider.value);
-    if (chatProMaxTokensInput) localStorage.setItem(LS_MAX_TOKENS, chatProMaxTokensInput.value);
-    if (chatProTopPSlider) localStorage.setItem(LS_TOP_P, chatProTopPSlider.value);
-    if (chatProTopKInput) localStorage.setItem(LS_TOP_K, chatProTopKInput.value);
-
-    console.log('Model parameters saved:', {
-        temp: chatProTemperatureSlider ? chatProTemperatureSlider.value : 'N/A',
-        maxTokens: chatProMaxTokensInput ? chatProMaxTokensInput.value : 'N/A',
-        topP: chatProTopPSlider ? chatProTopPSlider.value : 'N/A',
-        topK: chatProTopKInput ? chatProTopKInput.value : 'N/A',
-    });
-
-    sendChatConfigToIframe(); // Send the updated config to the iframe
-    
-    if (chatProStatus) { // General saved message
-        chatProStatus.textContent = 'Settings Saved.';
-        setTimeout(() => { // Revert to connection status after a delay
-            if (chatProApiKeyInput && chatProApiKeyInput.value.trim()) {
-                chatProStatus.textContent = 'Status: Key loaded from local storage';
-            } else {
-                chatProStatus.textContent = 'Status: Not Connected';
-            }
-        }, 2000);
-    }
-    // Optionally close the modal after saving
-    // closeChatProApiSettingsModal(); 
-}
-
-// --- NEW: Function to send config to Chat Pro Iframe ---
-function sendChatConfigToIframe() {
-    const apiKey = localStorage.getItem(LS_API_KEY);
-    const modelSelector = document.getElementById('gemini-model-selector'); // In index.html
-    
-    const temperature = localStorage.getItem(LS_TEMPERATURE) || '0.7';
-    const maxOutputTokens = localStorage.getItem(LS_MAX_TOKENS) || '2048';
-    const topP = localStorage.getItem(LS_TOP_P) || '0.95';
-    const topK = localStorage.getItem(LS_TOP_K) || '40';
-
-    if (chatProSidebarIframe && chatProSidebarIframe.contentWindow && modelSelector) {
-        const selectedModel = modelSelector.value;
-        // Save the selected model to localStorage as well, so it can be reloaded if needed
-        localStorage.setItem(LS_SELECTED_MODEL, selectedModel);
-
-        console.log(`[Main.js] Sending config to iframe: Model - ${selectedModel}, API Key present - ${!!apiKey}, Temp - ${temperature}, MaxTokens - ${maxOutputTokens}, TopP - ${topP}, TopK - ${topK}`);
-        chatProSidebarIframe.contentWindow.postMessage({
-            type: 'CHAT_PRO_CONFIG',
-            apiKey: apiKey,
-            selectedModel: selectedModel,
-            temperature: parseFloat(temperature),
-            maxOutputTokens: parseInt(maxOutputTokens, 10),
-            topP: parseFloat(topP),
-            topK: parseInt(topK, 10)
-        }, '*'); // Consider specifying target origin in production
-    } else {
-        if (!modelSelector) console.error('[Main.js] Main page model selector not found for sending config.');
-        if (!chatProSidebarIframe || !chatProSidebarIframe.contentWindow) console.error('[Main.js] Chat Pro iframe or its contentWindow not available for sending config.');
-    }
-}
-// --- END NEW: Function to send config to Chat Pro Iframe ---
-
-// --- NEW: Chat Pro Sidebar Resize Logic ---
-const chatProSidebarDragHandle = document.getElementById('chatProSidebarDragHandle');
-let isResizingChat = false;
-let initialChatSidebarWidth = 0;
-let initialChatMouseX = 0;
-let activePointerId = null; // To store the pointer ID
-
-// Define handlers with explicit names for easier removal reference if needed
-const handleChatResizeMouseMoveBound = (e) => handleChatResizeMouseMove(e);
-const stopChatResizeBound = (e) => stopChatResize(e); // Pass event to stopChatResize
-
-if (chatProSidebar && chatProSidebarDragHandle) {
-    chatProSidebarDragHandle.addEventListener('pointerdown', (e) => { // Changed to pointerdown
-        // Prevent default browser actions for mousedown, like text selection or image dragging
-        // Only capture for primary button to avoid issues with other pointer types/buttons
-        if (e.button !== 0) return;
-        e.preventDefault();
-
-        isResizingChat = true;
-        activePointerId = e.pointerId; // Store the pointerId
-        initialChatMouseX = e.clientX;
-        initialChatSidebarWidth = chatProSidebar.offsetWidth;
-        
-        // Disable text selection on the entire body during drag
-        document.body.style.userSelect = 'none';
-        document.body.style.cursor = 'col-resize';
-        
-        // Crucially, disable transitions on the sidebar during drag for direct width manipulation
-        chatProSidebar.style.transition = 'none'; 
-
-        // Capture the pointer on the drag handle itself
-        e.target.setPointerCapture(activePointerId);
-
-        chatProSidebarDragHandle.addEventListener('pointermove', handleChatResizeMouseMoveBound); // Changed to pointermove, attached to handle
-        chatProSidebarDragHandle.addEventListener('pointerup', stopChatResizeBound); // Changed to pointerup, attached to handle
-        chatProSidebarDragHandle.addEventListener('pointercancel', stopChatResizeBound); // Handle unexpected pointer cancellations
-    });
-}
-
-function handleChatResizeMouseMove(e) {
-    if (!isResizingChat || e.pointerId !== activePointerId) return; // Process only the captured pointer
-    // No need to preventDefault here as pointermove on a captured element won't scroll by default
-
-    const currentMouseX = e.clientX;
-    const deltaX = currentMouseX - initialChatMouseX;
-    let newWidth = initialChatSidebarWidth - deltaX;
-
-    const minWidth = 200; // Minimum width
-    const maxWidth = Math.min(800, window.innerWidth - 20); // Maximum width, ensuring it stays mostly on screen
-
-    if (newWidth < minWidth) newWidth = minWidth;
-    if (newWidth > maxWidth) newWidth = maxWidth;
-
-    chatProSidebar.style.width = newWidth + 'px';
-}
-
-function stopChatResize(e) { // Accept event argument
-    if (isResizingChat) {
-        if (activePointerId !== null && e.target.hasPointerCapture(activePointerId)) {
-            e.target.releasePointerCapture(activePointerId); // Release the captured pointer
-        }
-        activePointerId = null;
-        isResizingChat = false;
-        
-        // Re-enable text selection and reset cursor
-        document.body.style.userSelect = ''; 
-        document.body.style.cursor = 'default';
-        
-        // Only re-enable the transition for the 'right' property (for open/close animation)
-        // The width has been set manually and should not transition immediately after drag.
-        chatProSidebar.style.transition = 'right 0.3s ease-in-out'; 
-
-        chatProSidebarDragHandle.removeEventListener('pointermove', handleChatResizeMouseMoveBound);
-        chatProSidebarDragHandle.removeEventListener('pointerup', stopChatResizeBound);
-        chatProSidebarDragHandle.removeEventListener('pointercancel', stopChatResizeBound);
-    }
-}
-// --- END NEW: Chat Pro Sidebar Resize Logic ---
-
 // --- Global Update Function ---
 
 /**
@@ -367,11 +75,16 @@ function stopChatResize(e) { // Accept event argument
  * Reads data from the DOM, performs calculations, and updates summary displays and month subtotals.
  */
 export function updateUIAndSummaries() {
-    console.log("Updating UI and Summaries...");
     try {
         // 1. Get Data and Settings - Use state as source of truth
-        const clients = state.clients;
-        console.log('[UpdateUI] Using state.clients:', clients.length, 'entries');
+        const allClients = state.clients;
+
+        // Filter clients by active year
+        const clients = allClients.filter(client => {
+            if (!client.closeDate || client.closeDate.length < 4) return false;
+            const year = parseInt(client.closeDate.substring(0, 4), 10);
+            return year === state.activeYear;
+        });
 
         const goalInput = document.getElementById('receipts-goal-input');
         const goal = goalInput ? parseInt(goalInput.value, 10) : state.receiptsGoal;
@@ -452,8 +165,6 @@ export function updateUIAndSummaries() {
         sortClientsByDate(); // Sort rows within months
         sortMonthSections(); // Sort month sections chronologically
 
-        console.log("UI and Summaries updated.");
-
     } catch (error) {
         console.error("Error in updateUIAndSummaries:", error);
         showMessage('Failed to update UI summaries: ' + error.message, 'error');
@@ -484,90 +195,21 @@ try {
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('main.js: DOMContentLoaded event fired.'); // Log DOMContentLoaded
-    console.log("DOM fully loaded and parsed. Initializing app...");
+    // Load sort preferences from localStorage
+    loadSortPreferences();
 
     // Initial data load
     loadInitialData();
 
+    // Initialize year tabs
+    initializeYearTabs();
+
     // First update of UI based on loaded data
     updateUIAndSummaries();
 
-    // --- Attach Event Listeners for Chat Pro API Modal (NEW SECTION - MODIFIED) ---
-    // Listeners for the API Settings Modal (within Chat Pro Sidebar)
-    const openApiSettingsBtn = document.getElementById('chat-pro-api-settings-btn');
-    const closeApiSettingsBtn = document.getElementById('close-chat-pro-api-settings-modal-btn');
-    const mainPageModelSelector = document.getElementById('gemini-model-selector'); // Selector from index.html
-
-    if (openApiSettingsBtn) {
-        openApiSettingsBtn.addEventListener('click', () => {
-            // If modal is currently visible (i.e., display is not 'none' and not empty), then close it.
-            // Otherwise, open it.
-            if (chatProApiSettingsModal && 
-                chatProApiSettingsModal.style.display && 
-                chatProApiSettingsModal.style.display !== 'none') {
-                closeChatProApiSettingsModal();
-            } else {
-                if (chatProApiSettingsModal) { 
-                    openChatProApiSettingsModal();
-                } else {
-                    console.error('[KeyIconClick] chatProApiSettingsModal element is null. Cannot open.');
-                }
-            }
-        });
-    } else {
-        console.error('Button to open Chat Pro API Settings modal (#chat-pro-api-settings-btn) not found.');
-    }
-    if (closeApiSettingsBtn) {
-        closeApiSettingsBtn.addEventListener('click', closeChatProApiSettingsModal);
-    } else {
-        console.error('Button to close Chat Pro API Settings modal (#close-chat-pro-api-settings-modal-btn) not found.');
-    }
-    if (chatProConnectBtn) {
-        chatProConnectBtn.addEventListener('click', () => {
-            handleChatProConnect(); 
-            // UX: Decide if modal should auto-close on connect. For now, "Connect" only handles key.
-            // "Save Settings" button handles saving all params and sending to iframe.
-        });
-    } else {
-        console.error('Chat Pro API Connect button (#chat-pro-connect-btn) not found in modal.');
-    }
-
-    // NEW: Listener for Save Settings button in API Modal
-    if (chatProSaveSettingsBtn) {
-        chatProSaveSettingsBtn.addEventListener('click', handleSaveChatProSettings);
-    } else {
-        console.error('Chat Pro API Save Settings button (#chat-pro-save-settings-btn) not found in modal.');
-    }
-
-    // Listeners for sliders to update their value displays
-    if (chatProTemperatureSlider && chatProTemperatureValueSpan) {
-        chatProTemperatureSlider.addEventListener('input', (event) => {
-            chatProTemperatureValueSpan.textContent = event.target.value;
-        });
-    }
-    if (chatProTopPSlider && chatProTopPValueSpan) {
-        chatProTopPSlider.addEventListener('input', (event) => {
-            chatProTopPValueSpan.textContent = event.target.value;
-        });
-    }
-
-    // Listener for main page model selector changes
-    if (mainPageModelSelector) {
-        // Load saved model on init
-        const savedModel = localStorage.getItem(LS_SELECTED_MODEL);
-        if (savedModel) {
-            mainPageModelSelector.value = savedModel;
-        }
-        mainPageModelSelector.addEventListener('change', () => {
-            console.log('[Main.js] Main page model selector changed.');
-            localStorage.setItem(LS_SELECTED_MODEL, mainPageModelSelector.value); // Save on change
-            sendChatConfigToIframe(); // <-- NEW: Send config on model change
-        });
-    } else {
-        console.error('[Main.js] Main page model selector (#gemini-model-selector) not found for event listener.');
-    }
-    // --- END Attach Event Listeners for Chat Pro API Modal ---
+    // Apply default sort and update indicators
+    sortRowsByField(state.sortPreferences.field, state.sortPreferences.direction);
+    updateSortIndicators(state.sortPreferences.field, state.sortPreferences.direction);
 
     // Fix structure (if needed, based on original script logic)
     // fixRowStructure();
@@ -577,22 +219,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add listener for Escape key to close the Add Renewal modal
     window.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
-            console.log('Escape key pressed'); // Debug log
             const addModal = document.getElementById('add-renewal-modal');
             if (addModal && addModal.style.display !== 'none') {
                 hideAddRenewalModal();
             }
             const genericModal = document.getElementById('generic-content-modal');
             if (genericModal && genericModal.style.display !== 'none') {
-                closeGenericModal(); 
-            }
-            // Close Chat Pro Sidebar on Escape
-            if (chatProSidebar && chatProSidebar.classList.contains('open')) {
-                closeChatProSidebar();
-            }
-            // Close Chat Pro API Settings Modal on Escape (NEW)
-            if (chatProApiSettingsModal && chatProApiSettingsModal.style.display !== 'none') {
-                closeChatProApiSettingsModal();
+                closeGenericModal();
             }
         }
     });
@@ -778,18 +411,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cancelBtn) cancelBtn.addEventListener('click', hideAddRenewalModal);
     }
 
-    // Show Add Renewal Modal Button
-    const showAddBtn = document.getElementById('show-add-form-btn');
-    if (showAddBtn) {
-        showAddBtn.addEventListener('click', () => {
-            console.log('Show Add Renewal button clicked');
-            clearForm(); // Clear form before showing
-            showAddRenewalModal();
-        });
-    } else {
-        console.error("Button #show-add-form-btn not found");
-    }
-
     // Save/Load Buttons & Input
     const saveBtn = document.getElementById('save-button');
     if (saveBtn) {
@@ -809,13 +430,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (updateGoalBtn) updateGoalBtn.addEventListener('click', updateReceiptsGoal);
 
     // Quick % Calculator
-    const percentCalcInput = document.getElementById('percent-input');
+    const percentCalcInput = document.getElementById('calculator-amount');
     if (percentCalcInput) {
         percentCalcInput.addEventListener('input', updatePercentageCalculator);
         // Initial calculation (in case there's a default value)
         updatePercentageCalculator();
-    } else {
-        console.error("Quick % Calc input field (#percent-input) not found");
     }
 
     // View Toggle Buttons
@@ -929,14 +548,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const iconUserProfile = document.getElementById('icon-user-profile');
-    if (iconUserProfile) {
-        iconUserProfile.addEventListener('click', () => {
-            console.log('User Profile icon clicked');
-            // openGenericModal('User Profile', 'placeholder_profile.html'); // Example
-        });
-    }
-
     // --- Custom Help Modal Logic ---
     const helpModalOverlay = document.getElementById('custom-help-modal-overlay');
     const helpModalCloseBtn = document.getElementById('custom-help-modal-close-btn');
@@ -981,52 +592,6 @@ document.addEventListener('DOMContentLoaded', () => {
     //         openGenericModal('SolidCAM Chat', 'src/pro_chat.html'); // This might need updating if pro_chat.html was removed/renamed
     //     });
     // }
-
-    // Enhanced logging for btn-chat-pro
-    console.log('[Main.js] Attempting to find #btn-chat-pro for event listener attachment...');
-    if (btnChatPro) {
-        console.log('[Main.js] Found #btn-chat-pro element:', btnChatPro);
-        btnChatPro.addEventListener('click', () => {
-            console.log('[Main.js] SolidCAM Chat Pro button CLICKED!');
-            if (chatProSidebar && chatProSidebar.classList.contains('open')) {
-                closeChatProSidebar();
-            } else {
-                openChatProSidebar(); 
-            }
-        });
-        console.log('[Main.js] Event listener ATTACHED to #btn-chat-pro.');
-    } else {
-        console.error('[Main.js] CRITICAL: Could not find #btn-chat-pro element. Listener NOT attached.');
-    }
-
-    // Listener for the new sidebar's close button
-    if (closeChatProSidebarBtn) {
-        closeChatProSidebarBtn.addEventListener('click', closeChatProSidebar);
-    }
-
-    const iconEmailTemplates = document.getElementById('icon-email-templates');
-    if (iconEmailTemplates) {
-        iconEmailTemplates.addEventListener('click', () => {
-            console.log('Email Templates icon clicked');
-            openGenericModal('Email Template System', 'placeholder_email_system.html'); // Replace with actual path/handler
-        });
-    }
-
-    const iconAdvCalculator = document.getElementById('icon-adv-calculator');
-    if (iconAdvCalculator) {
-        iconAdvCalculator.addEventListener('click', () => {
-            console.log('Advanced Calculator icon clicked');
-            // openGenericModal('Advanced Calculator', 'placeholder_calculator.html'); // Example
-        });
-    }
-
-    const iconScratchpad = document.getElementById('icon-scratchpad');
-    if (iconScratchpad) {
-        iconScratchpad.addEventListener('click', () => {
-            console.log('Scratchpad icon clicked');
-            // openGenericModal('Scratchpad', 'placeholder_scratchpad.html'); // Example
-        });
-    }
 
     // --- App Suggestions Modal Logic (Updated for new structure) ---
     const appSuggestionsButton = document.getElementById('icon-app-suggestions');
@@ -1119,5 +684,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // --- END App Suggestions Modal Logic ---
 
-    console.log("App initialized.");
 });

@@ -1,7 +1,8 @@
 import { state, getStateForSave, replaceState } from './state.js';
 import { showMessage, parseAmount, formatDate } from './utils.js';
-import { createNewMonthSection, updateMonthSection, sortClientsByDate, sortMonthSections, createAutoSaveIndicator, displaySummaryStatistics, rebuildClientListFromState, createRowElement } from './domUtils.js';
+import { createNewMonthSection, updateMonthSection, sortClientsByDate, sortMonthSections, createAutoSaveIndicator, displaySummaryStatistics, rebuildClientListFromState, createRowElement, sortRowsByField, updateSortIndicators } from './domUtils.js';
 import { calculateMonthlySubtotal } from './calculations.js';
+import { discoverYearsFromData, rebuildYearTabs } from './yearTabs.js';
 
 // --- Data Persistence Functions ---
 
@@ -9,12 +10,8 @@ import { calculateMonthlySubtotal } from './calculations.js';
  * Saves the current state of the license data (rows and checked status) to local storage.
  */
 export function saveData() {
-    console.log('saveData CALLED. Timestamp:', new Date().toLocaleTimeString());
     try {
         const stateClients = state.clients;
-        console.log('Attempting to save clients:', JSON.stringify(stateClients));
-        console.log('Attempting to save checkedRows:', JSON.stringify(state.checkedRows));
-        console.log('Attempting to save receiptsGoal:', state.receiptsGoal);
         const dataToSave = {
             ...getStateForSave(),
             clients: stateClients.map(c => ({ ...c, notes: c.notes || '' }))
@@ -49,16 +46,12 @@ export function saveData() {
  * Loads initial data from local storage when the application starts.
  */
 export function loadInitialData() {
-    console.log('loadInitialData CALLED. Timestamp:', new Date().toLocaleTimeString());
     try {
         // Load main license data
         const savedData = localStorage.getItem('licenseData');
-        console.log('Raw data from localStorage:', savedData);
         if (savedData) {
-            console.log("Loading data from local storage...");
-            validateAndImport(savedData);
+            validateAndImport(savedData, true); // Pass true for initial load (load ALL years)
         } else {
-             console.log("No saved data found in local storage.");
              // Initial setup if no data exists
              sortMonthSections();
         }
@@ -118,25 +111,21 @@ export function previewImportData(jsonData) {
 
 /**
  * Validates and imports data from a JSON string (typically from localStorage or a file import).
- * Clears existing data and rebuilds the UI.
  * @param {string} jsonData The JSON string to import.
+ * @param {boolean} isInitialLoad If true, loads ALL years. If false, replaces only active year's data.
  */
-export function validateAndImport(jsonData) {
-    console.log('validateAndImport CALLED. Timestamp:', new Date().toLocaleTimeString());
+export function validateAndImport(jsonData, isInitialLoad = false) {
     let data;
     try {
         data = JSON.parse(jsonData);
-        console.log('Parsed data for import:', data);
         if (!data || typeof data !== 'object') {
             throw new Error("Invalid data format: not an object.");
         }
 
-        // Basic validation (ensure this is comprehensive enough or rely on replaceState's defaults)
+        // Basic validation
         if (!Array.isArray(data.clients)) {
             throw new Error("Invalid data format: 'clients' array missing or not an array.");
         }
-        // It's good practice to ensure notes exist, replaceState should also handle this.
-        // data.clients = data.clients.map(client => ({ ...client, notes: client.notes || '' }));
 
     } catch (error) {
         console.error('Error parsing or validating imported data:', error);
@@ -144,47 +133,116 @@ export function validateAndImport(jsonData) {
         return; // Stop import
     }
 
-    console.log("Data validated. Proceeding with import.");
+    if (isInitialLoad) {
+        // --- INITIAL LOAD: Load ALL years ---
+        // 1. Load all clients from data
+        state.clients = data.clients.map(client => ({
+            ...client,
+            notes: client.notes || ''
+        }));
 
-    // --- MODIFICATION START ---
-    // 1. Update state object with loaded data
-    replaceState(data); // This will set state.clients, state.checkedRows, state.receiptsGoal
+        // 2. Update other state properties
+        if (typeof data.receiptsGoal === 'number') {
+            state.receiptsGoal = data.receiptsGoal;
+        }
+        if (typeof data.searchTerm === 'string') {
+            state.searchTerm = data.searchTerm;
+        }
+        if (typeof data.activeYear === 'number') {
+            state.activeYear = data.activeYear;
+        }
+        if (Array.isArray(data.availableYears)) {
+            state.availableYears = data.availableYears;
+        }
+        if (Array.isArray(data.checkedRows)) {
+            state.checkedRows = data.checkedRows;
+        }
 
-    // 2. Clear existing UI (main-container)
-    const mainContainer = document.getElementById('main-container');
-    if (mainContainer) {
-        mainContainer.innerHTML = ''; // Clear all existing month sections and rows
+        // 3. Update goal input
+        const goalInput = document.getElementById('receipts-goal-input');
+        if (goalInput) goalInput.value = state.receiptsGoal;
+
+        // 4. Discover years from ALL loaded data
+        discoverYearsFromData();
+
+        // 5. Rebuild year tabs and UI
+        rebuildYearTabs();
+        rebuildClientListFromState(); // This filters by active year for display
+
+        // 6. Sort and update
+        sortRowsByField(state.sortPreferences.field, state.sortPreferences.direction);
+        updateSortIndicators(state.sortPreferences.field, state.sortPreferences.direction);
+        sortMonthSections();
+
     } else {
-        console.error("validateAndImport: Main container #main-container not found. UI cannot be cleared or rebuilt.");
-        showMessage('Critical error: UI container missing.', 'error');
-        return; // Cannot proceed
+        // --- FILE IMPORT: Replace ONLY active year's data ---
+        // 1. Filter incoming clients to active year only
+        const incomingClients = data.clients.filter(client => {
+            if (!client.closeDate || client.closeDate.length < 4) return false;
+            const year = parseInt(client.closeDate.substring(0, 4), 10);
+            return year === state.activeYear;
+        });
+
+        // 2. Get existing client IDs from active year (for checkedRows cleanup)
+        const existingActiveYearIds = new Set(
+            state.clients
+                .filter(client => {
+                    if (!client.closeDate || client.closeDate.length < 4) return false;
+                    const year = parseInt(client.closeDate.substring(0, 4), 10);
+                    return year === state.activeYear;
+                })
+                .map(client => client.id)
+        );
+
+        // 3. Remove active year's data from state.clients (keep other years)
+        state.clients = state.clients.filter(client => {
+            if (!client.closeDate || client.closeDate.length < 4) return true; // Keep invalid dates
+            const year = parseInt(client.closeDate.substring(0, 4), 10);
+            return year !== state.activeYear; // Keep everything except active year
+        });
+
+        // 4. Add incoming active year data
+        state.clients = state.clients.concat(incomingClients.map(client => ({
+            ...client,
+            notes: client.notes || ''
+        })));
+
+        // 5. Update checkedRows - remove deleted active year entries
+        state.checkedRows = state.checkedRows.filter(id => !existingActiveYearIds.has(id));
+
+        // 6. Update other state properties from imported data
+        if (typeof data.receiptsGoal === 'number') {
+            state.receiptsGoal = data.receiptsGoal;
+        }
+        if (typeof data.searchTerm === 'string') {
+            state.searchTerm = data.searchTerm;
+        }
+        if (Array.isArray(data.checkedRows)) {
+            // Merge incoming checked rows (but only for active year clients)
+            const incomingClientIds = new Set(incomingClients.map(c => c.id));
+            const incomingChecked = data.checkedRows.filter(id => incomingClientIds.has(id));
+            state.checkedRows = [...new Set([...state.checkedRows, ...incomingChecked])];
+        }
+
+        // 7. Update goal input
+        const goalInput = document.getElementById('receipts-goal-input');
+        if (goalInput) goalInput.value = state.receiptsGoal;
+
+        // 8. Discover years and rebuild year tabs
+        discoverYearsFromData();
+        rebuildYearTabs();
+
+        // 9. Rebuild UI from state
+        rebuildClientListFromState(); // This already filters by active year
+
+        // 10. Sort and update
+        sortRowsByField(state.sortPreferences.field, state.sortPreferences.direction);
+        updateSortIndicators(state.sortPreferences.field, state.sortPreferences.direction);
+        sortMonthSections();
+
+        // 11. Save updated state
+        saveData();
+
+        showMessage(`Loaded ${incomingClients.length} renewals for ${state.activeYear}`, 'success');
     }
-    
-    // 3. Update input fields for goal (already handled by replaceState indirectly if goalInput exists and is updated by a general UI refresh)
-    // Re-check if goalInput needs explicit update after replaceState or if updateUIAndSummaries handles it.
-    // For now, let's assume `updateUIAndSummaries` or direct setting in `replaceState` handles UI input fields.
-    const goalInput = document.getElementById('receipts-goal-input');
-    if (goalInput) goalInput.value = state.receiptsGoal;
-
-
-    // 4. Rebuild the entire client list display from the now-updated state.clients
-    rebuildClientListFromState(); // This function should use state.clients and createRowElement
-
-    // REMOVE THE MANUAL DOM CREATION LOOP - rebuildClientListFromState handles this.
-    // The old loop that iterated data.clients and manually created TRs/TDs is GONE.
-    // --- MODIFICATION END ---
-
-
-    // Sort and update summaries (these should use the DOM built by rebuildClientListFromState or use state directly)
-    sortClientsByDate(); // Sorts rows within newly created month sections
-    sortMonthSections(); // Sorts the month sections themselves
-    
-    // updateUIAndSummaries() is called in main.js after loadInitialData completes.
-    // If called here, ensure it uses the correct state or DOM.
-    // For now, deferring to main.js call. If issues persist, may need to call it here.
-    // No, main.js calls updateUIAndSummaries AFTER loadInitialData.
-    // loadInitialData calls validateAndImport. So updateUIAndSummaries is called AFTER this.
-    // This seems correct.
-
-    console.log("validateAndImport: Data import processed using replaceState and rebuildClientListFromState.");
 }

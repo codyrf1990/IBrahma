@@ -9,7 +9,13 @@ export const state = {
     checkedRows: [], // Array to store the IDs of checked rows
     lastSaved: null, // Timestamp of the last save - maybe not needed in saved file?
     editingRowId: null, // Transient state, likely should not be saved.
-    searchTerm: '' // Added placeholder based on plan
+    searchTerm: '', // Added placeholder based on plan
+    activeYear: new Date().getFullYear(), // Currently selected year
+    availableYears: [], // Array of years with tabs (sorted ascending)
+    sortPreferences: {
+        field: 'closeDate', // Default sort field
+        direction: 'asc'    // 'asc' or 'desc'
+    }
 }; 
 
 /**
@@ -22,9 +28,10 @@ export function getStateForSave() {
         clients: state.clients.map(c => ({ ...c, notes: c.notes || '' })),
         receiptsGoal: state.receiptsGoal,
         checkedRows: state.checkedRows,
-        searchTerm: state.searchTerm
+        searchTerm: state.searchTerm,
+        activeYear: state.activeYear,
+        availableYears: state.availableYears
     };
-    console.log("[State] getStateForSave called. Returning state:", stateToSave);
     return stateToSave;
 }
 
@@ -35,19 +42,18 @@ export function getStateForSave() {
  * @param {object} newState - The state object loaded from the file.
  */
 export function replaceState(newState) {
-    console.log("[State] replaceState called with:", newState);
     // Basic validation
     if (newState && typeof newState === 'object') {
         // Replace state properties, providing defaults if missing
         // This updates the state object, which *should* become the source of truth
-        state.clients = (Array.isArray(newState.clients)) ? newState.clients.map(client => ({ ...client, notes: client.notes || '' })) : []; 
+        state.clients = (Array.isArray(newState.clients)) ? newState.clients.map(client => ({ ...client, notes: client.notes || '' })) : [];
         state.receiptsGoal = (typeof newState.receiptsGoal === 'number') ? newState.receiptsGoal : 55; // Default goal
         state.checkedRows = Array.isArray(newState.checkedRows) ? newState.checkedRows : [];
         state.searchTerm = (typeof newState.searchTerm === 'string') ? newState.searchTerm : '';
+        state.activeYear = (typeof newState.activeYear === 'number') ? newState.activeYear : new Date().getFullYear();
+        state.availableYears = Array.isArray(newState.availableYears) ? newState.availableYears : [];
         // Reset transient state
         state.editingRowId = null;
-
-        console.log('[State] State object replaced with loaded data.', state);
     } else {
         console.error('[State] Invalid data provided to replaceState.');
     }
@@ -56,7 +62,6 @@ export function replaceState(newState) {
 // Add a setter for the search term
 export function setSearchTerm(term) {
   state.searchTerm = term;
-  console.log('[State] Search term set to:', term);
 }
 
 /**
@@ -66,8 +71,49 @@ export function updateClientNote(clientId, newNoteText) {
     const client = state.clients.find(c => c.id === clientId);
     if (client) {
         client.notes = newNoteText;
-        console.log(`[State] Updated note for client ${clientId}:`, newNoteText);
     } else {
         console.warn(`[State] Client not found for note update: ${clientId}`);
     }
+}
+
+/**
+ * Load sort preferences from localStorage
+ */
+export function loadSortPreferences() {
+    try {
+        const saved = localStorage.getItem('opportunityTrackerSortPreferences');
+        if (saved) {
+            const preferences = JSON.parse(saved);
+            if (preferences && typeof preferences === 'object') {
+                state.sortPreferences.field = preferences.field || 'closeDate';
+                state.sortPreferences.direction = preferences.direction || 'asc';
+            }
+        }
+    } catch (error) {
+        console.warn('[State] Failed to load sort preferences from localStorage:', error);
+    }
+}
+
+/**
+ * Save sort preferences to localStorage
+ */
+export function saveSortPreferences() {
+    try {
+        const preferences = {
+            field: state.sortPreferences.field,
+            direction: state.sortPreferences.direction
+        };
+        localStorage.setItem('opportunityTrackerSortPreferences', JSON.stringify(preferences));
+    } catch (error) {
+        console.warn('[State] Failed to save sort preferences to localStorage:', error);
+    }
+}
+
+/**
+ * Update sort preferences and save to localStorage
+ */
+export function updateSortPreferences(field, direction) {
+    state.sortPreferences.field = field;
+    state.sortPreferences.direction = direction;
+    saveSortPreferences();
 }

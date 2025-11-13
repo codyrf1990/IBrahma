@@ -1,10 +1,11 @@
-import { state } from './state.js';
+import { state, updateSortPreferences } from './state.js';
 import { formatCurrency, showMessage, generateId, formatDate, getMonthFromDate, parseAmount } from './utils.js';
-import { saveData } from './data.js';
-import { createNewMonthSection, updateMonthSection, sortClientsByDate, sortMonthSections, clearForm, closeEditModal, createRowElement, getAllClientsFromDOM, hideAddRenewalModal, rebuildClientListFromState } from './domUtils.js';
+import { saveData, validateAndImport } from './data.js';
+import { createNewMonthSection, updateMonthSection, sortClientsByDate, sortMonthSections, clearForm, closeEditModal, createRowElement, getAllClientsFromDOM, hideAddRenewalModal, rebuildClientListFromState, sortRowsByField, updateSortIndicators } from './domUtils.js';
 import { updateUIAndSummaries } from './main.js';
 import { calculateMonthlySubtotal } from './calculations.js';
 import { getStateForSave, replaceState } from './state.js';
+import { addYearTab, discoverYearsFromData, rebuildYearTabs } from './yearTabs.js';
 
 // --- Event Handler Functions ---
 
@@ -58,10 +59,19 @@ export function addLicense() {
         // 1. Modify state.clients directly
         state.clients.push(newLicenseData);
 
-        // 2. Save the updated state
+        // 2. Check if year tab needs to be created
+        if (closeDate && closeDate.length >= 4) {
+            const year = parseInt(closeDate.substring(0, 4), 10);
+            if (!isNaN(year) && !state.availableYears.includes(year)) {
+                addYearTab(year);
+            }
+        }
+
+        // 3. Save the updated state
         saveData();
 
-        // 3. Rebuild UI from state
+        // 4. Rebuild year tabs and UI from state
+        rebuildYearTabs();
         rebuildClientListFromState();
         sortClientsByDate();
         sortMonthSections();
@@ -124,10 +134,8 @@ export function toggleChecked(rowId) {
     // 3. Save the updated state
     saveData();
 
-    // 4. Rebuild UI from state
-    // For a checkbox toggle, rebuilding the whole list might be overkill but ensures consistency.
-    // A more targeted DOM update could be to find the row and toggle its class, 
-    // then call updateUIAndSummaries. But let's keep it consistent for now.
+    // 4. Rebuild year tabs and UI from state
+    rebuildYearTabs();
     rebuildClientListFromState();
     sortClientsByDate();
     sortMonthSections();
@@ -171,9 +179,12 @@ export function deleteRow(rowId) {
         if (rowElement) {
             rowElement.classList.add('row-fade-out');
             setTimeout(() => {
-                // a. Rebuild UI from the already updated state
+                // a. Discover years and rebuild year tabs (in case we deleted the last item from a year)
+                discoverYearsFromData();
+                rebuildYearTabs();
+                // b. Rebuild UI from the already updated state
                 rebuildClientListFromState();
-                // b. Sort and update summaries
+                // c. Sort and update summaries
                 sortClientsByDate();
                 sortMonthSections();
                 updateUIAndSummaries();
@@ -181,6 +192,8 @@ export function deleteRow(rowId) {
             }, 500); // Match transition duration in CSS
         } else {
             // If rowElement wasn't found initially but state was updated, still refresh UI
+            discoverYearsFromData();
+            rebuildYearTabs();
             rebuildClientListFromState();
             sortClientsByDate();
             sortMonthSections();
@@ -247,7 +260,13 @@ export function saveEditChanges() {
             console.warn('Invalid amount in edit modal, defaulting to 0');
         }
 
-        // 1. Update the client object in state.clients
+        // 1. Check if year changed (for year tab management)
+        const oldCloseDate = state.clients[clientIndex].closeDate;
+        const oldYear = oldCloseDate && oldCloseDate.length >= 4 ? parseInt(oldCloseDate.substring(0, 4), 10) : null;
+        const newYear = closeDate && closeDate.length >= 4 ? parseInt(closeDate.substring(0, 4), 10) : null;
+        const yearChanged = oldYear !== newYear;
+
+        // 2. Update the client object in state.clients
         const updatedClient = {
             ...state.clients[clientIndex], // Preserve existing fields like ID, notes, isChecked
             name,
@@ -259,16 +278,22 @@ export function saveEditChanges() {
         };
         state.clients[clientIndex] = updatedClient;
 
-        // 2. Save the updated state
+        // 3. Check if new year tab needs to be created
+        if (newYear && !isNaN(newYear) && !state.availableYears.includes(newYear)) {
+            addYearTab(newYear);
+        }
+
+        // 4. Save the updated state
         saveData();
 
-        // 3. Rebuild UI from state
+        // 5. Rebuild year tabs and UI from state
+        rebuildYearTabs();
         rebuildClientListFromState();
         sortClientsByDate();
         sortMonthSections();
         updateUIAndSummaries();
 
-        // 4. Close modal and show success
+        // 6. Close modal and show success
         closeEditModal();
         showMessage('Changes saved successfully', 'success');
 
@@ -312,11 +337,9 @@ export function updateReceiptsGoal() {
  * Ensures elements are not destroyed during updates.
  */
 export function updatePercentageCalculator() {
-    const amountInput = document.getElementById('calculator-amount'); // Use the CORRECT ID for the amount input field identified in step 2
-    if (!amountInput) {
-        console.error("Calculator amount input field not found!");
-        return;
-    }
+    const amountInput = document.getElementById('calculator-amount');
+    if (!amountInput) return; // Silently return if not found
+
     const amount = parseFloat(amountInput.value) || 0;
 
     const fivePercentValue = (amount * 0.05).toFixed(0);
@@ -326,10 +349,8 @@ export function updatePercentageCalculator() {
     // Helper to safely update content
     const updateResultContainer = (containerId, labelText, value) => {
         const container = document.getElementById(containerId);
-        if (!container) {
-            console.error(`Result container #${containerId} not found!`);
-            return;
-        }
+        if (!container) return; // Silently return if not found
+
         // Find existing spans IF THEY EXIST
         let labelSpan = container.querySelector('.result-label');
         let valueSpan = container.querySelector('.result-value');
@@ -340,8 +361,6 @@ export function updatePercentageCalculator() {
         } else {
             // If structure exists, just update the value text
             valueSpan.textContent = value;
-            // Optional: ensure label is correct too, though it shouldn't change
-            // labelSpan.textContent = labelText;
         }
     };
 
@@ -426,32 +445,17 @@ export function handleFileLoad(event) {
     reader.onload = (e) => {
         try {
             const fileContent = e.target.result;
-            console.log("[Load] File read successfully. Attempting to parse JSON...");
-            const loadedState = JSON.parse(fileContent);
-            console.log("[Load] JSON parsed successfully:", loadedState);
+            console.log("[Load] File read successfully. Attempting to import...");
 
-            // Basic Validation (Ensure it's an object and has expected top-level keys)
-            // TODO: Add more robust validation based on expected object structure
-            if (typeof loadedState === 'object' && loadedState !== null && Array.isArray(loadedState.clients) && typeof loadedState.receiptsGoal === 'number' && Array.isArray(loadedState.checkedRows)) {
-                console.log("[Load] Loaded state appears valid. Replacing current state...");
-                replaceState(loadedState); // Update the application state
+            // Use validateAndImport with isInitialLoad=false to replace only active year's data
+            validateAndImport(fileContent, false);
 
-                console.log("[Load] Triggering UI refresh...");
-                rebuildClientListFromState();
+            // updateUIAndSummaries is called within validateAndImport, but call again to be safe
+            updateUIAndSummaries();
 
-                console.log("[FileLoad] Sorting and updating UI...");
-                sortClientsByDate();
-                sortMonthSections();
-                updateUIAndSummaries();
-
-                console.log("[FileLoad] Data loaded successfully.");
-                showMessage("Data loaded successfully!", "success");
-            } else {
-                console.error("[Load] Invalid file format or missing key properties.", loadedState);
-                showMessage("Error: Invalid file format. Could not load data.", "error");
-            }
+            console.log("[FileLoad] Data imported successfully.");
         } catch (error) {
-            console.error("[Load] Error parsing JSON file:", error);
+            console.error("[Load] Error importing file:", error);
             showMessage("Error: Could not read or parse the selected file. Ensure it's valid JSON.", "error");
         } finally {
             // Reset file input value to allow loading the same file again if needed
@@ -467,24 +471,7 @@ export function handleFileLoad(event) {
     };
 
     reader.readAsText(file); // Start reading the file as text
-    console.log("[Load] Started reading file as text...");
-} 
-
-// --- Initialize Event Listeners ---
-
-// Add event listener for the percentage calculator input
-// Ensure this runs after the DOM is loaded. If main.js calls an init function,
-// move this there. For now, place it here assuming script execution order.
-document.addEventListener('DOMContentLoaded', () => {
-     const calculatorInput = document.getElementById('calculator-amount');
-     if (calculatorInput) {
-         calculatorInput.addEventListener('input', updatePercentageCalculator);
-         // Also trigger calculation on initial load if there's a value
-         updatePercentageCalculator(); 
-     } else {
-        console.warn("Could not attach listener: Percentage calculator amount input not found on DOMContentLoaded.");
-     }
-});
+}
 
 // Event listener for the SolidCAM Chat STD button
 const solidcamChatStdButton = document.getElementById('btn-chat-std');
@@ -523,5 +510,33 @@ if (genericModal && genericModalIframe && genericModalCloseButton) {
     if (!genericModalIframe) console.error('Generic modal iframe (generic-modal-iframe) not found for close button setup.');
     if (!genericModalCloseButton) console.error('Generic modal close button (generic-modal-close-btn) not found for setup.');
 }
+
+// --- Sort Header Click Handler (Event Delegation) ---
+/**
+ * Handles clicks on sortable table headers to sort all month sections
+ */
+document.addEventListener('click', (event) => {
+    const header = event.target.closest('.th-sortable');
+    if (!header) return;
+
+    const field = header.getAttribute('data-sort-field');
+    if (!field) return;
+
+    // Determine direction: toggle if same field, default to asc if new field
+    let direction = 'asc';
+    if (state.sortPreferences.field === field) {
+        // Toggle direction
+        direction = state.sortPreferences.direction === 'asc' ? 'desc' : 'asc';
+    }
+
+    // Update state and save to localStorage
+    updateSortPreferences(field, direction);
+
+    // Apply sort to all tables
+    sortRowsByField(field, direction);
+
+    // Update visual indicators
+    updateSortIndicators(field, direction);
+});
 
 // --- Potentially other listeners or initialization code below --- 

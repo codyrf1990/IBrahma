@@ -84,15 +84,8 @@ export function createNewMonthSection(month, initialAmount = 0) {
         return null;
     }
 
-    // Determine the year for the month header
-    const currentDate = new Date();
-    let year = currentDate.getFullYear();
-    const currentMonthIndex = currentDate.getMonth(); // 0-11
-
-    // If it's Q4 (Oct-Dec, index 9-11) and the new month is Q1 (Jan-Mar, index 0-2)
-    if (currentMonthIndex >= 9 && monthIndex <= 2) {
-        year += 1;
-    }
+    // Use the active year from state
+    const year = state.activeYear;
 
     const monthYearKey = `${year}-${(monthIndex + 1).toString().padStart(2, '0')}`; // YYYY-MM format
 
@@ -100,19 +93,31 @@ export function createNewMonthSection(month, initialAmount = 0) {
         <div class="month-section" id="${month}-section" data-month-index="${monthIndex}" data-year="${year}" data-month-year="${monthYearKey}">
             <div class="month-header">
                 <span>${monthNames[monthIndex]} ${year}</span>
-                <span id="${month}-count">0 Subscriptions</span>
+                <span id="${month}-count">0 Confirmed Deals</span>
             </div>
             <div class="table-responsive-wrapper">
                 <table class="client-table">
                     <thead>
                         <tr>
                             <th class="th-checkbox"></th>
-                            <th class="th-name">Account Name</th>
-                            <th class="th-renewal-date">Renewal Date</th>
-                            <th class="th-sent-date">Sent Date</th>
-                            <th class="th-close-date">Close Date</th>
-                            <th class="th-amount">Amount</th>
-                            <th class="th-opp-id">Opportunity ID</th>
+                            <th class="th-name th-sortable" data-sort-field="name" aria-label="Sort by Account Name">
+                                Account Name <span class="sort-indicator"></span>
+                            </th>
+                            <th class="th-renewal-date th-sortable" data-sort-field="renewalDate" aria-label="Sort by Renewal Date">
+                                Renewal Date <span class="sort-indicator"></span>
+                            </th>
+                            <th class="th-sent-date th-sortable" data-sort-field="sentDate" aria-label="Sort by Sent Date">
+                                Sent Date <span class="sort-indicator"></span>
+                            </th>
+                            <th class="th-close-date th-sortable" data-sort-field="closeDate" aria-label="Sort by Close Date">
+                                Close Date <span class="sort-indicator"></span>
+                            </th>
+                            <th class="th-amount th-sortable" data-sort-field="amount" aria-label="Sort by Amount">
+                                Amount <span class="sort-indicator"></span>
+                            </th>
+                            <th class="th-opp-id th-sortable" data-sort-field="opportunityId" aria-label="Sort by Opportunity ID">
+                                Opportunity ID <span class="sort-indicator"></span>
+                            </th>
                             <th class="th-actions">Actions</th>
                         </tr>
                     </thead>
@@ -176,7 +181,7 @@ export function updateMonthSection(month, subtotal, totalEntryCount = 0, confirm
 
     const countElement = document.getElementById(`${month}-count`);
     if (countElement) {
-        countElement.textContent = `${confirmedCountParam} Subscription${confirmedCountParam !== 1 ? 's' : ''}`;
+        countElement.textContent = `${confirmedCountParam} Confirmed Deal${confirmedCountParam !== 1 ? 's' : ''}`;
     }
 
     // Update new footer counts and amounts
@@ -241,7 +246,16 @@ export function clearForm() {
 /**
  * Sorts client rows within each month's tbody based on the close date.
  */
-export function sortClientsByDate() {
+/**
+ * Sorts all client rows by the specified field and direction across all month sections.
+ * Only sorts visible rows (respects search filter and view toggle).
+ *
+ * @param {string} field - The field to sort by ('name', 'renewalDate', 'sentDate', 'closeDate', 'amount', 'opportunityId')
+ * @param {string} direction - Sort direction ('asc' or 'desc')
+ */
+export function sortRowsByField(field, direction) {
+    const directionMultiplier = direction === 'desc' ? -1 : 1;
+
     document.querySelectorAll('.month-section').forEach(section => {
         const tbody = section.querySelector('tbody');
         if (!tbody) return;
@@ -249,33 +263,95 @@ export function sortClientsByDate() {
         const rows = Array.from(tbody.querySelectorAll('.client-row'));
 
         rows.sort((a, b) => {
-            const dateA = a.querySelector('.td-close-date')?.textContent || '';
-            const dateB = b.querySelector('.td-close-date')?.textContent || '';
+            let valueA, valueB;
 
-            // Attempt to parse dates (assuming MM/DD/YYYY)
-            const parseSortDate = (dateStr) => {
-                try {
-                    const parts = dateStr.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
-                    if (parts) {
-                        // Month is 0-indexed in JS Date
-                        return new Date(parts[3], parts[1] - 1, parts[2]);
-                    }
-                    // Fallback for potentially other formats or empty strings
-                    const parsed = new Date(dateStr);
-                    return isNaN(parsed.getTime()) ? new Date(0) : parsed; // Treat invalid dates as very old
-                } catch {
-                    return new Date(0);
-                }
-            };
+            switch (field) {
+                case 'name':
+                    // Sort by account name (case-insensitive alphabetical)
+                    valueA = a.querySelector('.td-name')?.textContent.trim().toLowerCase() || '';
+                    valueB = b.querySelector('.td-name')?.textContent.trim().toLowerCase() || '';
+                    return directionMultiplier * valueA.localeCompare(valueB);
 
-            const timeA = parseSortDate(dateA).getTime();
-            const timeB = parseSortDate(dateB).getTime();
+                case 'renewalDate':
+                case 'sentDate':
+                case 'closeDate':
+                    // Sort by date using data attributes (YYYY-MM-DD format)
+                    const dataAttrMap = {
+                        'renewalDate': 'data-renewal-date',
+                        'sentDate': 'data-sent-date',
+                        'closeDate': 'data-close-date'
+                    };
+                    valueA = a.getAttribute(dataAttrMap[field]) || '0000-00-00'; // Empty dates to beginning
+                    valueB = b.getAttribute(dataAttrMap[field]) || '0000-00-00';
+                    // Lexicographic comparison works for YYYY-MM-DD format
+                    return directionMultiplier * valueA.localeCompare(valueB);
 
-            return timeA - timeB;
+                case 'amount':
+                    // Sort by amount (numeric)
+                    const parseAmount = (row) => {
+                        const amountText = row.querySelector('.td-amount')?.textContent.trim() || '0';
+                        // Remove "USD", "$", and commas, then parse
+                        const cleaned = amountText.replace(/USD|\$|,/g, '').trim();
+                        return parseFloat(cleaned) || 0;
+                    };
+                    valueA = parseAmount(a);
+                    valueB = parseAmount(b);
+                    return directionMultiplier * (valueA - valueB);
+
+                case 'opportunityId':
+                    // Sort by opportunity ID (alphanumeric)
+                    valueA = a.getAttribute('data-opportunity-id')?.toLowerCase() || '';
+                    valueB = b.getAttribute('data-opportunity-id')?.toLowerCase() || '';
+                    return directionMultiplier * valueA.localeCompare(valueB);
+
+                default:
+                    // Fallback to close date
+                    valueA = a.getAttribute('data-close-date') || '0000-00-00';
+                    valueB = b.getAttribute('data-close-date') || '0000-00-00';
+                    return directionMultiplier * valueA.localeCompare(valueB);
+            }
         });
 
         // Re-append rows in sorted order
         rows.forEach(row => tbody.appendChild(row));
+    });
+}
+
+/**
+ * Legacy function for backward compatibility - now calls sortRowsByField
+ * @deprecated Use sortRowsByField('closeDate', 'asc') instead
+ */
+export function sortClientsByDate() {
+    sortRowsByField('closeDate', 'asc');
+}
+
+/**
+ * Updates sort indicators on all table headers to reflect current sort state.
+ * @param {string} activeField - The currently active sort field
+ * @param {string} direction - Sort direction ('asc' or 'desc')
+ */
+export function updateSortIndicators(activeField, direction) {
+    // Get all sortable headers across all tables
+    document.querySelectorAll('.th-sortable').forEach(header => {
+        const field = header.getAttribute('data-sort-field');
+        const indicator = header.querySelector('.sort-indicator');
+
+        // Remove existing classes
+        header.classList.remove('sort-active', 'sort-asc', 'sort-desc');
+        if (indicator) {
+            indicator.classList.remove('sort-asc', 'sort-desc');
+        }
+
+        // Add active class and direction if this is the active field
+        if (field === activeField) {
+            header.classList.add('sort-active', `sort-${direction}`);
+            if (indicator) {
+                indicator.classList.add(`sort-${direction}`);
+            }
+            header.setAttribute('aria-sort', direction === 'asc' ? 'ascending' : 'descending');
+        } else {
+            header.removeAttribute('aria-sort');
+        }
     });
 }
 
@@ -339,7 +415,6 @@ export function createAutoSaveIndicator() {
  * @param {string} rowId - The ID of the row to edit.
  */
 export function openEditModal(rowId) {
-    console.log('[openEditModal] Function called for rowId:', rowId); // Diagnostic log
     const modal = document.getElementById('edit-modal');
     const row = document.getElementById(rowId);
 
@@ -462,7 +537,7 @@ export function displaySummaryStatistics(summaryData) {
     // --- Update Progress Overview Card ---
     const progressPercentage = goal > 0 ? (confirmedCount / goal) * 100 : 0;
 
-    if (receiptsInfoEl) receiptsInfoEl.textContent = `${confirmedCount} of ${goal} Receipts Received`;
+    if (receiptsInfoEl) receiptsInfoEl.textContent = `${confirmedCount} of ${goal} Confirmed Deals`;
     else elementsFound = false;
 
     if (receiptsProgressEl) receiptsProgressEl.style.width = `${progressPercentage.toFixed(2)}%`;
@@ -474,17 +549,17 @@ export function displaySummaryStatistics(summaryData) {
     if (receiptsGoalInputEl) receiptsGoalInputEl.value = goal.toString();
     else elementsFound = false;
 
-    // --- Update Key Stats Card --- 
+    // --- Update Key Stats Card ---
     if (totalEnteredEl && summaryData.hasOwnProperty('totalEnteredAmount')) {
-        totalEnteredEl.textContent = formatCurrency(summaryData.totalEnteredAmount);
+        totalEnteredEl.textContent = calculationsFormatCurrency(summaryData.totalEnteredAmount);
     }
     if (avgAmountEl && summaryData.hasOwnProperty('averageDealSize')) {
-        avgAmountEl.textContent = formatCurrency(summaryData.averageDealSize);
+        avgAmountEl.textContent = calculationsFormatCurrency(summaryData.averageDealSize);
     }
 
     // Update the new Total Confirmed (Whole Number) card
     if (totalConfirmedWholeValueEl && summaryData.hasOwnProperty('totalConfirmed')) {
-        totalConfirmedWholeValueEl.textContent = formatCurrency(summaryData.totalConfirmed, { showCents: false });
+        totalConfirmedWholeValueEl.textContent = calculationsFormatCurrency(summaryData.totalConfirmed, { showCents: false });
     }
 
     // Log only if any elements weren't found (for debugging)
@@ -505,9 +580,8 @@ export function displayEntrySummary(totalAmountAll, totalAmountConfirmed) {
         const formattedConfirmed = calculationsFormatCurrency(totalAmountConfirmed);
         const formattedAll = calculationsFormatCurrency(totalAmountAll);
         summaryElement.textContent = `Confirmed: ${formattedConfirmed} / Total: ${formattedAll}`;
-    } else {
-        console.warn('Could not find element #entry-summary-text to display amounts.');
     }
+    // Element is optional/commented out in HTML, no need to warn
 }
 
 // Modify renderClientTable (or similar function) to accept and use monthlySubtotals
@@ -565,7 +639,6 @@ export function renderClientTable(clients, sortCriteria, filter = '', monthlySub
  *                 Example: { totalConfirmed: 15, avgAmount: 550.75, confirmRate: 85.2 }
  */
 function displayKPIs(kpis) {
-    console.log("displayKPIs called with:", kpis);
     if (!kpis) {
         console.error("KPI data is undefined or null. Cannot display KPIs.");
         // Optionally update UI to show an error state for KPIs
@@ -671,10 +744,28 @@ export function showAddRenewalModal() {
 
         if (renewalDateInput) renewalDateInput.value = '';
         if (sentDateInput) sentDateInput.value = '';
-        if (closeDateInput) closeDateInput.value = '';
         if (nameInput) nameInput.value = '';
         if (amountInput) amountInput.value = '';
         if (oppIdInput) oppIdInput.value = '';
+
+        // Set default close date to active year
+        if (closeDateInput) {
+            const today = new Date();
+            const currentYear = today.getFullYear();
+
+            // If we're currently in the active year, use today's date
+            // Otherwise, default to January 1st of the active year
+            if (currentYear === state.activeYear) {
+                // Format today as YYYY-MM-DD
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                closeDateInput.value = `${year}-${month}-${day}`;
+            } else {
+                // Default to January 1st of active year
+                closeDateInput.value = `${state.activeYear}-01-01`;
+            }
+        }
 
         modal.style.display = 'flex';
         document.getElementById('account-name')?.focus();
@@ -722,7 +813,6 @@ export function updateRowVisibility() {
                 break;
             }
         }
-        console.log('[Filter Pre-scan] Any match found for term "' + searchTerm + '":', anyMatchFound);
     }
     allRows.forEach(clientRow => {
         const isChecked = clientRow.classList.contains('checked');
@@ -772,15 +862,22 @@ export function updateRowVisibility() {
  * This does NOT perform sorting or update totals; call those separately after.
  */
 export function rebuildClientListFromState() {
-    const clients = state.getState ? state.getState().clients : state.clients;
+    const allClients = state.getState ? state.getState().clients : state.clients;
     const container = document.getElementById('main-container');
     if (!container) {
         console.error('[rebuildClientListFromState] #main-container not found.');
         return;
     }
+
+    // Filter clients by active year
+    const clients = allClients.filter(client => {
+        if (!client.closeDate || client.closeDate.length < 4) return false;
+        const year = parseInt(client.closeDate.substring(0, 4), 10);
+        return year === state.activeYear;
+    });
+
     // Clear the container
     container.innerHTML = '';
-    console.log('[rebuildClientListFromState] Starting UI rebuild from state. Clients count:', clients.length);
     // Helper: Map of month name to tbody element
     const monthBodies = {};
     clients.forEach(client => {
@@ -805,27 +902,22 @@ export function rebuildClientListFromState() {
         const rowElement = createRowElement(client);
         monthTbody.appendChild(rowElement);
     });
-    console.log('[rebuildClientListFromState] UI rebuild completed.');
 }
 
 // Function to open the generic modal
 function openGenericModal(title, contentUrl) {
-    console.log('[openGenericModal] Called with title:', title, 'and URL:', contentUrl);
     const modal = document.getElementById('generic-content-modal');
     const modalTitle = document.getElementById('generic-modal-title');
     const iframe = document.getElementById('generic-modal-iframe');
 
     if (modal) {
-        console.log('[openGenericModal] Found modal element:', modal);
         if (modalTitle) {
-            console.log('[openGenericModal] Found modal title element:', modalTitle);
             modalTitle.textContent = title;
         } else {
             console.error('[openGenericModal] CRITICAL: Could not find modal title element #generic-modal-title');
         }
 
         if (iframe) {
-            console.log('[openGenericModal] Found iframe element:', iframe);
             iframe.src = contentUrl || 'about:blank';
         } else {
             console.error('[openGenericModal] CRITICAL: Could not find iframe element #generic-modal-iframe');
@@ -833,16 +925,6 @@ function openGenericModal(title, contentUrl) {
 
         // Attempt to display the modal
         modal.style.display = 'flex'; // Use flex as per .modal-overlay and general modal centering approach
-        console.log('[openGenericModal] Set modal.style.display to:', modal.style.display);
-        
-        // Check computed style shortly after
-        setTimeout(() => {
-            const computedDisplay = window.getComputedStyle(modal).display;
-            console.log('[openGenericModal] Computed modal display (after timeout):', computedDisplay);
-            if (computedDisplay === 'none') {
-                console.warn('[openGenericModal] Modal display is still "none" after attempting to set it. Check CSS overriding rules.');
-            }
-        }, 100); // 100ms delay
 
     } else {
         console.error('[openGenericModal] CRITICAL: Could not find modal element #generic-content-modal');

@@ -43,21 +43,16 @@
                     <div class="commander-icon" id="icon-load-from-file" title="Load from File"><img src="src/assets/Images/load data 2.png" alt="Load" style="width: 40px; height: 40px;"><span class="icon-label">Load</span></div>
                     <div class="commander-icon" id="icon-add-renewal" title="Add Renewal"><img src="src/assets/Images/Add Account.png" alt="Add" style="width: 40px; height: 40px;"><span class="icon-label">Add</span></div>
                     <div class="commander-icon" id="icon-system-settings" title="Settings"><img src="src/assets/Images/settings12.png" alt="Settings" style="width: 40px; height: 40px;"><span class="icon-label">Settings</span></div>
-                    <div class="commander-icon" id="icon-user-profile" title="User Profile"><img src="src/assets/Images/Profile.png" alt="Profile" style="width: 40px; height: 40px;"><span class="icon-label">Profile</span></div>
                     <div class="commander-icon" id="icon-system-help" title="Help"><img src="src/assets/Images/help.png" alt="Help" style="width: 40px; height: 40px;"><span class="icon-label">Help</span></div>
                 </div>
             </div>
             <div id="commander-chats-section" class="commander-section">
                 <h3>AI Chats</h3>
                 <button id="btn-chat-std" class="button medium-button">SolidCAM Chat Std</button>
-                <button id="btn-chat-pro" class="button medium-button">SolidCAM Chat Pro</button>
             </div>
             <div id="commander-utils-section" class="commander-section">
                 <h3>Utilities</h3>
                 <div class="icon-grid">
-                    <div class="commander-icon" id="icon-email-templates" title="Email Templates"><img src="src/assets/Images/emails 1.png" alt="Email" style="width: 40px; height: 40px;"><span class="icon-label">Email</span></div>
-                    <div class="commander-icon" id="icon-adv-calculator" title="Calculator"><img src="src/assets/Images/calculator one.png" alt="Calculator" style="width: 40px; height: 40px;"><span class="icon-label">Calc</span></div>
-                    <div class="commander-icon" id="icon-scratchpad" title="Scratchpad"><span class="icon-placeholder">[N]</span><span class="icon-label">Notes</span></div>
                     <div class="commander-icon" id="icon-app-suggestions" title="App Suggestions">
                         <div style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
                             <img src="src/assets/Images/idea.png" alt="App Suggestions" style="width: 40px; height: 40px;">
@@ -77,7 +72,7 @@
         <div id="add-renewal-modal" class="modal-overlay" style="display: none;">
             <div class="modal-content">
                 <div class="add-section" id="add-section">
-                    <h3>Add New Renewal</h3>
+                    <h3>Add New Renewal <span id="add-renewal-year-indicator"></span></h3>
                     <div class="form-grid">
                         <div class="form-field">
                             <label for="account-name">Account Name</label>
@@ -119,23 +114,37 @@
              <!-- MOVED TO HEADER -->
         <!-- </div> -->
 
+        <!-- YEAR TABS START -->
+        <div id="year-tabs-container" class="card">
+            <div class="year-tabs-header">
+                <h3>Year Selection</h3>
+                <button id="add-year-btn" class="button small-button" title="Add New Year">
+                    <i class="fas fa-plus"></i> Add Year
+                </button>
+            </div>
+            <div id="year-tabs" class="year-tabs">
+                <!-- Year buttons will be dynamically inserted here -->
+            </div>
+        </div>
+        <!-- YEAR TABS END -->
+
         <!-- Totals Toggle and Confirmed Total Area (Refactored) -->
         <div class="totals-summary">
              <!-- NEW: Combined Progress Overview Box -->
              <div id="progress-overview" class="summary-box">
                  <h3>Progress Overview</h3>
                  <!-- Main Info Texts -->
-                 <p id="receipts-info">0 of 55 Receipts Received</p> <!-- Renamed from div -->
+                 <p id="receipts-info">0 of 55 Confirmed Deals</p> <!-- Renamed from div -->
                  <div class="progress-bar-container" style="margin-bottom: 0.75rem;"> <!-- Added wrapper & margin -->
                      <div class="progress-bar">
                          <div class="progress-fill" id="receipts-progress" style="width: 0%"></div>
                      </div>
                  </div>
                  <!-- Goal Control Group -->
-                 <div class="control-group goal-group"> 
+                 <div class="control-group goal-group">
                      <span id="receipts-percentage">0%</span>
                      <input type="number" id="receipts-goal-input" value="55" min="1">
-                     <button id="update-goal-btn">Update Goal</button>
+                     <button id="update-goal-btn">Total Accounts</button>
                  </div>
                  <hr> <!-- Separator -->
              </div>
@@ -144,15 +153,15 @@
              <div id="kpi-stats-section" class="summary-box summary-box-empty"> <!-- Renamed ID, kept classes -->
                  <h4>Key Stats</h4>
                  <div class="kpi-list">
-                     <p>Total Entered: <span id="kpi-total-entered-amount" class="kpi-value">Calculating...</span></p>
-                     <p>Average Confirmed: <span id="kpi-avg-amount" class="kpi-value">Calculating...</span></p>
+                     <p>Total Pipeline Value: <span id="kpi-total-entered-amount" class="kpi-value">Calculating...</span></p>
+                     <p>Average Deal Size: <span id="kpi-avg-amount" class="kpi-value">Calculating...</span></p>
                  </div>
              </div>
 
              <!-- NEW: Static text display for entry counts -->
              <!-- <p id="entry-summary-text" class="entry-summary">Loading counts...</p> -->
              <div id="total-confirmed-whole-card" class="summary-box entry-summary"> <!-- Replaced p with div and added class for styling -->
-                 <h3>Total Confirmed</h3>
+                 <h3>Total Revenue</h3>
                  <p id="total-confirmed-whole-value" class="kpi-value">$0</p> <!-- Added kpi-value class for consistency -->
              </div>
         </div>
@@ -265,131 +274,6 @@
                 <iframe id="generic-modal-iframe" src="about:blank"></iframe>
             </div>
         </div>
-    </div>
-    
-    <!-- NEW CHAT PRO SIDEBAR -->
-    <div id="chatProSidebar" class="chat-sidebar">
-        <div id="chatProSidebarDragHandle" class="chat-sidebar-drag-handle"></div>
-        <div class="chat-sidebar-header">
-            <h3>Pro</h3>
-            <button id="closeChatProSidebarBtn" class="chat-sidebar-close-btn">&times;</button>
-        </div>
-
-        <!-- Chat Pro Controls Header -->
-        <div class="chat-pro-controls-header">
-            <div class="model-selector-container">
-                <label for="gemini-model-selector" class="visually-hidden">Gemini Model:</label>
-                <select id="gemini-model-selector" aria-label="Select Gemini Model">
-                    <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro (Latest)</option>
-                    <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash (Latest)</option>
-                    <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
-                    <option value="gemini-2.0-flash">Gemini 2.0 Flash</option> 
-                    <option value="gemini-pro">Gemini Pro</option> <!-- Kept existing Gemini Pro as it was distinct -->
-                    <option value="gemini-2.5-flash-preview-04-17">Gemini 2.5 Flash Preview 04-17</option>
-                    <option value="gemini-2.5-pro-experimental-03-25">Gemini 2.5 Pro Experimental 03-25</option>
-                    <option value="gemini-2.0-flash-preview-image-generation">Gemini 2.0 Flash Preview Image Generation</option>
-                    <option value="gemini-2.0-flash-experimental">Gemini 2.0 Flash Experimental</option>
-                    <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash-Lite</option>
-                    <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-                    <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash-8B</option>
-                    <option value="gemma-3">Gemma 3</option>
-                    <option value="gemini-embedding-experimental-03-07">Gemini Embedding Experimental 03-07</option>
-                </select>
-            </div>
-            <button id="chat-pro-api-settings-btn" class="button icon-button" title="API Settings">
-                <i class="fas fa-key"></i> <span class="visually-hidden">API Settings</span>
-            </button>
-        </div>
-        <!-- END: Chat Pro Controls Header -->
-
-        <iframe id="chatProSidebarIframe" src="about:blank"></iframe>
-
-        <!-- API Settings Modal for Chat Pro -->
-        <div id="chat-pro-api-settings-modal" class="modal-overlay" style="display: none;">
-            <div class="modal-content api-settings-modal-content">
-                <div class="modal-header">
-                    <h4 id="chat-pro-api-modal-title">Gemini API Configuration</h4>
-                    <button id="close-chat-pro-api-settings-modal-btn" class="modal-close" aria-label="Close API Settings">&times;</button>
-                </div>
-                <div class="modal-body api-settings-modal-body">
-                    <div class="api-settings-section">
-                        <h5>Credentials</h5>
-                        <div class="form-field">
-                            <label for="chat-pro-api-key">API Key:</label>
-                            <input type="password" id="chat-pro-api-key" placeholder="Enter your Gemini API key">
-                        </div>
-                        <button id="chat-pro-connect-btn" class="button add-btn" style="width: 100%; margin-top: 10px;">Connect</button>
-                        <div id="chat-pro-status" class="api-status" style="margin-top: 10px; text-align: center; font-size: 0.9em;">
-                            Status: Not Connected
-                        </div>
-                    </div>
-
-                    <div class="api-settings-section">
-                        <h5>Model Parameters</h5>
-                        <div class="form-field">
-                            <label for="chat-pro-temperature">Temperature: 
-                                <span class="default-value-display" id="default-temp-display">(Default: 0.7)</span>
-                                <span class="info-icon" data-tooltip="Controls randomness. Higher values (e.g., 0.9) for more creative/random output; lower values (e.g., 0.2) for more focused/deterministic output. Use case: Creative writing (high), factual summary (low)."> <i class="fas fa-info-circle"></i></span>
-                            </label>
-                            <input type="range" id="chat-pro-temperature" min="0" max="1" step="0.1" value="0.7">
-                            <span class="range-value">0.7</span>
-                        </div>
-                        <div class="form-field">
-                            <label for="chat-pro-max-tokens">Max Output Tokens: 
-                                <span class="default-value-display" id="default-max-tokens-display">(Default: 2048)</span>
-                                <span class="info-icon" data-tooltip="Maximum number of tokens (approx. words/sub-words) the model will generate. Use case: Control response length. Shorter for quick answers, longer for detailed explanations."> <i class="fas fa-info-circle"></i></span>
-                            </label>
-                            <input type="number" id="chat-pro-max-tokens" value="1024" min="1">
-                        </div>
-                        <div class="form-field">
-                            <label for="chat-pro-top-p">Top-P: 
-                                <span class="default-value-display" id="default-top-p-display">(Default: 0.95)</span>
-                                <span class="info-icon" data-tooltip="Nucleus sampling. Selects the smallest set of tokens whose cumulative probability exceeds P. Model samples only from this set. Use case: Alternative to Temperature for controlling randomness. 0.1 means only tokens in the top 10% probability mass are considered."> <i class="fas fa-info-circle"></i></span>
-                            </label>
-                            <input type="range" id="chat-pro-top-p" min="0" max="1" step="0.01" value="0.95">
-                            <span class="range-value">0.95</span>
-                        </div>
-                        <div class="form-field">
-                            <label for="chat-pro-top-k">Top-K: 
-                                <span class="default-value-display" id="default-top-k-display">(Default: 40)</span>
-                                <span class="info-icon" data-tooltip="Filters vocabulary to the K most probable next tokens at each step. Use case: Limits model's choices to high-probability tokens, can prevent improbable tokens. Set to 0 to disable."> <i class="fas fa-info-circle"></i></span>
-                            </label>
-                            <input type="number" id="chat-pro-top-k" value="40" min="1">
-                        </div>
-                    </div>
-
-                    <div class="api-settings-section">
-                        <h5>Safety Settings (Placeholders)</h5>
-                        <div class="form-field">
-                            <label>Harassment:</label>
-                            <span>Block None (Placeholder)</span>
-                        </div>
-                        <div class="form-field">
-                            <label>Hate Speech:</label>
-                            <span>Block Medium and Above (Placeholder)</span>
-                        </div>
-                        <div class="form-field">
-                            <label>Sexually Explicit:</label>
-                            <span>Block Most (Placeholder)</span>
-                        </div>
-                         <div class="form-field">
-                            <label>Dangerous Content:</label>
-                            <span>Block Medium and Above (Placeholder)</span>
-                        </div>
-                    </div>
-                    
-                    <div class="api-settings-section">
-                        <h5>Advanced Options</h5>
-                        <p style="text-align: center; color: var(--text-secondary); font-size: 0.9em;">(Further customization options will be available here)</p>
-                    </div>
-
-                </div>
-                <div class="modal-footer api-settings-modal-footer">
-                    <button id="chat-pro-save-settings-btn" class="button add-btn">Save Settings</button>
-                </div>
-            </div>
-        </div>
-        <!-- END: API Settings Modal -->
     </div>
 
     <!-- Settings Panel Modal -->
