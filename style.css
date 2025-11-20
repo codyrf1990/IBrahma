@@ -1,56 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap');
+
 :root {
-    /* Color Variables */
-    --primary-color: #CC0000;
-    --primary-hover: #b30000;
-    --accent-gold: #FFD700;
-    --text-primary: #333;
-    --text-secondary: #666;
-    --background-primary: #f8f8f8;
-    --background-secondary: #e6e6e6;
-    --card-background: #ffffff;
-    --border-color: #e0e0e0;
-    --success-color: #38a169;
-    --error-color: #e53e3e;
-    
-    /* Light Theme Table Header Variables */
-    --table-header-bg: #f0f2f5;
-    --table-header-text-color: #212529;
-    --table-header-border-color: #dee2e6;
-    
-    /* Spacing Variables */
+    /* Core Palette */
+    --primary-color: #d62828;
+    --primary-hover: #b92020;
+    --accent-gold: #f0c262;
+    --text-primary: #f5f2ef;
+    --text-secondary: #c5bebc;
+    --background-primary: #12090d;
+    --background-secondary: #1b1114;
+    --card-background: #161214;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --success-color: #4ade80;
+    --error-color: #f87171;
+
+    /* Tables */
+    --table-header-bg: #1f1b1d;
+    --table-header-text-color: #f5f1ee;
+    --table-header-border-color: rgba(255, 255, 255, 0.09);
+
+    /* Spacing */
     --spacing-xs: 4px;
     --spacing-sm: 8px;
     --spacing-md: 16px;
     --spacing-lg: 24px;
     --spacing-xl: 40px;
-    
-    /* Border Radius */
+
+    /* Radii */
     --border-radius-sm: 4px;
-    --border-radius-md: 6px;
-    --border-radius-lg: 8px;
-    
+    --border-radius-md: 8px;
+    --border-radius-lg: 14px;
+
     /* Shadows */
-    --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
-    --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+    --shadow-sm: 0 6px 14px rgba(0, 0, 0, 0.28);
+    --shadow-md: 0 14px 40px rgba(0, 0, 0, 0.35);
 }
 
-/* Dark Mode Variables */
+/* Dark Mode Variables (default state) */
 body.dark-mode {
-    --primary-color: #E53935;
-    --primary-hover: #D32F2F;
-    --accent-gold: #FFCA28;
-    --text-primary: #e0e0e0;
-    --text-secondary: #b0b0b0;
-    --background-primary: #121212;
-    --background-secondary: #1e1e1e;
-    --card-background: #2c2c2c;
-    --border-color: #444;
-    --table-header-bg: #333333;
-    --table-header-text-color: #e0e0e0;
-    --table-header-border-color: #444;
+    --primary-color: #d62828;
+    --primary-hover: #b92020;
+    --accent-gold: #f0c262;
+    --text-primary: #f5f2ef;
+    --text-secondary: #c5bebc;
+    --background-primary: #0f080b;
+    --background-secondary: #1a1013;
+    --card-background: #161214;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --table-header-bg: #1f1b1d;
+    --table-header-text-color: #f5f1ee;
+    --table-header-border-color: rgba(255, 255, 255, 0.09);
 
-    --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
-    --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+    --shadow-sm: 0 6px 14px rgba(0, 0, 0, 0.34);
+    --shadow-md: 0 14px 40px rgba(0, 0, 0, 0.42);
 }
 
 /* Visually Hidden Utility Class */
@@ -67,16 +69,24 @@ body.dark-mode {
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    font-family: 'Manrope', 'Segoe UI', system-ui, -apple-system, sans-serif;
     margin: 0;
     padding: 0;
-    background: linear-gradient(135deg, var(--background-primary) 0%, var(--background-secondary) 100%);
+    background-color: var(--background-primary);
+    background-image:
+        radial-gradient(140% 120% at 12% 18%, rgba(214, 40, 40, 0.32), transparent 48%),
+        radial-gradient(130% 140% at 85% 8%, rgba(139, 23, 23, 0.42), transparent 55%),
+        radial-gradient(120% 120% at 50% 110%, rgba(214, 40, 40, 0.24), transparent 60%),
+        linear-gradient(180deg, #0c0709 0%, #1a0d11 45%, #0d0709 100%);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     color: var(--text-primary);
     transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 100vh;
 }
 
 #license-app {
-    max-width: 1000px;
+    max-width: 1140px;
     margin: 0 auto;
     padding: var(--spacing-lg);
     transition: background-color 0.3s ease;
@@ -89,7 +99,7 @@ body {
     align-items: center; /* Vertically align items */
     padding: 10px 20px; /* Adjust padding */
     gap: 20px; /* Space between columns */
-    border-bottom: 1px solid #eee; /* Optional separator */
+    border-bottom: 1px solid var(--border-color); /* Subtle separator */
     margin-bottom: 15px; /* Space below header row */
     background-color: var(--card-background); /* MODIFIED: Give header a background */
     box-shadow: var(--shadow-sm);
@@ -121,7 +131,7 @@ body {
 /* NEW: Style for the tagline */
 .main-header .app-tagline {
     font-size: 0.8rem; /* Smaller than title */
-    color: #666; /* Muted color */
+    color: var(--text-secondary); /* Muted color */
     margin-top: 3px; /* Space below title (adjust as needed) */
     margin-bottom: 0;
     line-height: 1.2;
@@ -2625,13 +2635,13 @@ body.dark-mode #commander-chats-section .button:hover {
 }
 
 body.dark-mode .month-section .client-table tbody .client-row:nth-child(odd) {
-    background-color: #252525; /* Even darker for better contrast */
+    background-color: rgba(255, 255, 255, 0.018);
 }
 body.dark-mode .month-section .client-table tbody .client-row:nth-child(even) {
-    background-color: #3a3a3a; /* Lighter grey for stronger distinction */
+    background-color: rgba(255, 255, 255, 0.028);
 }
 body.dark-mode .month-section .client-table tbody .client-row:hover {
-    background-color: rgba(220, 53, 69, 0.25) !important; /* More prominent hover effect */
+    background-color: rgba(214, 40, 40, 0.08) !important;
     transition: background-color 0.2s ease;
 }
 
@@ -2731,7 +2741,7 @@ body.dark-mode .month-header span {
 
 body.dark-mode .client-table th {
     background-color: var(--table-header-bg); /* MODIFIED: was var(--card-background) */
-    color: var(--primary-color); /* MODIFIED: was var(--table-header-text-color), now explicitly red */
+    color: var(--table-header-text-color);
     border-bottom: 2px solid var(--table-header-border-color);
 }
 
@@ -3052,4 +3062,240 @@ body.dark-mode #add-renewal-year-indicator {
         font-size: 0.85rem;
         padding: 6px 12px;
     }
+}
+
+/* ==========================================================================
+   Theme Overrides — SolidCAM Catalogue Look
+   Purpose: Re-skin without altering structure or JS hooks.
+   ========================================================================== */
+h1, h2, h3, h4, h5 {
+    font-family: 'Barlow', 'Manrope', 'Segoe UI', system-ui, sans-serif;
+    letter-spacing: 0.02em;
+    color: var(--text-primary);
+}
+
+a {
+    color: var(--accent-gold);
+}
+
+/* Card shell + containers */
+.card,
+.container,
+.summary-box,
+.month-section,
+#commander-card,
+#year-tabs-container,
+.totals-summary .summary-box,
+.modal,
+.modal-content,
+#app-suggestion-modal {
+    background: radial-gradient(120% 180% at 50% 0%, rgba(255, 255, 255, 0.02), transparent 60%), #161214;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md);
+    color: var(--text-primary);
+}
+
+/* Header bar */
+.main-header {
+    background: linear-gradient(135deg, rgba(214, 40, 40, 0.12), rgba(12, 7, 9, 0.9));
+    border: 1px solid rgba(214, 40, 40, 0.15);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.main-header .app-title {
+    color: #e44;
+    text-shadow: 0 8px 22px rgba(214, 40, 40, 0.4);
+}
+
+.main-header .app-tagline {
+    color: rgba(245, 242, 239, 0.8);
+}
+
+.main-header .percentage-calculator {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    color: var(--text-primary);
+}
+
+/* Inputs */
+input,
+select,
+textarea {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--text-primary);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: rgba(245, 242, 239, 0.55);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: rgba(214, 40, 40, 0.6);
+    box-shadow: 0 0 0 2px rgba(214, 40, 40, 0.2);
+}
+
+/* Buttons and pills */
+button,
+.button,
+.add-btn,
+.cancel-btn,
+#add-year-btn,
+#update-goal-btn,
+.sync-button {
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: linear-gradient(180deg, rgba(214, 40, 40, 0.9), rgba(156, 25, 25, 0.95));
+    color: #fff;
+    box-shadow: 0 12px 30px rgba(214, 40, 40, 0.35), 0 2px 8px rgba(0, 0, 0, 0.4);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
+
+button:hover,
+.button:hover,
+.add-btn:hover,
+#add-year-btn:hover,
+#update-goal-btn:hover,
+.sync-button:hover {
+    background: linear-gradient(180deg, rgba(214, 40, 40, 1), rgba(156, 25, 25, 1));
+    transform: translateY(-1px);
+    box-shadow: 0 14px 32px rgba(214, 40, 40, 0.4), 0 4px 12px rgba(0, 0, 0, 0.45);
+}
+
+.cancel-btn,
+.secondary-button {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-secondary);
+    box-shadow: none;
+}
+
+.cancel-btn:hover,
+.secondary-button:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+    transform: translateY(-1px);
+}
+
+/* Search bar */
+.search-container input[type="search"] {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* Summary / KPI tiles */
+.summary-box h3,
+.summary-box h4 {
+    color: var(--accent-gold);
+    letter-spacing: 0.02em;
+}
+
+.kpi-value {
+    color: #f7f5f3;
+    font-weight: 700;
+}
+
+/* Commander card */
+#commander-card {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.4));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: var(--shadow-md);
+}
+
+.commander-section h3 {
+    color: var(--accent-gold);
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.commander-icon {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25);
+}
+
+.commander-icon:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(214, 40, 40, 0.45);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* Year tabs */
+.year-tabs-header {
+    background: linear-gradient(135deg, rgba(214, 40, 40, 0.12), rgba(0, 0, 0, 0.35));
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.year-tab {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+}
+
+.year-tab.active {
+    background: linear-gradient(180deg, rgba(214, 40, 40, 0.9), rgba(156, 25, 25, 0.95));
+    border-color: rgba(214, 40, 40, 0.8);
+    color: #fff;
+}
+
+/* Table minimal skin (structure unchanged) */
+.client-table thead {
+    background: linear-gradient(180deg, rgba(31, 27, 29, 0.85), rgba(19, 15, 17, 0.95));
+}
+
+.client-table th,
+.client-table td {
+    color: var(--text-primary);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.client-table th {
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+.client-row {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+.month-section .client-table tbody .client-row:nth-child(odd) {
+    background-color: rgba(255, 255, 255, 0.015);
+}
+
+.month-section .client-table tbody .client-row:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.month-section .client-table tbody .client-row:hover {
+    background-color: rgba(214, 40, 40, 0.06) !important;
+}
+
+/* Progress bar */
+.progress-bar {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.progress-fill {
+    background: linear-gradient(90deg, #d62828, #f0c262);
+}
+
+/* Modals */
+.modal,
+.modal-content,
+#app-suggestion-modal {
+    background: rgba(15, 12, 14, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.6);
+}
+
+.modal-header h3,
+.app-suggestion-modal-header h2 {
+    color: var(--accent-gold);
 }
