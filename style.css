@@ -1,51 +1,105 @@
 @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap');
 
+/* Universal box-sizing for consistent width calculations */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 :root {
-    /* Core Palette */
+    /* Core Brand Colors - SolidCAM red/gold used subtly */
     --primary-color: #d62828;
     --primary-hover: #b92020;
-    --accent-gold: #f0c262;
-    --text-primary: #f5f2ef;
-    --text-secondary: #c5bebc;
-    --background-primary: #12090d;
-    --background-secondary: #1b1114;
-    --card-background: #161214;
-    --border-color: rgba(255, 255, 255, 0.08);
-    --success-color: #4ade80;
-    --error-color: #f87171;
+    --primary-active: #9e1b1b;
+    --accent-gold: #e8b84d; /* Desaturated for sophistication */
+    --accent-gold-subtle: rgba(232, 184, 77, 0.12);
 
-    /* Tables */
-    --table-header-bg: #1f1b1d;
-    --table-header-text-color: #f5f1ee;
-    --table-header-border-color: rgba(255, 255, 255, 0.09);
+    /* Professional Neutral Palette */
+    --bg-primary: #1a1a1a; /* Refined dark background */
+    --bg-elevated: #242424; /* Elevated surfaces */
+    --bg-card: #2a2a2a; /* Card backgrounds */
+    --bg-hover: #303030; /* Hover states */
+    --bg-input: #222222; /* Input backgrounds */
 
-    /* Spacing */
+    /* Text Colors */
+    --text-primary: #f5f5f5; /* High contrast white */
+    --text-secondary: #b8b8b8; /* Secondary text */
+    --text-tertiary: #888888; /* Tertiary/disabled text */
+    --text-inverse: #1a1a1a; /* Text on light backgrounds */
+
+    /* Semantic Colors */
+    --success-color: #10b981; /* Professional green */
+    --success-bg: rgba(16, 185, 129, 0.12);
+    --error-color: #ef4444; /* Clear red for errors */
+    --error-bg: rgba(239, 68, 68, 0.12);
+    --info-color: #3b82f6; /* Professional blue */
+    --info-bg: rgba(59, 130, 246, 0.12);
+    --warning-color: #f59e0b;
+    --warning-bg: rgba(245, 158, 11, 0.12);
+
+    /* Border Colors */
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    --border-default: rgba(255, 255, 255, 0.1);
+    --border-strong: rgba(255, 255, 255, 0.15);
+
+    /* Table Specific */
+    --table-header-bg: #272727;
+    --table-row-even: rgba(255, 255, 255, 0.02);
+    --table-row-odd: rgba(255, 255, 255, 0.04);
+    --table-row-hover: rgba(214, 40, 40, 0.08);
+
+    /* Spacing System - More generous for SaaS feel */
     --spacing-xs: 4px;
     --spacing-sm: 8px;
-    --spacing-md: 16px;
-    --spacing-lg: 24px;
-    --spacing-xl: 40px;
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 24px;
+    --spacing-2xl: 32px;
+    --spacing-3xl: 48px;
+    --spacing-4xl: 64px;
 
-    /* Radii */
-    --border-radius-sm: 4px;
-    --border-radius-md: 8px;
-    --border-radius-lg: 14px;
+    /* Border Radius - Modern, not boxy */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-full: 9999px; /* Only for avatars/badges */
 
-    /* Shadows */
-    --shadow-sm: 0 6px 14px rgba(0, 0, 0, 0.28);
-    --shadow-md: 0 14px 40px rgba(0, 0, 0, 0.35);
+    /* Shadow System - Premium, lighter shadows (Linear/Stripe inspired) */
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.06);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.15), 0 8px 24px rgba(0, 0, 0, 0.10);
 
-    /* Typography */
-    --font-size-xl: 1.8rem;
-    --font-size-lg: 1.2rem;
-    --font-size-md: 1rem;
-    --font-size-sm: 0.9rem;
-    --font-size-xs: 0.8rem;
-    --font-size-tiny: 0.7rem;
+    /* Typography - Professional SaaS scale (15px base) */
+    --font-size-xs: 0.75rem;       /* 12px - fine print */
+    --font-size-sm: 0.8125rem;     /* 13px - labels, captions */
+    --font-size-base: 0.9375rem;   /* 15px - NEW BASE for body text */
+    --font-size-md: 1rem;          /* 16px - emphasized body */
+    --font-size-lg: 1.125rem;      /* 18px - subheadings */
+    --font-size-xl: 1.375rem;      /* 22px - section headings */
+    --font-size-2xl: 1.75rem;      /* 28px - page titles */
+    --font-size-3xl: 2.25rem;      /* 36px - hero text */
 
-    /* Transitions */
-    --transition-standard: 0.2s ease;
-    --transition-fast: 0.15s ease;
+    /* Line Heights - Better readability */
+    --line-height-tight: 1.25;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.7;
+
+    /* Font Weights - Clear hierarchy */
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+
+    /* Transitions - Smooth, professional */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Focus Ring - Accessibility */
+    --focus-ring: 0 0 0 3px rgba(59, 130, 246, 0.5);
+    --focus-ring-error: 0 0 0 3px rgba(239, 68, 68, 0.5);
 }
 
 /* Visually Hidden Utility Class */
@@ -65,165 +119,169 @@ body {
     font-family: 'Manrope', 'Segoe UI', system-ui, -apple-system, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: var(--background-primary);
+    font-size: var(--font-size-base); /* 15px base - modern SaaS standard */
+    line-height: 1.6; /* Comfortable reading without being too loose */
+    font-weight: var(--font-weight-normal);
+    background-color: var(--bg-primary);
+    /* Subtle, professional background - minimal gradients */
     background-image:
-        radial-gradient(140% 120% at 12% 18%, rgba(214, 40, 40, 0.32), transparent 48%),
-        radial-gradient(130% 140% at 85% 8%, rgba(139, 23, 23, 0.42), transparent 55%),
-        radial-gradient(120% 120% at 50% 110%, rgba(214, 40, 40, 0.24), transparent 60%),
-        linear-gradient(180deg, #0c0709 0%, #1a0d11 45%, #0d0709 100%);
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(214, 40, 40, 0.08), transparent 50%);
     background-repeat: no-repeat;
     background-attachment: fixed;
     color: var(--text-primary);
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color var(--transition-base), color var(--transition-base);
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 #license-app {
     max-width: 1140px;
     margin: 0 auto;
-    padding: var(--spacing-lg);
-    transition: background-color 0.3s ease;
+    padding: var(--spacing-2xl); /* More generous padding */
+    transition: background-color var(--transition-base);
 }
 
-/* NEW HEADER STYLING */
+/* HEADER - Professional masthead */
 .main-header {
     display: grid;
-    grid-template-columns: 1fr auto 1fr; /* Left flexible, Center auto, Right flexible */
-    align-items: center; /* Vertically align items */
-    padding: 10px 20px; /* Adjust padding */
-    gap: 20px; /* Space between columns */
-    border-bottom: 1px solid var(--border-color); /* Subtle separator */
-    margin-bottom: 15px; /* Space below header row */
-    background-color: var(--card-background); /* MODIFIED: Give header a background */
-    box-shadow: var(--shadow-sm);
-    border-radius: var(--border-radius-lg);
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: 2px var(--spacing-2xl); /* Ultra-compact vertical padding */
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-2xl);
+    background-color: var(--bg-card); /* Clean card background */
+    border: 1px solid var(--border-subtle); /* Subtle single border */
+    border-radius: var(--radius-lg); /* Modern radius */
+    box-shadow: var(--shadow-sm); /* Subtle elevation */
 }
 
-/* NEW: Title Group Container */
+/* Title Group */
 .main-header .title-group {
-     grid-column: 1 / 2; /* Place group in first column */
-     justify-self: start; /* Keep group aligned left */
-     align-self: center; /* Keep group vertically centered */
-     display: flex; /* Use flex for internal alignment if needed */
-     flex-direction: column; /* Stack title and tagline */
-     align-items: center; /* Horizontally center the title and tagline blocks */
-     position: relative; /* Allow fine-tuning of vertical position */
-     top: 2px; /* Nudge down slightly; adjust value as needed */
+    grid-column: 1 / 2;
+    justify-self: start;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Left-aligned for professional look */
+    gap: var(--spacing-xs);
 }
 
 .main-header .app-title {
-    margin: 0; /* Reset default heading margin */
-    font-size: 1.8rem; /* Make title large (adjust value as needed) */
-    color: var(--primary-color);
-    font-weight: 600; /* Or desired weight */
-    margin-bottom: 0; /* Remove space below title */
-    line-height: 1.1; /* Tighten line height */
-    text-align: center; /* Center the text within the h1 block */
+    margin: 0;
+    font-size: var(--font-size-2xl); /* 24px */
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary); /* White, not red */
+    line-height: var(--line-height-tight);
+    letter-spacing: -0.01em;
+    /* NO text-shadow - clean and professional */
 }
 
-/* NEW: Style for the tagline */
 .main-header .app-tagline {
-    font-size: 0.8rem; /* Smaller than title */
-    color: var(--text-secondary); /* Muted color */
-    margin-top: 3px; /* Space below title (adjust as needed) */
-    margin-bottom: 0;
-    line-height: 1.2;
-    text-align: center; /* Center tagline text - already was */
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: var(--line-height-normal);
 }
 
 .main-header .header-logo {
-    max-height: 72px; /* Adjusted from 60px */
+    max-height: 72px;
     width: auto;
     grid-column: 2 / 3;
     justify-self: center;
-    align-self: center; /* Added for better vertical alignment if header height changes */
+    align-self: center;
+    object-fit: contain;
 }
 
+/* Quick Calculator in Header */
 .main-header .percentage-calculator {
-    grid-column: 3 / 4; /* Place calculator in third column */
-    justify-self: end; /* Align to the right */
-    width: 127px; /* Adjusted to fit 9-digit input + label */
-    padding: 4px 6px; /* Reverted to a slightly larger padding */
-    border-radius: var(--border-radius-sm); /* Smaller radius */
-    font-size: 0.8rem; /* KEEPING AS IS */
-    min-width: 127px; /* Matches new width */
-    box-shadow: 0 1px 2px rgba(0,0,0,0.08); /* Lighter shadow */
-    background-color: var(--card-background); /* MODIFIED */
-    border: 1px solid var(--border-color);
-    margin: 0;
-    text-align: center; /* Center the title */
+    grid-column: 3 / 4;
+    justify-self: end;
+    padding: var(--spacing-lg);
+    background-color: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-xs);
+    min-width: 140px;
 }
 
-.main-header .percentage-calculator h4 { /* Title */
-    font-size: 0.9rem; /* Adjusted size */
-    margin-bottom: 8px; /* Space below title */
-    font-weight: 600;
+.main-header .percentage-calculator h4 {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
     color: var(--text-secondary);
+    margin: 0 0 var(--spacing-sm) 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .main-header .percentage-calculator .calculator-content {
     display: flex;
-    flex-direction: column; /* Stack Title / Amount / Results */
-    align-items: center; /* Center items horizontally */
-    gap: 4px; /* Reduced gap */
-    width: 100%; /* Ensure it fills the card for centering */
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
 }
 
-.main-header .percentage-calculator .calc-input-row { /* Renamed from amount-input-group */
-     display: flex;
-     align-items: center;
-     justify-content: center; /* Center the input row content */
-     gap: 6px; /* Space between label and input */
-     width: 100%; /* Take full width for centering */
+.main-header .percentage-calculator .calc-input-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+}
+
+.main-header .percentage-calculator .calc-input-row label {
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    font-weight: var(--font-weight-medium);
 }
 
 .main-header .percentage-calculator input[type="number"] {
-     width: 36px; /* Further reduced by 30% from 51px, rounded */
-     font-size: 0.8rem;
-     padding: 4px 5px; /* Slightly more padding */
-     border: 1px solid var(--border-color);
-     border-radius: var(--border-radius-sm);
+    width: 50px;
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-sm);
+    background-color: var(--bg-input);
+    color: var(--text-primary);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    transition: border-color var(--transition-fast);
 }
- .main-header .percentage-calculator .calc-input-row label {
-     font-size: 0.8rem;
-     color: var(--text-secondary);
- }
 
-/* --- Results Group Container (Horizontal Row) --- */
-.main-header .percentage-calculator .calculator-results { /* Wrapper for all results */
+.main-header .percentage-calculator input[type="number"]:focus {
+    outline: none;
+    border-color: var(--info-color);
+    box-shadow: var(--focus-ring);
+}
+
+.main-header .percentage-calculator .calculator-results {
     display: flex;
-    flex-direction: row; /* Arrange items horizontally */
-    justify-content: center; /* Key for centering items IN the row */
-    align-items: center; /* Align items vertically */
-    gap: 6px; /* Reverted to a wider gap for balance */
-    margin-top: 5px; /* Restore slight top margin if needed visually */
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-sm);
 }
 
-/* NEW: Individual Result Item (Vertical Stack Inside) */
 .main-header .percentage-calculator .percentage-result-item {
     display: flex;
-    flex-direction: column; /* Stack label (5%) above value (500) */
-    align-items: center; /* Center the stacked items horizontally */
+    flex-direction: column;
+    align-items: center;
     text-align: center;
-    padding: 0 2px; /* Reverted to slightly wider padding */
-    min-width: 30px; /* Reverted to a wider min-width for balance */
 }
 
-/* NEW: Style Label and Value Spans */
 .main-header .percentage-calculator .result-label {
     display: block;
-    font-size: 0.7rem;
-    color: var(--text-secondary);
-    line-height: 1.1;
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+    line-height: var(--line-height-tight);
+    margin-bottom: 2px;
 }
 
 .main-header .percentage-calculator .result-value {
     display: block;
-    font-size: 0.85rem; /* Slightly larger value */
-    font-weight: 600; /* Bolder value */
-    color: var(--text-primary); /* Use primary text color for results */
-    line-height: 1.1;
-    margin: 0; /* Reset margin */
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--accent-gold);
+    line-height: var(--line-height-tight);
 }
 
 /* NEW BUTTON ROW STYLING */
@@ -241,7 +299,7 @@ body {
 /* Base styles for all action buttons */
 .header-actions .button {
     padding: 8px 18px; /* Adjust padding */
-    border-radius: var(--border-radius-md); /* Rounded corners */
+    border-radius: var(--radius-md); /* Rounded corners */
     border: 1px solid transparent; /* Base border */
     font-size: 0.9rem; /* Consistent font size */
     font-weight: 600; /* Medium weight */
@@ -284,7 +342,7 @@ body {
 /* Secondary Button Style (#save-button, #load-button - Outline Example) */
 #save-button,
 #load-button {
-    background-color: var(--card-background);
+    background-color: var(--bg-card);
     color: var(--primary-color);
     border: 1px solid var(--primary-color);
 }
@@ -314,11 +372,11 @@ button {
 }
 
 .container {
-    background-color: var(--card-background); /* MODIFIED */
-    border-radius: var(--border-radius-lg);
+    background-color: var(--bg-card); /* MODIFIED */
+    border-radius: var(--radius-lg);
     box-shadow: var(--shadow-md);
     padding: var(--spacing-lg);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border-default);
     margin-bottom: 0;
 }
 
@@ -332,8 +390,8 @@ h2 {
 
 .month-section {
     margin-bottom: var(--spacing-xl);
-    background: var(--card-background); /* MODIFIED */
-    border-radius: var(--border-radius-lg);
+    background: var(--bg-card); /* MODIFIED */
+    border-radius: var(--radius-lg);
     padding: var(--spacing-md);
     box-shadow: var(--shadow-sm);
     margin-bottom: 10px; /* Further reduced bottom margin for compactness */
@@ -370,7 +428,7 @@ h2 {
 
 /* Updated Client Row Styles using TR */
 .client-row {
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-default);
     background-color: white;
     vertical-align: middle; /* Ensure vertical alignment */
     transition: background-color 0.2s ease-in-out; /* Smooth transition */
@@ -472,13 +530,13 @@ h2 {
 }
 
 /* Style the actions table header and data cells */
-#main-container th.td-actions,
+#main-container th.th-actions,
 #main-container td.td-actions {
     min-width: 110px; /* Ensure enough space for all icons */
     width: 110px;
     text-align: center;
     vertical-align: middle;
-    padding: 0 16px 0 4px; /* Increased right padding for spacing from edge */
+    padding: 12px 14px; /* Match base padding for alignment */
 }
 
 /* Styling for individual action buttons/icons */
@@ -527,11 +585,11 @@ h2 {
 
 /* Styles for the Restructured Totals Area */
 .totals-summary {
-    background-color: var(--card-background); /* MODIFIED: Card background */
+    background-color: var(--bg-card); /* MODIFIED: Card background */
     padding: var(--spacing-md) 0; /* Adjust padding - top/bottom only */
     margin-top: var(--spacing-lg);
-    border-radius: var(--border-radius-lg); /* Card border radius */
-    border: 1px solid var(--border-color); /* Card border */
+    border-radius: var(--radius-lg); /* Card border radius */
+    border: 1px solid var(--border-default); /* Card border */
     box-shadow: var(--shadow-sm); /* Card shadow */
     display: flex;
     justify-content: space-around; /* Distribute items */
@@ -556,7 +614,7 @@ h2 {
 /* Add vertical separators */
 .totals-summary > #progress-overview,
 .totals-summary > #kpi-stats-section {
-    border-right: 1px solid var(--border-color); /* Use theme border color */
+    border-right: 1px solid var(--border-default); /* Use theme border color */
 }
 
 /* Remove horizontal line within progress overview */
@@ -597,7 +655,7 @@ h2 {
 .toggle-button {
     padding: var(--spacing-sm) var(--spacing-lg);
     border: 2px solid var(--primary-color);
-    border-radius: var(--border-radius-md);
+    border-radius: var(--radius-md);
     background-color: white;
     color: var(--primary-color);
     font-weight: 600;
@@ -627,8 +685,8 @@ h2 {
     margin: var(--spacing-lg) 0;
     background-color: white;
     padding: var(--spacing-lg);
-    border-radius: var(--border-radius-lg);
-    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-default);
     box-shadow: var(--shadow-sm);
     min-height: 150px;
 }
@@ -638,9 +696,9 @@ h2 {
     flex: 0 1 350px;
     max-width: 400px;
     padding: var(--spacing-md);
-    border-radius: var(--border-radius-md);
-    background-color: var(--background-primary);
-    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-default);
 }
 
 /* Specific styles for the new combined overview box */
@@ -702,35 +760,26 @@ h2 {
 #progress-overview #total-pool-input {
     width: 70px; /* Increased width */
     padding: var(--spacing-xs) var(--spacing-sm);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
     text-align: center; /* Centered text */
     flex-shrink: 0; /* Prevent inputs from shrinking */
 }
 
+/* Total Accounts button - uses primary button styling */
 #progress-overview #update-goal-btn,
 #progress-overview #update-pool-btn {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border: 1px solid var(--primary-color);
-    background-color: white;
-    color: var(--primary-color);
-    border-radius: var(--border-radius-sm);
-    cursor: pointer;
-    font-size: 0.85rem;
-    transition: background-color 0.2s ease, color 0.2s ease;
-    white-space: nowrap; /* Prevent button text wrapping */
-    flex-shrink: 0; /* Prevent buttons from shrinking */
-}
-
-#progress-overview #update-goal-btn:hover,
-#progress-overview #update-pool-btn:hover {
-    background-color: var(--primary-hover);
-    color: white;
+    /* Inherits from primary button styles - solid red background */
+    font-size: 0.75rem; /* Smaller font size */
+    padding: 4px 8px; /* Reduced padding - 1/3 of normal */
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: auto; /* Remove minimum width constraint */
 }
 
 #progress-overview hr {
     border: none;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--border-default);
     margin: var(--spacing-md) 0;
 }
 
@@ -828,7 +877,7 @@ h2 {
 .completion-status {
     margin-top: var(--spacing-lg);
     padding: var(--spacing-md);
-    border-radius: var(--border-radius-md);
+    border-radius: var(--radius-md);
     background-color: rgba(74, 222, 128, 0.1);
     color: var(--success-color);
     font-weight: 600;
@@ -839,8 +888,8 @@ h2 {
 .add-section {
     margin-top: var(--spacing-xl);
     padding: var(--spacing-lg);
-    border-radius: var(--border-radius-lg);
-    background-color: var(--background-primary);
+    border-radius: var(--radius-lg);
+    background-color: var(--bg-primary);
     border: 1px dashed var(--primary-color);
 }
 
@@ -868,20 +917,31 @@ label {
     color: var(--text-secondary);
 }
 
+/* INPUTS - Modern, premium styling (Stripe-inspired) */
 input, select {
     width: 100%;
-    padding: var(--spacing-sm);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-sm);
+    padding: 10px 14px; /* More generous padding */
+    border: 1.5px solid var(--border-default); /* Slightly thicker for substance */
+    border-radius: 6px; /* Modern, friendly radius */
     box-sizing: border-box;
     color: var(--text-primary);
-    background-color: var(--background-secondary);
+    background-color: var(--bg-input);
+    font-size: var(--font-size-base);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04); /* Subtle depth */
+    transition: all var(--transition-base);
+}
+
+input:hover, select:hover {
+    border-color: var(--border-strong);
 }
 
 input:focus, select:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(204, 0, 0, 0.2);
+    background-color: var(--bg-elevated);
+    box-shadow:
+        inset 0 1px 2px rgba(0, 0, 0, 0.04),
+        0 0 0 3px rgba(214, 40, 40, 0.1); /* Layered focus shadow */
 }
 
 .button-row {
@@ -893,7 +953,7 @@ input:focus, select:focus {
 button {
     padding: var(--spacing-sm) var(--spacing-md);
     border: none;
-    border-radius: var(--border-radius-sm);
+    border-radius: var(--radius-sm);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -909,19 +969,19 @@ button {
 }
 
 .cancel-btn {
-    background-color: var(--background-primary);
+    background-color: var(--bg-primary);
     color: var(--text-secondary);
 }
 
 .cancel-btn:hover {
-    background-color: var(--background-secondary);
+    background-color: var(--bg-elevated);
 }
 
 .sync-button {
     background-color: var(--primary-color);
     color: white;
     padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: var(--border-radius-sm);
+    border-radius: var(--radius-sm);
     cursor: pointer;
     display: inline-block;
     margin-bottom: var(--spacing-lg);
@@ -941,7 +1001,7 @@ button {
     padding: var(--spacing-xs) var(--spacing-sm);
     background-color: var(--success-color);
     color: white;
-    border-radius: var(--border-radius-md);
+    border-radius: var(--radius-md);
     font-size: 0.9rem; /* Readable size */
     z-index: 1000; /* Ensure it's above other elements */
     margin-left: 0; /* Override previous margin */
@@ -990,10 +1050,10 @@ button {
 
 .info-badge {
     display: inline-block;
-    background: var(--background-secondary);
+    background: var(--bg-elevated);
     color: var(--text-secondary);
     padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--border-radius-md);
+    border-radius: var(--radius-md);
     font-size: var(--font-size-xs);
     margin-left: var(--spacing-xs);
 }
@@ -1001,8 +1061,8 @@ button {
 .empty-state {
     text-align: center;
     padding: 40px 20px;
-    background-color: var(--background-primary);
-    border-radius: var(--border-radius-lg);
+    background-color: var(--bg-primary);
+    border-radius: var(--radius-lg);
     margin-bottom: var(--spacing-xl);
 }
 
@@ -1031,8 +1091,8 @@ button {
     width: 60px;
     padding: 2px 5px;
     text-align: center;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
     font-size: 0.9rem;
 }
 
@@ -1042,7 +1102,7 @@ button {
     background-color: var(--primary-color);
     color: white;
     border: none;
-    border-radius: var(--border-radius-sm);
+    border-radius: var(--radius-sm);
     cursor: pointer;
 }
 
@@ -1072,20 +1132,23 @@ button {
     justify-content: flex-end;
 }
 
+/* MODAL OVERLAY - Premium with backdrop blur */
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
-    display: flex; /* Use flexbox for centering */
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
-    z-index: 1000; /* Ensure it's on top */
-    visibility: hidden; /* Initially hidden - controlled by JS */
+    background-color: rgba(0, 0, 0, 0.65); /* Darker for better focus */
+    backdrop-filter: blur(4px); /* Frosted glass effect */
+    -webkit-backdrop-filter: blur(4px); /* Safari support */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    visibility: hidden;
     opacity: 0;
-    transition: opacity 0.2s ease, visibility 0.2s ease;
+    transition: opacity var(--transition-slow), visibility var(--transition-slow);
 }
 
 .modal-overlay[style*="display: block"],
@@ -1095,12 +1158,27 @@ button {
 }
 
 .modal {
-    background: var(--card-background);
-    border-radius: var(--border-radius-lg);
-    padding: var(--spacing-lg);
+    background: var(--bg-card);
+    border-radius: 12px; /* More modern than 16px */
+    padding: var(--spacing-2xl);
     width: 90%;
     max-width: 600px;
-    box-shadow: var(--shadow-md);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.2),
+        0 24px 64px rgba(0, 0, 0, 0.12); /* Dramatic elevation */
+    animation: modalSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Slide-up animation for all modals */
+@keyframes modalSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .modal-header {
@@ -1226,7 +1304,7 @@ button {
 /* New rule for general cell padding */
 .client-table th,
 .client-table td {
-    padding: 10px 14px; /* More generous spacing for comfort */
+    padding: 12px 14px; /* Standardized spacing for alignment */
     line-height: 1.5; /* Improved line-height for comfortable reading */
     border-bottom: 1px solid rgba(255, 255, 255, 0.06); /* Subtle horizontal border */
     font-size: 0.97rem; /* Increased for better readability */
@@ -1255,18 +1333,16 @@ button {
 /* Optional: More specific padding for first/last cells if needed */
 .client-table th:first-child,
 .client-table td:first-child {
-    padding-left: 8px;
-    padding-right: 10px; /* Keep original right padding or adjust as needed */
+    padding-left: 12px;
+    padding-right: 12px; /* Consistent with base padding */
 }
 
 .client-table th:last-child,
 .client-table td:last-child {
-    padding-right: var(--spacing-md); /* Ensure padding on the right of the last cell */
+    padding-right: 12px; /* Consistent with base padding */
 }
 
-.client-table th.th-amount {
-    text-align: right;
-}
+/* Removed redundant .client-table th.th-amount rule - text-align already set in shared rule */
 
 .table-responsive-wrapper {
     width: 100%;     /* Ensure wrapper takes full width */
@@ -1285,7 +1361,7 @@ button {
 }
 
 .table-responsive-wrapper::-webkit-scrollbar-track {
-    background: var(--background-secondary);
+    background: var(--bg-elevated);
     border-radius: 4px;
 }
 
@@ -1372,11 +1448,9 @@ button {
     }
     
     /* Adjust column min-widths for better appearance */
-    .th-name, .td-name { min-width: 130px; max-width: 180px; }
-    .th-renewal-date, .td-renewal-date { min-width: 90px; max-width: 90px; }
-    .th-sent-date, .td-sent-date { min-width: 90px; max-width: 90px; }
-    .th-close-date, .td-close-date { min-width: 90px; max-width: 90px; }
-    .th-amount, .td-amount { min-width: 90px; max-width: 90px; }
+    .th-name, .td-name { min-width: 120px; max-width: 200px; }
+    .th-renewal-date, .td-renewal-date { min-width: 100px; max-width: 120px; }
+    .th-amount, .td-amount { min-width: 100px; max-width: 130px; }
 }
 
 /* Mobile breakpoint adjustments */
@@ -1387,7 +1461,7 @@ button {
     
     .container {
         padding: var(--spacing-sm);
-        border-radius: var(--border-radius-md);
+        border-radius: var(--radius-md);
     }
     
     .month-header {
@@ -1401,10 +1475,6 @@ button {
     
     /* Hide less critical columns on smallest screens */
     .th-opp-id, .td-opp-id {
-        display: none;
-    }
-    
-    .th-sent-date, .td-sent-date {
         display: none;
     }
     
@@ -1440,10 +1510,9 @@ button {
     }
     
     /* Adjust column sizes */
-    .th-name, .td-name { min-width: 120px; max-width: 150px; }
-    .th-renewal-date, .td-renewal-date { min-width: 80px; max-width: 80px; }
-    .th-close-date, .td-close-date { min-width: 80px; max-width: 80px; }
-    .th-amount, .td-amount { min-width: 80px; max-width: 80px; }
+    .th-name, .td-name { min-width: 110px; max-width: 160px; }
+    .th-renewal-date, .td-renewal-date { min-width: 95px; max-width: 110px; }
+    .th-amount, .td-amount { min-width: 95px; max-width: 120px; }
     
     /* Make forms more compact */
     .form-field {
@@ -1578,7 +1647,7 @@ document.addEventListener('DOMContentLoaded', function() {
   position: absolute;
   background-color: #3a3a3a;
   border: 1px solid #777;
-  border-radius: var(--border-radius-sm);
+  border-radius: var(--radius-sm);
   padding: 10px;
   z-index: 101;
   box-shadow: 0 2px 10px rgba(0,0,0,0.5);
@@ -1608,8 +1677,8 @@ document.addEventListener('DOMContentLoaded', function() {
   width: 100%;
   min-height: 80px;
   box-sizing: border-box;
-  border: 1px solid var(--border-color);
-  background-color: var(--background-secondary);
+  border: 1px solid var(--border-default);
+  background-color: var(--bg-elevated);
   color: var(--text-primary);
   font-family: inherit;
   font-size: var(--font-size-sm);
@@ -1670,9 +1739,9 @@ document.addEventListener('DOMContentLoaded', function() {
 /* Column Specific Styles */
 .th-checkbox,
 .td-checkbox {
-    width: 40px; /* Reduced from 50px */
+    width: 50px; /* Increased for consistent padding */
     text-align: center;
-    padding: 6px 8px; /* Consistent with other cell padding */
+    padding: 12px 8px; /* Match vertical padding with base */
 }
 
 .td-checkbox .checkbox-wrapper {
@@ -1681,9 +1750,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /* Widths for other columns - update to ensure proper distribution */
 .th-name, .td-name {
-    width: 22%; /* Reduced from 25% */
-    min-width: 110px; /* Further reduced */
-    max-width: 240px;
+    width: 22%; /* Rebalanced after increasing other columns */
+    min-width: 120px; /* Increased for better content fit */
+    max-width: 250px; /* Slightly increased */
     /* text-align: left; */ /* Ensure this doesn't override */
 }
 .td-name {
@@ -1692,68 +1761,41 @@ document.addEventListener('DOMContentLoaded', function() {
     white-space: nowrap; /* Prevent text wrapping */
 }
 .th-renewal-date, .td-renewal-date {
-    width: 11%; /* Reduced from 12% */
+    width: 12%; /* Increased to prevent truncation */
     text-align: center;
-    min-width: 50px; /* Further reduced */
-    max-width: 90px; /* Reduced from 100px */
+    min-width: 100px; /* Increased for full date display */
+    max-width: 130px; /* Increased to accommodate dates */
 }
 .td-renewal-date {
     overflow: hidden; /* Clip overflowing text */
     text-overflow: ellipsis; /* Show "..." for truncated text */
     white-space: nowrap; /* Prevent text wrapping */
 }
-.th-sent-date, .td-sent-date {
-    width: 11%; /* Reduced from 12% */
-    text-align: center;
-    min-width: 50px; /* Further reduced */
-    max-width: 90px; /* Reduced from 100px */
-}
-.td-sent-date {
-    overflow: hidden; /* Clip overflowing text */
-    text-overflow: ellipsis; /* Show "..." for truncated text */
-    white-space: nowrap; /* Prevent text wrapping */
-}
-.th-close-date, .td-close-date {
-    width: 11%; /* Reduced from 12% */
-    text-align: center;
-    min-width: 50px; /* Further reduced */
-    max-width: 90px; /* Reduced from 100px */
-}
-.td-close-date {
-    overflow: hidden; /* Clip overflowing text */
-    text-overflow: ellipsis; /* Show "..." for truncated text */
-    white-space: nowrap; /* Prevent text wrapping */
-}
 .th-amount, .td-amount {
-    width: 11%; /* Match other numeric columns */
+    width: 14%; /* Increased to prevent truncation */
     text-align: right; /* Right-align currency values */
-    min-width: 80px;
-    max-width: 110px;
+    min-width: 110px; /* Increased for full currency display */
+    max-width: 150px; /* Increased to accommodate larger amounts */
+    font-variant-numeric: tabular-nums; /* Monospaced numbers - applied to BOTH th and td for alignment */
 }
 .td-amount {
     overflow: hidden; /* Clip overflowing text */
     text-overflow: ellipsis; /* Show "..." for truncated text */
     white-space: nowrap; /* Prevent text wrapping */
-    font-variant-numeric: tabular-nums; /* Monospaced numbers for better alignment */
+    /* font-variant-numeric moved to shared rule above for th/td alignment */
 }
 
 .th-opp-id, .td-opp-id {
-    width: 14%; /* Reduced from 15% */
+    width: 16%; /* Rebalanced after adjusting other columns */
     text-align: left; /* Default left alignment */
-    min-width: 70px; /* Further reduced */
-    max-width: 120px; /* Reduced from 130px */
+    min-width: 100px; /* Keep for full content display */
+    max-width: 180px; /* Adjusted for balanced distribution */
 }
 .td-opp-id {
-    overflow: hidden; /* Clip overflowing text */
-    text-overflow: ellipsis; /* Show "..." for truncated text */
-    white-space: nowrap; /* Prevent text wrapping */
+    /* Removed ellipsis - allow full content display */
 }
-.th-actions, .td-actions { 
-    width: 7%; /* Reduced from 8% */
-    text-align: center;
-    min-width: 40px; /* Further reduced */
-    /* padding for td-actions handled by .td-actions rule above */
-}
+
+/* Actions column styling is defined in lines 533-540 with more specific selectors */
 
 /* Added styles for Quick Percentage Calculator layout */
 
@@ -1782,7 +1824,7 @@ document.addEventListener('DOMContentLoaded', function() {
     opacity: 1;
 }
 #custom-help-modal {
-    background: var(--card-background, #2c2c2c);
+    background: var(--bg-card, #2c2c2c);
     color: var(--text-primary, #f0f0f0);
     padding: 25px;
     border-radius: 8px;
@@ -1804,7 +1846,7 @@ document.addEventListener('DOMContentLoaded', function() {
     align-items: center;
     padding-bottom: 15px;
     margin-bottom: 15px;
-    border-bottom: 1px solid var(--border-color, #444);
+    border-bottom: 1px solid var(--border-default, #444);
 }
 #custom-help-modal-title {
     color: var(--text-primary, #e0e0e0);
@@ -1861,7 +1903,7 @@ document.addEventListener('DOMContentLoaded', function() {
 .custom-help-modal-footer {
     padding-top: 15px;
     margin-top: 15px;
-    border-top: 1px solid var(--border-color, #444);
+    border-top: 1px solid var(--border-default, #444);
     text-align: center;
     font-size: 0.95em;
     color: #aaa;
@@ -1906,7 +1948,7 @@ document.addEventListener('DOMContentLoaded', function() {
     opacity: 1;
 }
 #app-suggestion-modal {
-    background: var(--card-background, #2c2c2c);
+    background: var(--bg-card, #2c2c2c);
     color: var(--text-primary, #f0f0f0);
     padding: 25px;
     border-radius: 8px;
@@ -1924,7 +1966,7 @@ document.addEventListener('DOMContentLoaded', function() {
     align-items: center;
     padding-bottom: 15px;
     margin-bottom: 15px;
-    border-bottom: 1px solid var(--border-color, #444);
+    border-bottom: 1px solid var(--border-default, #444);
 }
 #app-suggestion-modal-title {
     color: var(--accent-gold, #FFD700);
@@ -1994,7 +2036,7 @@ document.addEventListener('DOMContentLoaded', function() {
 .app-suggestion-modal-footer {
     padding-top: 15px;
     margin-top: 15px;
-    border-top: 1px solid var(--border-color, #444);
+    border-top: 1px solid var(--border-default, #444);
     text-align: right;
     display: flex;
     justify-content: flex-end;
@@ -2017,14 +2059,14 @@ document.addEventListener('DOMContentLoaded', function() {
     background: none;
     color: var(--accent-gold);
     border: 1px solid var(--accent-gold);
-    border-radius: var(--border-radius-sm);
+    border-radius: var(--radius-sm);
     padding: var(--spacing-sm) var(--spacing-lg);
     font-size: var(--font-size-md);
     cursor: pointer;
     transition: background 0.2s, color 0.2s;
 }
 .button.secondary-button:hover {
-    background: var(--background-secondary);
+    background: var(--bg-elevated);
     color: var(--text-primary);
     border-color: var(--text-primary);
 }
@@ -2176,9 +2218,9 @@ document.addEventListener('DOMContentLoaded', function() {
     display: flex;
     justify-content: space-between;
     padding: var(--spacing-md);
-    background-color: var(--card-background); /* MODIFIED */
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-lg);
+    background-color: var(--bg-card); /* MODIFIED */
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
     margin-top: var(--spacing-lg);
     margin-bottom: var(--spacing-lg);
@@ -2189,7 +2231,7 @@ document.addEventListener('DOMContentLoaded', function() {
     padding: var(--spacing-sm);
     text-align: center;
     /* Optional: Add a light border between sections */
-    /* border-right: 1px solid var(--border-color); */
+    /* border-right: 1px solid var(--border-default); */
 }
 
 .commander-section:last-child {
@@ -2201,7 +2243,7 @@ document.addEventListener('DOMContentLoaded', function() {
     color: var(--primary-color);
     margin-top: 0;
     margin-bottom: var(--spacing-md);
-    border-bottom: 1px solid var(--border-color); /* Subtle separator for titles */
+    border-bottom: 1px solid var(--border-default); /* Subtle separator for titles */
     padding-bottom: var(--spacing-sm);
 }
 
@@ -2209,8 +2251,8 @@ document.addEventListener('DOMContentLoaded', function() {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 12px; /* Slightly increased gap */
-    margin-top: var(--spacing-sm);
+    gap: var(--spacing-lg); /* 16px - generous breathing room */
+    margin-top: var(--spacing-md);
 }
 
 .commander-icon {
@@ -2219,13 +2261,13 @@ document.addEventListener('DOMContentLoaded', function() {
     align-items: center;
     justify-content: center; /* Center content vertically */
     padding: var(--spacing-sm);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
     cursor: pointer;
     min-width: 70px; /* Adjusted min-width */
     max-width: 80px; /* Added max-width for consistency */
     height: 70px; /* Fixed height */
-    background-color: var(--card-background);
+    background-color: var(--bg-card);
     transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
     box-shadow: var(--shadow-sm);
 }
@@ -2288,10 +2330,10 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 #generic-content-modal .modal-content {
-    background: var(--card-background);
+    background: var(--bg-card);
     color: var(--text-primary);
     padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md) var(--spacing-lg);
-    border-radius: var(--border-radius-md);
+    border-radius: var(--radius-md);
     box-shadow: var(--shadow-md);
     width: 60vw;
     max-width: 800px;
@@ -2308,7 +2350,7 @@ document.addEventListener('DOMContentLoaded', function() {
     font-size: 1.4em;
     margin-bottom: var(--spacing-md);
     padding-bottom: var(--spacing-md);
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-default);
     font-weight: 700;
     text-align: left;
 }
@@ -2326,7 +2368,7 @@ document.addEventListener('DOMContentLoaded', function() {
     height: 100%;
     border: none;
     display: block;
-    background: var(--card-background);
+    background: var(--bg-card);
 }
 
 #generic-content-modal .close-button,
@@ -2362,7 +2404,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     .commander-section {
         border-right: none; /* Remove side border when stacked */
-        border-bottom: 1px solid var(--border-color); /* Add bottom border */
+        border-bottom: 1px solid var(--border-default); /* Add bottom border */
         padding-bottom: var(--spacing-md); /* Add padding at the bottom */
     }
     .commander-section:last-child {
@@ -2411,9 +2453,9 @@ document.addEventListener('DOMContentLoaded', function() {
 .main-header,
 .month-section,
 #commander-card /* Ensure commander card is themed */ {
-    background-color: var(--card-background);
+    background-color: var(--bg-card);
     transition: background-color 0.3s ease, border-color 0.3s ease;
-    border: 1px solid var(--border-color); /* Ensure border color also transitions */
+    border: 1px solid var(--border-default); /* Ensure border color also transitions */
 }
 
 input[type="text"],
@@ -2422,12 +2464,12 @@ input[type="date"],
 input[type="search"],
 select,
 textarea /* Added textarea */ {
-    background-color: var(--background-secondary); /* Use a slightly lighter dark shade for inputs */
+    background-color: var(--bg-elevated); /* Use a slightly lighter dark shade for inputs */
     color: var(--text-primary);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border-default);
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
     padding: var(--spacing-sm); /* Ensure consistent padding */
-    border-radius: var(--border-radius-sm); /* Ensure consistent border-radius */
+    border-radius: var(--radius-sm); /* Ensure consistent border-radius */
 }
 
 input[type="text"]::placeholder,
@@ -2468,9 +2510,9 @@ textarea::placeholder /* Added textarea placeholder */ {
     transform: translateX(-50%); /* Center the tooltip */
     width: 250px;
     padding: 10px;
-    border-radius: var(--border-radius-md);
-    background-color: var(--card-background); /* Use card background for tooltip */
-    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background-color: var(--bg-card); /* Use card background for tooltip */
+    border: 1px solid var(--border-default);
     color: var(--text-primary);
     font-size: 0.85em;
     line-height: 1.4;
@@ -2493,7 +2535,7 @@ textarea::placeholder /* Added textarea placeholder */ {
     transform: translateX(-50%);
     border-width: 5px;
     border-style: solid;
-    border-color: var(--border-color) transparent transparent transparent;
+    border-color: var(--border-default) transparent transparent transparent;
     visibility: hidden;
     opacity: 0;
     transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
@@ -2527,43 +2569,43 @@ textarea::placeholder /* Added textarea placeholder */ {
     margin: var(--spacing-md) auto;
     max-width: var(--max-content-width);
     padding: 0;
-    border-radius: var(--border-radius-md);
+    border-radius: var(--radius-md);
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border-default);
 }
 
 .year-tabs-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm) var(--spacing-md);
-    border-bottom: 2px solid var(--primary-color);
-    background: linear-gradient(135deg, rgba(220, 53, 69, 0.06) 0%, rgba(220, 53, 69, 0.02) 100%);
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--border-subtle);
+    background-color: transparent; /* No gradient */
 }
 
 .year-tabs-header h3 {
     margin: 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--primary-color);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
 }
 
 .year-tabs {
     display: flex;
-    gap: var(--spacing-xs);
+    gap: var(--spacing-md);
     flex-wrap: wrap;
-    padding: var(--spacing-md);
+    padding: var(--spacing-lg);
     align-items: center;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.01) 0%, transparent 100%);
+    background-color: transparent; /* No gradient */
 }
 
 .year-tab {
     padding: 10px 20px;
-    border: 2px solid var(--border-color);
-    background: var(--card-background);
+    border: 2px solid var(--border-default);
+    background: var(--bg-card);
     color: var(--text-primary);
-    border-radius: var(--border-radius-md);
+    border-radius: var(--radius-md);
     cursor: pointer;
     font-weight: 600;
     font-size: 0.95rem;
@@ -2574,7 +2616,7 @@ textarea::placeholder /* Added textarea placeholder */ {
 
 .year-tab:hover {
     border-color: var(--primary-color);
-    background: var(--background-secondary);
+    background: var(--bg-elevated);
     transform: translateY(-1px);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
@@ -2599,16 +2641,16 @@ textarea::placeholder /* Added textarea placeholder */ {
     gap: 6px;
     padding: 6px 14px;
     font-size: 0.875rem;
-    border: 1px solid var(--border-color);
-    background: var(--card-background);
+    border: 1px solid var(--border-default);
+    background: var(--bg-card);
     color: var(--text-primary);
-    border-radius: var(--border-radius-sm);
+    border-radius: var(--radius-sm);
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 #add-year-btn:hover {
-    background: var(--background-secondary);
+    background: var(--bg-elevated);
     border-color: var(--primary-color);
     color: var(--primary-color);
 }
@@ -2665,43 +2707,89 @@ textarea::placeholder /* Added textarea placeholder */ {
    Theme Overrides — SolidCAM Catalogue Look
    Purpose: Re-skin without altering structure or JS hooks.
    ========================================================================== */
-h1, h2, h3, h4, h5 {
+/* TYPOGRAPHY - Professional hierarchy */
+h1, h2, h3, h4, h5, h6 {
     font-family: 'Barlow', 'Manrope', 'Segoe UI', system-ui, sans-serif;
-    letter-spacing: 0.02em;
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-tight);
+    letter-spacing: -0.01em;
     color: var(--text-primary);
+    margin: 0 0 var(--spacing-md) 0;
+}
+
+h1 {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+}
+
+h2 {
+    font-size: var(--font-size-2xl);
+}
+
+h3 {
+    font-size: var(--font-size-xl);
+}
+
+h4 {
+    font-size: var(--font-size-lg);
+}
+
+p {
+    margin: 0 0 var(--spacing-md) 0;
+    line-height: var(--line-height-relaxed);
 }
 
 a {
-    color: var(--accent-gold);
+    color: var(--info-color);
+    text-decoration: none;
+    transition: color var(--transition-fast);
 }
 
-/* Card shell + containers */
+a:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+a:focus-visible {
+    outline: 2px solid var(--info-color);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+/* FOCUS STATES - Accessibility */
+*:focus-visible {
+    outline: 2px solid var(--info-color);
+    outline-offset: 2px;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: none; /* Handled by individual component styles */
+}
+
+/* CARDS & CONTAINERS - Clean glass-morphism */
 .card,
 .container,
 .summary-box,
 .month-section,
-#commander-card,
-#year-tabs-container,
-.totals-summary .summary-box,
-.modal,
-.modal-content,
-#app-suggestion-modal {
-    background: radial-gradient(120% 180% at 50% 0%, rgba(255, 255, 255, 0.02), transparent 60%), #161214;
-    border: 1px solid var(--border-color);
+#year-tabs-container {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-2xl);
+    margin-bottom: var(--spacing-2xl);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+    border: 1px solid var(--border-default);
     box-shadow: var(--shadow-md);
     color: var(--text-primary);
 }
 
-/* Header bar */
-.main-header {
-    background: linear-gradient(135deg, rgba(214, 40, 40, 0.12), rgba(12, 7, 9, 0.9));
-    border: 1px solid rgba(214, 40, 40, 0.15);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-}
+/* Header bar styles defined above in HEADER section */
 
 .main-header .app-title {
-    color: #e44;
-    text-shadow: 0 8px 22px rgba(214, 40, 40, 0.4);
+    /* Styles defined above in HEADER section */
 }
 
 .main-header .app-tagline {
@@ -2738,161 +2826,352 @@ textarea:focus {
 
 /* Buttons and pills */
 button,
+/* BUTTONS - Modern, professional design */
 .button,
 .add-btn,
 .cancel-btn,
 #add-year-btn,
 #update-goal-btn,
-.sync-button {
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    background: linear-gradient(180deg, rgba(214, 40, 40, 0.9), rgba(156, 25, 25, 0.95));
-    color: #fff;
-    box-shadow: 0 12px 30px rgba(214, 40, 40, 0.35), 0 2px 8px rgba(0, 0, 0, 0.4);
-    font-weight: 700;
-    letter-spacing: 0.01em;
+.sync-button,
+button {
+    /* Base button styles */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md) var(--spacing-xl);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-tight);
+    border-radius: var(--radius-sm); /* Modern 8px, NOT pills */
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    white-space: nowrap;
+    user-select: none;
 }
 
-button:hover,
+/* Primary buttons - Solid red, no gradients */
+.button,
+.add-btn,
+#add-year-btn,
+#update-goal-btn,
+.sync-button {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-xs);
+}
+
 .button:hover,
 .add-btn:hover,
 #add-year-btn:hover,
 #update-goal-btn:hover,
 .sync-button:hover {
-    background: linear-gradient(180deg, rgba(214, 40, 40, 1), rgba(156, 25, 25, 1));
-    transform: translateY(-1px);
-    box-shadow: 0 14px 32px rgba(214, 40, 40, 0.4), 0 4px 12px rgba(0, 0, 0, 0.45);
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px); /* Subtle lift */
 }
 
+.button:active,
+.add-btn:active,
+#add-year-btn:active,
+#update-goal-btn:active,
+.sync-button:active {
+    background-color: var(--primary-active);
+    transform: translateY(0);
+    box-shadow: var(--shadow-xs);
+}
+
+.button:focus-visible,
+.add-btn:focus-visible,
+#add-year-btn:focus-visible,
+#update-goal-btn:focus-visible,
+.sync-button:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring-error);
+}
+
+/* Secondary/Cancel buttons - Ghost style */
 .cancel-btn,
 .secondary-button {
-    background: rgba(255, 255, 255, 0.04);
+    background-color: transparent;
     color: var(--text-secondary);
+    border-color: var(--border-default);
     box-shadow: none;
 }
 
 .cancel-btn:hover,
 .secondary-button:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background-color: var(--bg-hover);
     color: var(--text-primary);
-    transform: translateY(-1px);
+    border-color: var(--border-strong);
+    transform: none; /* No lift for secondary */
 }
 
-/* Search bar */
+.cancel-btn:active,
+.secondary-button:active {
+    background-color: var(--bg-elevated);
+}
+
+.cancel-btn:focus-visible,
+.secondary-button:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+}
+
+/* Disabled state */
+.button:disabled,
+.add-btn:disabled,
+.cancel-btn:disabled,
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.button:disabled:hover,
+.add-btn:disabled:hover,
+button:disabled:hover {
+    background-color: var(--primary-color);
+    box-shadow: var(--shadow-xs);
+    transform: none;
+}
+
+/* SEARCH BAR - Prominent and accessible */
+.search-container {
+    margin-bottom: var(--spacing-2xl);
+}
+
 .search-container input[type="search"] {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    width: 100%;
+    height: 48px; /* Touch-friendly height */
+    padding: var(--spacing-md) var(--spacing-xl);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-normal);
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
     color: var(--text-primary);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    box-shadow: var(--shadow-xs);
+    transition: all var(--transition-base);
+}
+
+.search-container input[type="search"]::placeholder {
+    color: var(--text-tertiary);
+}
+
+.search-container input[type="search"]:hover {
+    border-color: var(--border-strong);
+}
+
+.search-container input[type="search"]:focus {
+    outline: none;
+    border-color: var(--info-color);
+    box-shadow: var(--focus-ring);
+    background-color: var(--bg-elevated);
 }
 
 /* Summary / KPI tiles */
+.summary-box {
+    background-color: var(--bg-elevated);
+}
+
 .summary-box h3,
 .summary-box h4 {
-    color: var(--accent-gold);
-    letter-spacing: 0.02em;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+    margin: 0 0 var(--spacing-lg) 0;
+    letter-spacing: -0.01em;
 }
 
 .kpi-value {
-    color: #f7f5f3;
-    font-weight: 700;
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--accent-gold);
+    line-height: var(--line-height-tight);
 }
 
-/* Commander card */
+/* COMMANDER CARD - Action center */
 #commander-card {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.4));
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: var(--shadow-md);
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: var(--spacing-2xl);
 }
 
 .commander-section h3 {
-    color: var(--accent-gold);
-    border-bottom-color: rgba(255, 255, 255, 0.08);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary); /* Changed from gold to white */
+    margin: 0 0 var(--spacing-lg) 0;
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 .commander-icon {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25);
+    background-color: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-xs);
+    transition: all var(--transition-base);
 }
 
 .commander-icon:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(214, 40, 40, 0.45);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+    background-color: var(--bg-hover);
+    border-color: var(--primary-color); /* Red border on hover */
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-2px);
 }
 
-/* Year tabs */
+.commander-icon:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-xs);
+}
+
+/* YEAR TABS - Segmented control style */
 .year-tabs-header {
-    background: linear-gradient(135deg, rgba(214, 40, 40, 0.12), rgba(0, 0, 0, 0.35));
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background-color: transparent; /* No gradient */
+    border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
 }
 
 .year-tab {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background-color: transparent;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    padding: var(--spacing-md) var(--spacing-xl);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    transition: all var(--transition-base);
+}
+
+.year-tab:hover {
+    background-color: var(--bg-hover);
     color: var(--text-primary);
+    border-color: var(--border-strong);
 }
 
 .year-tab.active {
-    background: linear-gradient(180deg, rgba(214, 40, 40, 0.9), rgba(156, 25, 25, 0.95));
-    border-color: rgba(214, 40, 40, 0.8);
-    color: #fff;
+    background-color: var(--primary-color); /* Solid red, no gradient */
+    border-color: var(--primary-color);
+    color: #ffffff;
+    font-weight: var(--font-weight-semibold);
 }
 
-/* Table minimal skin (structure unchanged) */
+/* Table header - no gradient */
 .client-table thead {
-    background: linear-gradient(180deg, rgba(31, 27, 29, 0.85), rgba(19, 15, 17, 0.95));
+    background-color: var(--table-header-bg);
 }
 
+/* DATA TABLES - Professional, scannable */
+/* Note: Base padding is defined earlier at line ~1305 to avoid conflicts */
 .client-table th,
 .client-table td {
     color: var(--text-primary);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 .client-table th {
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    font-size: 0.85rem;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.01em;
+    /* NO text-transform: uppercase - use sentence case */
+    background-color: var(--table-header-bg);
+    color: var(--text-secondary);
+}
+
+.client-table tbody tr {
+    height: 48px; /* Taller rows for better readability */
+    transition: background-color var(--transition-fast);
 }
 
 .client-row {
-    background-color: rgba(255, 255, 255, 0.02);
+    background-color: transparent;
 }
 
 .month-section .client-table tbody .client-row:nth-child(odd) {
-    background-color: rgba(255, 255, 255, 0.015);
+    background-color: var(--table-row-odd); /* Visible zebra striping */
 }
 
 .month-section .client-table tbody .client-row:nth-child(even) {
-    background-color: rgba(255, 255, 255, 0.03);
+    background-color: var(--table-row-even);
+}
+
+/* Table row hover - Premium elevation effect */
+.month-section .client-table tbody .client-row {
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .month-section .client-table tbody .client-row:hover {
-    background-color: rgba(214, 40, 40, 0.06) !important;
+    background-color: var(--table-row-hover) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Subtle lift */
+    transform: translateY(-1px); /* Micro-lift on hover */
+    cursor: pointer;
 }
 
-/* Progress bar */
+/* PROGRESS BAR - Premium with spring animation */
 .progress-bar {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    height: 10px; /* More substantial for dashboard KPIs */
+    background: linear-gradient(
+        to right,
+        var(--bg-elevated),
+        var(--bg-hover)
+    ); /* Subtle gradient track */
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    position: relative;
 }
 
 .progress-fill {
-    background: linear-gradient(90deg, #d62828, #f0c262);
+    background-color: var(--primary-color); /* Solid red for in-progress */
+    height: 100%;
+    border-radius: var(--radius-full);
+    transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); /* Spring animation */
+    position: relative;
 }
 
-/* Modals */
+/* Gold when complete (100%) - can be triggered with [data-complete="true"] */
+.progress-fill[data-complete="true"] {
+    background: linear-gradient(90deg, #d4af37, var(--accent-gold));
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1));
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+}
+
+/* MODALS - Clean, professional */
 .modal,
 .modal-content,
 #app-suggestion-modal {
-    background: rgba(15, 12, 14, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.6);
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    padding: var(--spacing-2xl);
 }
 
 .modal-header h3,
 .app-suggestion-modal-header h2 {
-    color: var(--accent-gold);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary); /* White, not gold */
+    margin: 0 0 var(--spacing-lg) 0;
 }

@@ -32,18 +32,14 @@ export function createRowElement(licenseData) {
     
     // Store original date values as data attributes for sorting and other operations
     row.setAttribute('data-opportunity-id', licenseData.opportunityId || '');
-    row.setAttribute('data-sent-date', licenseData.sentDate || '');
-    row.setAttribute('data-close-date', licenseData.closeDate || '');
     row.setAttribute('data-renewal-date', licenseData.renewalDate || '');
 
     // Format dates for display
     const formattedRenewalDate = licenseData.renewalDate ? formatDate(licenseData.renewalDate) : '';
-    const formattedSentDate = licenseData.sentDate ? formatDate(licenseData.sentDate) : '';
-    const formattedCloseDate = licenseData.closeDate ? formatDate(licenseData.closeDate) : '';
     const formattedAmount = formatCurrency(licenseData.amount);
 
     // Create HTML with columns in exact order matching the table headers:
-    // Checkbox, Name, Renewal Date, Sent Date, Close Date, Amount, Opportunity ID, Actions
+    // Checkbox, Name, Renewal Date, Amount, Opportunity ID, Actions
     row.innerHTML = `
         <td class="td-checkbox">
             <div class="checkbox-wrapper">
@@ -52,8 +48,6 @@ export function createRowElement(licenseData) {
         </td>
         <td class="td-name">${licenseData.name || ''}</td>
         <td class="td-renewal-date">${formattedRenewalDate}</td>
-        <td class="td-sent-date">${formattedSentDate}</td>
-        <td class="td-close-date">${formattedCloseDate}</td>
         <td class="td-amount">USD ${formattedAmount}</td>
         <td class="td-opp-id">${licenseData.opportunityId || ''}</td>
         <td class="td-actions">
@@ -105,12 +99,6 @@ export function createNewMonthSection(month, initialAmount = 0) {
                             </th>
                             <th class="th-renewal-date th-sortable" data-sort-field="renewalDate" aria-label="Sort by Renewal Date">
                                 Renewal Date <span class="sort-indicator"></span>
-                            </th>
-                            <th class="th-sent-date th-sortable" data-sort-field="sentDate" aria-label="Sort by Sent Date">
-                                Sent Date <span class="sort-indicator"></span>
-                            </th>
-                            <th class="th-close-date th-sortable" data-sort-field="closeDate" aria-label="Sort by Close Date">
-                                Close Date <span class="sort-indicator"></span>
                             </th>
                             <th class="th-amount th-sortable" data-sort-field="amount" aria-label="Sort by Amount">
                                 Amount <span class="sort-indicator"></span>
@@ -273,16 +261,9 @@ export function sortRowsByField(field, direction) {
                     return directionMultiplier * valueA.localeCompare(valueB);
 
                 case 'renewalDate':
-                case 'sentDate':
-                case 'closeDate':
-                    // Sort by date using data attributes (YYYY-MM-DD format)
-                    const dataAttrMap = {
-                        'renewalDate': 'data-renewal-date',
-                        'sentDate': 'data-sent-date',
-                        'closeDate': 'data-close-date'
-                    };
-                    valueA = a.getAttribute(dataAttrMap[field]) || '0000-00-00'; // Empty dates to beginning
-                    valueB = b.getAttribute(dataAttrMap[field]) || '0000-00-00';
+                    // Sort by date using data attribute (YYYY-MM-DD format)
+                    valueA = a.getAttribute('data-renewal-date') || '0000-00-00'; // Empty dates to beginning
+                    valueB = b.getAttribute('data-renewal-date') || '0000-00-00';
                     // Lexicographic comparison works for YYYY-MM-DD format
                     return directionMultiplier * valueA.localeCompare(valueB);
 
@@ -305,9 +286,9 @@ export function sortRowsByField(field, direction) {
                     return directionMultiplier * valueA.localeCompare(valueB);
 
                 default:
-                    // Fallback to close date
-                    valueA = a.getAttribute('data-close-date') || '0000-00-00';
-                    valueB = b.getAttribute('data-close-date') || '0000-00-00';
+                    // Fallback to renewal date
+                    valueA = a.getAttribute('data-renewal-date') || '0000-00-00';
+                    valueB = b.getAttribute('data-renewal-date') || '0000-00-00';
                     return directionMultiplier * valueA.localeCompare(valueB);
             }
         });
@@ -429,10 +410,8 @@ export function openEditModal(rowId) {
 
     // Retrieve data from the row
     const name = row.querySelector('.td-name')?.textContent || '';
-    // Read dates from data attributes for raw YYYY-MM-DD format
+    // Read date from data attribute for raw YYYY-MM-DD format
     const renewalDate = row.dataset.renewalDate || '';
-    const sentDate = row.dataset.sentDate || '';
-    const closeDate = row.dataset.closeDate || '';
     // Keep amount and oppId retrieval as is
     const amountStr = row.querySelector('.td-amount')?.textContent || '0';
     const opportunityId = row.getAttribute('data-opportunity-id') || '';
@@ -440,15 +419,11 @@ export function openEditModal(rowId) {
     // Populate modal fields
     const editNameEl = document.getElementById('edit-name');
     const editRenewalDateEl = document.getElementById('edit-renewal-date');
-    const editSentDateEl = document.getElementById('edit-sent-date');
-    const editCloseDateEl = document.getElementById('edit-date');
     const editAmountEl = document.getElementById('edit-amount');
     const editOpportunityIdEl = document.getElementById('edit-opportunity-id');
 
     if (editNameEl) editNameEl.value = name;
     if (editRenewalDateEl) editRenewalDateEl.value = renewalDate;
-    if (editSentDateEl) editSentDateEl.value = sentDate;
-    if (editCloseDateEl) editCloseDateEl.value = closeDate;
     if (editAmountEl) editAmountEl.value = parseAmount(amountStr).toFixed(2);
     if (editOpportunityIdEl) editOpportunityIdEl.value = opportunityId;
 
@@ -492,14 +467,12 @@ export function getAllClientsFromDOM() {
         const client = {
             id: row.id,
             name: nameEl ? nameEl.textContent : '',
-            // Get dates from data attributes for raw values
+            // Get date from data attribute for raw value
             renewalDate: row.getAttribute('data-renewal-date') || '',
-            sentDate: row.getAttribute('data-sent-date') || '',
-            closeDate: row.getAttribute('data-close-date') || '',
             amount: amountEl ? parseAmount(amountEl.textContent) : 0, // Use parseAmount
             opportunityId: oppIdEl ? oppIdEl.textContent : '',
             // Get isChecked state directly from checkbox state
-            isChecked: checkboxEl ? checkboxEl.checked : false 
+            isChecked: checkboxEl ? checkboxEl.checked : false
         };
         clients.push(client);
     });
@@ -798,15 +771,11 @@ export function updateRowVisibility() {
             const name = row.querySelector('.td-name')?.textContent.toLowerCase() || '';
             const opp = row.querySelector('.td-opp-id')?.textContent.toLowerCase() || '';
             const renDate = row.querySelector('.td-renewal-date')?.textContent.toLowerCase() || '';
-            const senDate = row.querySelector('.td-sent-date')?.textContent.toLowerCase() || '';
-            const cloDate = row.querySelector('.td-close-date')?.textContent.toLowerCase() || '';
             const amt = row.querySelector('.td-amount')?.textContent.toLowerCase() || '';
             if (
                 name.includes(searchTerm) ||
                 opp.includes(searchTerm) ||
                 renDate.includes(searchTerm) ||
-                senDate.includes(searchTerm) ||
-                cloDate.includes(searchTerm) ||
                 amt.includes(searchTerm)
             ) {
                 anyMatchFound = true;
@@ -819,8 +788,6 @@ export function updateRowVisibility() {
         const accountName = clientRow.querySelector('.td-name')?.textContent.toLowerCase() || '';
         const oppId = clientRow.querySelector('.td-opp-id')?.textContent.toLowerCase() || '';
         const renewalDateText = clientRow.querySelector('.td-renewal-date')?.textContent.toLowerCase() || '';
-        const sentDateText = clientRow.querySelector('.td-sent-date')?.textContent.toLowerCase() || '';
-        const closeDateText = clientRow.querySelector('.td-close-date')?.textContent.toLowerCase() || '';
         const amountText = clientRow.querySelector('.td-amount')?.textContent.toLowerCase() || '';
         let matchesSearch = true;
         if (searchTerm) {
@@ -828,8 +795,6 @@ export function updateRowVisibility() {
                 accountName.includes(searchTerm) ||
                 oppId.includes(searchTerm) ||
                 renewalDateText.includes(searchTerm) ||
-                sentDateText.includes(searchTerm) ||
-                closeDateText.includes(searchTerm) ||
                 amountText.includes(searchTerm);
         }
         let shouldBeVisibleBasedOnView = false;

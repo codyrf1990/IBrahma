@@ -16,26 +16,22 @@ export function addLicense() {
     try {
         const nameEl = document.getElementById('account-name');
         const renewalDateEl = document.getElementById('renewal-date');
-        const sentDateEl = document.getElementById('sent-date');
-        const closeDateEl = document.getElementById('close-date');
         const amountEl = document.getElementById('amount');
         const opportunityIdEl = document.getElementById('opportunity-id');
 
-        if (!nameEl || !closeDateEl || !amountEl) {
+        if (!nameEl || !renewalDateEl || !amountEl) {
             console.error('[addLicense] Required form elements not found');
             showMessage('Error: Form elements not found', 'error');
             return;
         }
 
         const name = nameEl.value.trim();
-        const renewalDate = renewalDateEl?.value || '';
-        const sentDate = sentDateEl?.value || '';
-        const closeDate = closeDateEl.value;
+        const renewalDate = renewalDateEl.value;
         let amount = parseFloat(amountEl.value);
         const opportunityId = opportunityIdEl?.value.trim() || '';
 
-        if (!name || !closeDate) {
-            showMessage('Account Name and Close Date are required', 'error');
+        if (!name || !renewalDate) {
+            showMessage('Account Name and Renewal Date are required', 'error');
             return;
         }
         if (isNaN(amount)) {
@@ -48,8 +44,6 @@ export function addLicense() {
             id: rowId,
             name,
             renewalDate,
-            sentDate,
-            closeDate,
             amount,
             opportunityId,
             isChecked: false,
@@ -60,8 +54,8 @@ export function addLicense() {
         state.clients.push(newLicenseData);
 
         // 2. Check if year tab needs to be created
-        if (closeDate && closeDate.length >= 4) {
-            const year = parseInt(closeDate.substring(0, 4), 10);
+        if (renewalDate && renewalDate.length >= 4) {
+            const year = parseInt(renewalDate.substring(0, 4), 10);
             if (!isNaN(year) && !state.availableYears.includes(year)) {
                 addYearTab(year);
             }
@@ -232,12 +226,10 @@ export function saveEditChanges() {
         // Get updated values from modal form
         const nameEl = document.getElementById('edit-name');
         const renewalDateEl = document.getElementById('edit-renewal-date');
-        const sentDateEl = document.getElementById('edit-sent-date');
-        const closeDateEl = document.getElementById('edit-date');
         const amountEl = document.getElementById('edit-amount');
         const opportunityIdEl = document.getElementById('edit-opportunity-id');
 
-        if (!nameEl || !closeDateEl || !amountEl) {
+        if (!nameEl || !renewalDateEl || !amountEl) {
             console.error('[saveEditChanges] Required edit form elements not found');
             showMessage('Error: Edit form elements not found', 'error');
             closeEditModal();
@@ -245,14 +237,12 @@ export function saveEditChanges() {
         }
 
         const name = nameEl.value.trim();
-        const renewalDate = renewalDateEl?.value || '';
-        const sentDate = sentDateEl?.value || '';
-        const closeDate = closeDateEl.value;
+        const renewalDate = renewalDateEl.value;
         let amount = parseFloat(amountEl.value);
         const opportunityId = opportunityIdEl?.value.trim() || '';
 
-        if (!name || !closeDate) {
-            showMessage('Account Name and Close Date are required', 'error');
+        if (!name || !renewalDate) {
+            showMessage('Account Name and Renewal Date are required', 'error');
             return; // Keep modal open for correction
         }
         if (isNaN(amount)) {
@@ -261,9 +251,9 @@ export function saveEditChanges() {
         }
 
         // 1. Check if year changed (for year tab management)
-        const oldCloseDate = state.clients[clientIndex].closeDate;
-        const oldYear = oldCloseDate && oldCloseDate.length >= 4 ? parseInt(oldCloseDate.substring(0, 4), 10) : null;
-        const newYear = closeDate && closeDate.length >= 4 ? parseInt(closeDate.substring(0, 4), 10) : null;
+        const oldRenewalDate = state.clients[clientIndex].renewalDate;
+        const oldYear = oldRenewalDate && oldRenewalDate.length >= 4 ? parseInt(oldRenewalDate.substring(0, 4), 10) : null;
+        const newYear = renewalDate && renewalDate.length >= 4 ? parseInt(renewalDate.substring(0, 4), 10) : null;
         const yearChanged = oldYear !== newYear;
 
         // 2. Update the client object in state.clients
@@ -271,8 +261,6 @@ export function saveEditChanges() {
             ...state.clients[clientIndex], // Preserve existing fields like ID, notes, isChecked
             name,
             renewalDate,
-            sentDate,
-            closeDate,
             amount,
             opportunityId
         };
