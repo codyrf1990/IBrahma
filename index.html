@@ -42,7 +42,6 @@
                     <div class="commander-icon" id="icon-save-to-file" title="Save to File"><img src="src/assets/Images/save Best.png" alt="Save" style="width: 40px; height: 40px;"><span class="icon-label">Save</span></div>
                     <div class="commander-icon" id="icon-load-from-file" title="Load from File"><img src="src/assets/Images/load data 2.png" alt="Load" style="width: 40px; height: 40px;"><span class="icon-label">Load</span></div>
                     <div class="commander-icon" id="icon-add-renewal" title="Add Renewal"><img src="src/assets/Images/Add Account.png" alt="Add" style="width: 40px; height: 40px;"><span class="icon-label">Add</span></div>
-                    <div class="commander-icon" id="icon-system-settings" title="Settings"><img src="src/assets/Images/settings12.png" alt="Settings" style="width: 40px; height: 40px;"><span class="icon-label">Settings</span></div>
                     <div class="commander-icon" id="icon-system-help" title="Help"><img src="src/assets/Images/help.png" alt="Help" style="width: 40px; height: 40px;"><span class="icon-label">Help</span></div>
                 </div>
             </div>
@@ -276,40 +275,6 @@
         </div>
     </div>
 
-    <!-- Settings Panel Modal -->
-    <div id="settings-panel-modal" class="modal-overlay" style="display: none;">
-        <div class="modal-content settings-modal-content"> <!-- Added settings-modal-content for specific styling -->
-            <div class="modal-header">
-                <h3>Settings</h3>
-                <button id="close-settings-panel" class="modal-close">&times;</button>
-            </div>
-            <div class="settings-panel-body">
-                <div class="setting-item">
-                    <label for="dark-mode-toggle">Dark Mode</label>
-                    <label class="switch">
-                        <input type="checkbox" id="dark-mode-toggle">
-                        <span class="slider round"></span>
-                    </label>
-                </div>
-                <div class="setting-item">
-                    <label>Placeholder Setting 1</label>
-                    <span>(In Construction)</span>
-                </div>
-                <div class="setting-item">
-                    <label>Placeholder Setting 2</label>
-                    <span>(In Construction)</span>
-                </div>
-                <div class="setting-item">
-                    <label>Another Placeholder</label>
-                    <span>(In Construction)</span>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button id="save-settings-btn" class="add-btn">Save Settings</button>
-            </div>
-        </div>
-    </div>
-    <!-- END Settings Panel Modal -->
 
     <!-- App Suggestions Modal -->
     <div id="app-suggestion-modal-overlay" class="modal-overlay" style="display: none;">
@@ -351,7 +316,6 @@
     <!-- END App Suggestions Modal -->
 
     <script type="module" src="src/js/main.js"></script>
-    <script src="src/js/settings.js"></script>
     <!-- Custom Help Modal Overlay -->
     <div id="custom-help-modal-overlay" class="modal-overlay" style="display: none;">
         <div id="custom-help-modal">
@@ -394,7 +358,7 @@
 
                 <section id="help-commander-card">
                     <h3>Commander Card Quick Actions</h3>
-                    <p><strong>System:</strong> <i class="fas fa-save" aria-hidden="true"></i> Save, <i class="fas fa-folder-open" aria-hidden="true"></i> Load, <i class="fas fa-plus-circle" aria-hidden="true"></i> Add Renewal, <i class="fas fa-cog" aria-hidden="true"></i> Settings, <i class="fas fa-user-circle" aria-hidden="true"></i> Profile, <i class="fas fa-question-circle" aria-hidden="true"></i> Help (this window).</p>
+                    <p><strong>System:</strong> <i class="fas fa-save" aria-hidden="true"></i> Save, <i class="fas fa-folder-open" aria-hidden="true"></i> Load, <i class="fas fa-plus-circle" aria-hidden="true"></i> Add Renewal, <i class="fas fa-question-circle" aria-hidden="true"></i> Help (this window).</p>
                     <p><strong>AI Chats:</strong> Launch "SolidCAM Chat Std" or "SolidCAM Chat Pro" (in a sidebar).</p>
                     <p><strong>Utilities:</strong> Access <i class="fas fa-envelope" aria-hidden="true"></i> Email, <i class="fas fa-calculator" aria-hidden="true"></i> Calculator, <i class="fas fa-sticky-note" aria-hidden="true"></i> Notes.</p>
                 </section>

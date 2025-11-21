@@ -540,14 +540,6 @@ document.addEventListener('DOMContentLoaded', () => {
         iconAddRenewal.addEventListener('click', showAddRenewalModal);
     }
 
-    const iconSystemSettings = document.getElementById('icon-system-settings');
-    if (iconSystemSettings) {
-        iconSystemSettings.addEventListener('click', () => {
-            console.log('System Settings icon clicked');
-            // openGenericModal('System Settings', 'placeholder_settings.html'); // Example
-        });
-    }
-
     // --- Custom Help Modal Logic ---
     const helpModalOverlay = document.getElementById('custom-help-modal-overlay');
     const helpModalCloseBtn = document.getElementById('custom-help-modal-close-btn');
